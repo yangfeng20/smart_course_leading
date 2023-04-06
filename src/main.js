@@ -6,6 +6,7 @@ import VueParticles from 'vue-particles'
 import router from './router'
 import axios from "@/axios";
 import VueQuillEditor from 'vue-quill-editor'
+import RichTextShow from "@/components/RichTextShow";
 
 // 富文本 样式
 import 'quill/dist/quill.core.css'

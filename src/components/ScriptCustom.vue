@@ -9,8 +9,16 @@
       <div class="script-block" v-for="(custom, index) in row" :key="index">
         <div class="script-info">
           <div class="script-info-inner">申请名称：{{ custom.applyName }}</div>
-          <div class="script-info-inner">申请状态：{{ custom.applyStatus?.desc }}</div>
+          <div class="script-info-inner">网站地址：
+            <el-link :href="custom.website" target="_blank" :underline="false"><i
+                class="el-icon-view el-icon--right"></i> {{ custom.website }}
+            </el-link>
+          </div>
+          <div class="script-info-inner">申请状态：
+            <el-tag>{{ custom.applyStatus?.desc }}</el-tag>
+          </div>
           <div class="script-info-inner">申请时间：{{ custom.createdDate }}</div>
+          <RichTextShow :content="custom.applyContent"></RichTextShow>
         </div>
       </div>
     </div>
@@ -39,6 +47,16 @@
             <el-input v-model="scriptCustomApplyForm.applyName" autocomplete="off" placeholder="需要定制的脚本简短描述"></el-input>
           </el-form-item>
 
+          <el-form-item label="网站地址" :label-width="formLabelWidth">
+            <el-input v-model="scriptCustomApplyForm.website" autocomplete="off"
+                      placeholder="需要定制脚本的网站url"></el-input>
+          </el-form-item>
+
+          <el-form-item label="账号信息" :label-width="formLabelWidth">
+            <el-input v-model="scriptCustomApplyForm.accountInfo" autocomplete="off"
+                      placeholder="定制脚本网站的账号（用于站长制造调试脚本，不会在列表显示）"></el-input>
+          </el-form-item>
+
           <el-form-item label="申请描述" :label-width="formLabelWidth">
             <quill-editor v-model="scriptCustomApplyForm.applyContent" :options="editorOption"
                           style="height: 500px"></quill-editor>
@@ -62,15 +80,15 @@
 <script>
 import {quillEditor} from 'vue-quill-editor';
 import ElementUI from 'element-ui'
-import Moment from 'moment'
+import RichTextShow from "@/components/RichTextShow";
 
 export default {
-  components: {quillEditor},
+  components: {quillEditor, RichTextShow},
   name: "ScriptCustom",
   data() {
     return {
       customList: [
-        {applyName: '职教云1.0', applyStatus: {desc: "已提交"}, createdDate: "2020-23-12 23:23:00"},
+        {applyName: '职教云1.0', applyStatus: {desc: "已提交"}, website: "", createdDate: "2020-23-12 23:23:00"},
         {applyName: '职教云1.0', applyStatus: {desc: "已提交"}, createdDate: "2020-23-12 23:23:00"},
       ],
       customPage: {
@@ -84,7 +102,7 @@ export default {
         modules: {
           toolbar: [
             ['bold', 'italic', 'underline'],
-            ['image', 'code-block'],
+            ['image'],
           ],
         },
       },
@@ -95,6 +113,9 @@ export default {
       scriptCustomApplyForm: {
         applyName: '',
         applyContent: '',
+        website: "",
+        accountInfo: "",
+        applyStatus: 1
       },
       formLabelWidth: '80px',
       timer: null,
@@ -103,7 +124,10 @@ export default {
 
   methods: {
     searchScriptCustom() {
-      this.$axios.post("/script_apply/search", {}).then(resp => {
+      this.$axios.post("/script_apply/search", {
+        page: 1,
+        size: 10
+      }).then(resp => {
         let customListResult = resp.data.data;
         console.log(customListResult)
         this.customList = customListResult.content === null ? [] : customListResult.content;
