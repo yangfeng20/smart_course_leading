@@ -1,6 +1,7 @@
 import axios from "axios";
 import ElementUI from 'element-ui'
 import router from "vue-router";
+import Moment from "moment";
 
 
 /**
@@ -43,7 +44,30 @@ request.interceptors.response.use(resp => {
         // http的响应状态码会进入这里
         let result = resp.data;
         if (result.code === 200) {
+            formatDate(result)
             return resp;
+        }
+
+        // 创建更新时间格式
+        function formatDate(result) {
+            let formatStr = 'YYYY-MM-DD hh:mm:ss'
+            if (result?.data?.createdDate) {
+                result.data.createdDate = new Moment(result.data.createdDate).format(formatStr)
+            }
+            if (result?.data?.updatedDate) {
+                result.data.updatedDate = new Moment(result.data.updatedDate).format(formatStr)
+            }
+
+            if (result?.data?.content) {
+                result.data.content.forEach(item=>{
+                    if (item?.createdDate) {
+                        item.createdDate = new Moment(item.createdDate).format(formatStr)
+                    }
+                    if (item?.updatedDate) {
+                        item.updatedDate = new Moment(item.updatedDate).format(formatStr)
+                    }
+                })
+            }
         }
 
         // 代码执行下来，说明code不为200，或者result有问题【使用弹窗提示,可能为空白】

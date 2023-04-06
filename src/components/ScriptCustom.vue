@@ -2,14 +2,15 @@
 
   <div>
 
+    <el-button type="primary" icon="el-icon-refresh" @click="refreshList">刷新列表</el-button>
     <el-button type="primary" icon="el-icon-edit" @click="dialog = true">新增定制</el-button>
 
     <div class="script-row" v-for="(row, index) in rowList" :key="index">
       <div class="script-block" v-for="(custom, index) in row" :key="index">
         <div class="script-info">
-          <div class="script-info-inner">{{ custom.applyName }}</div>
-          <div class="script-info-inner">{{ custom.applyStatus.desc }}</div>
-          <div class="script-info-inner">{{ custom.createdDate }}</div>
+          <div class="script-info-inner">申请名称：{{ custom.applyName }}</div>
+          <div class="script-info-inner">申请状态：{{ custom.applyStatus?.desc }}</div>
+          <div class="script-info-inner">申请时间：{{ custom.createdDate }}</div>
         </div>
       </div>
     </div>
@@ -31,7 +32,7 @@
         ref="drawer"
         :size="'40%'"
     >
-      <div class="demo-drawer__content">
+      <div class="drawer__content">
         <el-form :model="scriptCustomApplyForm">
 
           <el-form-item label="申请名称" :label-width="formLabelWidth">
@@ -39,11 +40,14 @@
           </el-form-item>
 
           <el-form-item label="申请描述" :label-width="formLabelWidth">
-            <el-input v-model="scriptCustomApplyForm.applyContent" autocomplete="off" placeholder="需要定制的脚本简短描述"></el-input>
+            <quill-editor v-model="scriptCustomApplyForm.applyContent" :options="editorOption"
+                          style="height: 500px"></quill-editor>
           </el-form-item>
         </el-form>
-        <div class="demo-drawer__footer">
-          <el-button @click="cancelForm">关 闭</el-button>
+
+        <div class="drawer__footer" style="bottom: 10px; position: absolute">
+          <el-button @click="cancelForm" type="warning">关 闭</el-button>
+          <el-button @click="clearContent" type="danger">清 空</el-button>
           <el-button type="primary" @click="$refs.drawer.closeDrawer()" :loading="loading">
             {{ loading ? '提交中 ...' : '确 定' }}
           </el-button>
@@ -56,7 +60,12 @@
 </template>
 
 <script>
+import {quillEditor} from 'vue-quill-editor';
+import ElementUI from 'element-ui'
+import Moment from 'moment'
+
 export default {
+  components: {quillEditor},
   name: "ScriptCustom",
   data() {
     return {
@@ -68,6 +77,16 @@ export default {
         page: 1,
         size: 10,
         total: 10
+      },
+
+      editorOption: {
+        placeholder: '请输入定制脚本的描述\n包含需要定制脚本的网站地址\n网站账号',
+        modules: {
+          toolbar: [
+            ['bold', 'italic', 'underline'],
+            ['image', 'code-block'],
+          ],
+        },
       },
 
 
@@ -86,19 +105,39 @@ export default {
     searchScriptCustom() {
       this.$axios.post("/script_apply/search", {}).then(resp => {
         let customListResult = resp.data.data;
+        console.log(customListResult)
         this.customList = customListResult.content === null ? [] : customListResult.content;
         this.customPage.total = customListResult.total;
         this.customPage.page = customListResult.page;
         this.customPage.size = customListResult.size;
       })
     },
+    refreshList() {
+      this.searchScriptCustom()
+    },
+    clearContent() {
+      this.scriptCustomApplyForm = {}
+    },
+    checkFormData() {
+      if (this.scriptCustomApplyForm.applyName === '' || this.scriptCustomApplyForm.applyContent === '') {
+        ElementUI.Message.warning("名称和描述都不可为空")
+        return false;
+      }
+
+      return true;
+    },
 
     addScriptCustomApply() {
-
+      this.$axios.post("script_apply/add", {
+        ...this.scriptCustomApplyForm,
+      })
     },
 
     handleClose(done) {
       if (this.loading) {
+        return;
+      }
+      if (!this.checkFormData()) {
         return;
       }
       this.$confirm('确定提交脚本定制申请吗？')
