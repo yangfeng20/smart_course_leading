@@ -1,12 +1,15 @@
 <template>
 
   <div>
+
+    <el-button type="primary" icon="el-icon-edit" @click="dialog = true">新增定制</el-button>
+
     <div class="script-row" v-for="(row, index) in rowList" :key="index">
       <div class="script-block" v-for="(custom, index) in row" :key="index">
         <div class="script-info">
-          <div class="script-info-inner">{{ custom.scriptName }}</div>
-          <div class="script-info-inner">{{ custom.scriptDesc }}</div>
-          <div class="script-info-inner">{{ custom.downloadCount }}</div>
+          <div class="script-info-inner">{{ custom.applyName }}</div>
+          <div class="script-info-inner">{{ custom.applyStatus.desc }}</div>
+          <div class="script-info-inner">{{ custom.createdDate }}</div>
         </div>
       </div>
     </div>
@@ -18,6 +21,37 @@
         layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
 
+    <!-- 侧边栏抽屉-->
+    <el-drawer
+        title="新增脚本定制申请"
+        :before-close="handleClose"
+        :visible.sync="dialog"
+        direction="rtl"
+        custom-class="demo-drawer"
+        ref="drawer"
+        :size="'40%'"
+    >
+      <div class="demo-drawer__content">
+        <el-form :model="scriptCustomApplyForm">
+
+          <el-form-item label="申请名称" :label-width="formLabelWidth">
+            <el-input v-model="scriptCustomApplyForm.applyName" autocomplete="off" placeholder="需要定制的脚本简短描述"></el-input>
+          </el-form-item>
+
+          <el-form-item label="申请描述" :label-width="formLabelWidth">
+            <el-input v-model="scriptCustomApplyForm.applyContent" autocomplete="off" placeholder="需要定制的脚本简短描述"></el-input>
+          </el-form-item>
+        </el-form>
+        <div class="demo-drawer__footer">
+          <el-button @click="cancelForm">关 闭</el-button>
+          <el-button type="primary" @click="$refs.drawer.closeDrawer()" :loading="loading">
+            {{ loading ? '提交中 ...' : '确 定' }}
+          </el-button>
+        </div>
+      </div>
+    </el-drawer>
+
+
   </div>
 </template>
 
@@ -27,28 +61,69 @@ export default {
   data() {
     return {
       customList: [
-        {customName: '职教云1.0', customDesc: '职教云刷课脚本', downloadCount: 2},
-        {customName: '数学', customDesc: '王老师', downloadCount: '周二 10:15-12:00'},
-        {customName: '英语', customDesc: '李老师', downloadCount: '周三 14:00-15:45'},
+        {applyName: '职教云1.0', applyStatus: {desc: "已提交"}, createdDate: "2020-23-12 23:23:00"},
+        {applyName: '职教云1.0', applyStatus: {desc: "已提交"}, createdDate: "2020-23-12 23:23:00"},
       ],
       customPage: {
         page: 1,
         size: 10,
         total: 10
-      }
+      },
+
+
+      dialog: false,
+      loading: false,
+      scriptCustomApplyForm: {
+        applyName: '',
+        applyContent: '',
+      },
+      formLabelWidth: '80px',
+      timer: null,
     }
   },
 
   methods: {
     searchScriptCustom() {
-      this.$axios.post("/script_info/search", {}).then(resp => {
+      this.$axios.post("/script_apply/search", {}).then(resp => {
         let customListResult = resp.data.data;
-        this.customList = customListResult.content;
+        this.customList = customListResult.content === null ? [] : customListResult.content;
         this.customPage.total = customListResult.total;
         this.customPage.page = customListResult.page;
         this.customPage.size = customListResult.size;
       })
     },
+
+    addScriptCustomApply() {
+
+    },
+
+    handleClose(done) {
+      if (this.loading) {
+        return;
+      }
+      this.$confirm('确定提交脚本定制申请吗？')
+          .then(_ => {
+            this.addScriptCustomApply();
+            this.loading = true;
+            this.timer = setTimeout(() => {
+              done();
+              // 动画关闭需要一定的时间
+              setTimeout(() => {
+                this.loading = false;
+              }, 400);
+            }, 1000);
+          })
+          .catch((e) => {
+            // 点击取消或者叉号,都不关闭
+            // this.cancelForm()
+          });
+    },
+    cancelForm() {
+      this.loading = false;
+      this.dialog = false;
+      clearTimeout(this.timer);
+    }
+
   },
 
   created() {
