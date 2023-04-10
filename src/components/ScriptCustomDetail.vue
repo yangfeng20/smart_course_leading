@@ -5,7 +5,7 @@
       <div class="website-icon">
         <el-image
             style="width: 100px; height: 100%"
-            src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+            :src="scriptCustomApply.website+'/favicon.ico'"
             fit="contain"></el-image>
       </div>
     </div>

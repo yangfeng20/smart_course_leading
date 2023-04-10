@@ -2,8 +2,15 @@
 
   <div>
 
-    <el-button type="primary" icon="el-icon-refresh" @click="refreshList">刷新列表</el-button>
     <el-button type="primary" icon="el-icon-edit" @click="dialog = true">新增定制</el-button>
+    <el-input v-model="searchParam.applyName" placeholder="申请名" v-show="isPermission" style="width: 10%" :clearable="true"></el-input>
+    <el-select v-model="searchParam.applyStatus" v-show="isPermission" placeholder="申请状态" :clearable="true">
+      <el-option label="已提交" value="1"></el-option>
+      <el-option label="制作中" value="2"></el-option>
+      <el-option label="已拒绝" value="3"></el-option>
+      <el-option label="已完成" value="4"></el-option>
+    </el-select>
+    <el-button type="primary" icon="el-icon-refresh" @click="refreshList">刷新列表</el-button>
 
     <div class="script-row" v-for="(row, index) in rowList" :key="index">
       <div class="script-block" v-for="(custom, index) in row" :key="index">
@@ -99,6 +106,11 @@ export default {
         total: 10
       },
 
+      searchParam: {
+        applyName: "",
+        applyStatus: "",
+      },
+
       editorOption: {
         placeholder: '请输入定制脚本的描述\n包含需要定制脚本的网站地址\n网站账号',
         modules: {
@@ -130,7 +142,9 @@ export default {
     searchScriptCustom() {
       this.$axios.post("/script_apply/search", {
         page: 1,
-        size: 10
+        size: 10,
+        applyName: this.searchParam.applyName,
+        applyStatus: this.searchParam.applyStatus,
       }).then(resp => {
         let customListResult = resp.data.data;
         this.customList = customListResult.content === null ? [] : customListResult.content;
@@ -140,7 +154,7 @@ export default {
       })
     },
     inDetail(e) {
-      this.$router.push({path: "/script_custom_detail", query: {id: e.target.innerText, permission:this.isPermission}})
+      this.$router.push({path: "/script_custom_detail", query: {id: e.target.innerText, permission: this.isPermission}})
     },
     getCookie(cookieName) {
       const cookies = document.cookie.split("; ")
