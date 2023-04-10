@@ -21,5 +21,13 @@ export default new vueRouter({
             path: "/about_author",
             component: () => import("@/components/AboutAuthor")
         },
+        {
+            path: "/script_custom_detail",
+            component: () => import("@/components/ScriptCustomDetail")
+        },
+        {
+            path: "/script_detail",
+            component: () => import("@/components/ScriptDetail")
+        },
     ]
 })

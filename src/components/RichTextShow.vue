@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <quill-editor ref="quill-editor" v-model="content" :options="editorOption"
+    <quill-editor ref="quill-editor" v-model="innerTextData" :options="editorOption"
                   style="height: 500px" :readonly="true"></quill-editor>
 
 
@@ -29,13 +29,18 @@ export default {
           ],
         },
       },
-
-      innerText:this.props['content']
+      innerTextData: ""
     }
   },
   watch: {
     content() {
-      return this.props['content']
+      console.log("watch执行")
+      this.innerTextData = this.content
+    },
+
+    innerTextData(){
+      console.log("inner 监听执行")
+      return this.innerTextData
     }
   }
 

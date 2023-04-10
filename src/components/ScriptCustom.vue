@@ -8,6 +8,7 @@
     <div class="script-row" v-for="(row, index) in rowList" :key="index">
       <div class="script-block" v-for="(custom, index) in row" :key="index">
         <div class="script-info">
+          <div class="script-info-inner" v-show="isPermission">申请Id：<a href="">{{ custom.id }}</a></div>
           <div class="script-info-inner">申请名称：{{ custom.applyName }}</div>
           <div class="script-info-inner">网站地址：
             <el-link :href="custom.website" target="_blank" :underline="false"><i
@@ -18,7 +19,6 @@
             <el-tag>{{ custom.applyStatus?.desc }}</el-tag>
           </div>
           <div class="script-info-inner">申请时间：{{ custom.createdDate }}</div>
-          <RichTextShow :content="custom.applyContent"></RichTextShow>
         </div>
       </div>
     </div>
@@ -107,6 +107,8 @@ export default {
         },
       },
 
+      isPermission:false,
+
 
       dialog: false,
       loading: false,
@@ -134,6 +136,29 @@ export default {
         this.customPage.total = customListResult.total;
         this.customPage.page = customListResult.page;
         this.customPage.size = customListResult.size;
+      })
+    },
+    getCookie(cookieName) {
+      const cookies = document.cookie.split("; ")
+      for (let i = 0; i < cookies.length; i++) {
+        const [name, value] = cookies[i].split("=")
+        if (name === cookieName) {
+          return decodeURIComponent(value)
+        }
+      }
+      return ""
+    },
+    isPermissionAction() {
+      let token = this.getCookie("token");
+      if (!token) {
+        return;
+      }
+
+      this.$axios.post("/auth/query_permission", {
+        token,
+        pageUrl:this.$route.path
+      }).then(resp=>{
+        this.isPermission = resp.data.data
       })
     },
     refreshList() {
@@ -191,6 +216,7 @@ export default {
 
   created() {
     this.searchScriptCustom();
+    this.isPermissionAction();
   },
 
   watch: {
