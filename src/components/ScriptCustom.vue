@@ -8,7 +8,9 @@
     <div class="script-row" v-for="(row, index) in rowList" :key="index">
       <div class="script-block" v-for="(custom, index) in row" :key="index">
         <div class="script-info">
-          <div class="script-info-inner" v-show="isPermission">申请Id：<a href="">{{ custom.id }}</a></div>
+          <div class="script-info-inner" v-show="isPermission">申请Id：
+            <el-link type="primary" @click="inDetail">{{ custom.id }}</el-link>
+          </div>
           <div class="script-info-inner">申请名称：{{ custom.applyName }}</div>
           <div class="script-info-inner">网站地址：
             <el-link :href="custom.website" target="_blank" :underline="false"><i
@@ -107,7 +109,7 @@ export default {
         },
       },
 
-      isPermission:false,
+      isPermission: false,
 
 
       dialog: false,
@@ -131,12 +133,14 @@ export default {
         size: 10
       }).then(resp => {
         let customListResult = resp.data.data;
-        console.log(customListResult)
         this.customList = customListResult.content === null ? [] : customListResult.content;
         this.customPage.total = customListResult.total;
         this.customPage.page = customListResult.page;
         this.customPage.size = customListResult.size;
       })
+    },
+    inDetail(e) {
+      this.$router.push({path: "/script_custom_detail", query: {id: e.target.innerText, permission:this.isPermission}})
     },
     getCookie(cookieName) {
       const cookies = document.cookie.split("; ")
@@ -156,8 +160,8 @@ export default {
 
       this.$axios.post("/auth/query_permission", {
         token,
-        pageUrl:this.$route.path
-      }).then(resp=>{
+        pageUrl: this.$route.path
+      }).then(resp => {
         this.isPermission = resp.data.data
       })
     },
