@@ -24,7 +24,7 @@
     </el-menu>
 
 
-    <el-carousel :interval="2000" type="card" height="300px">
+    <el-carousel :interval="2000" type="card" height="300px" v-show="isShow">
       <el-carousel-item v-for="item in carouselItems" :key="carouselItems.id">
         <img :src="item.src" alt="">
       </el-carousel-item>
@@ -38,8 +38,17 @@
 
 <script>
 export default {
+  watch: {
+    $route() {
+      if (this.$route.path === '/') {
+        this.isShow = true
+      }
+    },
+  },
   data() {
     return {
+      // 是否显示走马灯
+      isShow: false,
       carouselItems: [
         {
           id: 2,

@@ -12,9 +12,11 @@
     <div class="script-row" v-for="(row, index) in rowList" :key="index">
       <div class="script-block" v-for="(script, index) in row" :key="index">
         <div class="script-info">
-          <div class="script-info-inner">{{ script.scriptName }}</div>
-          <div class="script-info-inner">{{ script.scriptDesc }}</div>
-          <div class="script-info-inner">{{ script.downloadCount }}</div>
+          <div class="script-info-inner">脚本名称：
+            <el-link type="primary" @click="inDetail($event, script.id)">{{ script.scriptName }}</el-link>
+          </div>
+          <div class="script-info-inner">脚本简介：{{ script.scriptDesc }}</div>
+          <div class="script-info-inner">下载量：{{ script.downloadCount }}</div>
         </div>
       </div>
     </div>
@@ -35,11 +37,6 @@ export default {
       searchInput: "",
       scriptList: [
         {scriptName: '职教云1.0', scriptDesc: '职教云刷课脚本', downloadCount: 2},
-        {scriptName: '数学', scriptDesc: '王老师', downloadCount: '周二 10:15-12:00'},
-        {scriptName: '英语', scriptDesc: '李老师', downloadCount: '周三 14:00-15:45'},
-        {scriptName: '物理', scriptDesc: '赵老师', downloadCount: '周四 16:15-18:00'},
-        {scriptName: '化学', scriptDesc: '刘老师', downloadCount: '周五 13:30-15:15'},
-        {scriptName: '生物', scriptDesc: '陈老师', downloadCount: '周六 9:00-10:45'}
       ],
       scriptPage: {
         page: 1,
@@ -49,6 +46,9 @@ export default {
     }
   },
   methods: {
+    inDetail(e, id) {
+      this.$router.push({path: "/script_detail", query: {id}})
+    },
     searchScript() {
 
       this.$axios.post("/script_info/search",
@@ -64,6 +64,10 @@ export default {
       })
 
     },
+  },
+
+  created() {
+    this.searchScript()
   },
 
   watch: {

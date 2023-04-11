@@ -2,7 +2,7 @@
   <div>
 
     <quill-editor ref="quill-editor" v-model="innerTextData" :options="editorOption"
-                  style="height: 500px" :readonly="true"></quill-editor>
+                  style="height: 500px;width: 100%" :readonly="true"></quill-editor>
 
 
   </div>
@@ -24,8 +24,11 @@ export default {
         placeholder: '无提示',
         modules: {
           toolbar: [
-            ['bold', 'italic', 'underline'],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'header': 1 }, { 'header': 2 }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['image'],
+            ['clean'],
           ],
         },
       },
@@ -34,12 +37,10 @@ export default {
   },
   watch: {
     content() {
-      console.log("watch执行")
       this.innerTextData = this.content
     },
 
     innerTextData(){
-      console.log("inner 监听执行")
       return this.innerTextData
     }
   }
