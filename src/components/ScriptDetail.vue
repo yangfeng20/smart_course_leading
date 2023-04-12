@@ -4,56 +4,48 @@
       <div class="container">
         <div class="box1" slot="header">
           <h2>{{ scriptInfo.scriptName }}</h2>
+          <el-tag :type="scriptInfo.scriptStatus.key === 1 ? 'info' : 'success'">{{
+              scriptInfo.scriptStatus.desc
+            }}</el-tag>
         </div>
 
-        <div class="box2" style="display: flex; align-items: center;">
-          <label>下载链接：</label>
-          <el-button type="primary" round :href="scriptInfo.scriptUrl" target="_blank">点击下载</el-button>
-        </div>
+        <el-button type="primary" round :href="scriptInfo.scriptUrl" target="_blank">点击下载</el-button>
+
       </div>
 
       <el-divider></el-divider>
 
 
+
       <div style="display: flex; align-items: center">
-        <el-tag effect="dark">脚 本 描 述: </el-tag>
-        <span>{{ scriptInfo.scriptDesc }}</span>
+        <h3>脚本简介：</h3><span>{{ scriptInfo.scriptDesc }}</span>
       </div>
-
-
-
-      <div style=" align-items: center">
-        <label>脚本教程：</label>
-        <RichTextShowReadonly :content="scriptInfo.scriptCourse"/>
-      </div>
-
-      <el-tag :type="scriptInfo.scriptStatus.key === 1 ? 'success' : 'danger'">{{
-          scriptInfo.scriptStatus.desc
-        }}
-      </el-tag>
-
       <div style="display: flex; align-items: center">
         <label>下载次数：</label>
         <span>{{ scriptInfo.downloadCount }}</span>
       </div>
 
-      <div style="display: flex; align-items: center">
-        <label>创建人：</label>
-        <span>{{ scriptInfo.createdId }}</span>
+      <el-divider></el-divider>
+
+      <div style=" align-items: center">
+        <h3>脚本教程：</h3>
+        <RichTextShowReadonly :content="scriptInfo.scriptCourse"/>
       </div>
 
+
+
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
       <div style="display: flex; align-items: center">
-        <label>创建时间：</label>
+        <label>脚本创建时间：</label>
         <span>{{ scriptInfo.createdDate }}</span>
       </div>
 
-      <div style="display: flex; align-items: center">
-        <label>更新人：</label>
-        <span>{{ scriptInfo.updatedId }}</span>
-      </div>
-
-      <div style="display: flex; align-items: center">
-        <label>更新时间：</label>
+      <div style="display: flex; align-items: center" v-show="scriptInfo.updatedDate">
+        <label>脚本更新时间：</label>
         <span>{{ scriptInfo.updatedDate }}</span>
       </div>
     </el-card>
@@ -102,7 +94,6 @@ export default {
   methods: {
     refresh() {
       let id = this.$route.query.id;
-      console.log("detail",id)
 
       if (!(id)) {
         ElementUI.Message.error("拒绝访问")
@@ -125,10 +116,12 @@ export default {
   width: 100%;
   overflow: hidden;
 }
+
 .box1 {
   width: 50%;
   height: 100px;
   float: left;
+  margin-right: 1px;
 }
 
 .box2 {

@@ -29,5 +29,9 @@ export default new vueRouter({
             path: "/script_detail",
             component: () => import("@/components/ScriptDetail")
         },
+        {
+            path: "/script_save",
+            component: () => import("@/components/ScriptSave")
+        },
     ]
 })

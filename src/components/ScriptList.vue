@@ -1,12 +1,16 @@
 <template>
   <div class="block-list">
-    <div class="search-bar">
+    <br/>
+    <br/>
+    <br/>
+    <div class="search-bar" style="margin-top: 3%; display: flex">
       <el-input
           placeholder="搜索脚本"
           v-model="searchInput"
           clearable>
       </el-input>
       <el-button type="primary" icon="el-icon-search" @click="searchScript">搜索</el-button>
+      <el-button type="primary" icon="el-icon-edit" @click="saveScript($event)" v-show="isPermission">新增脚本</el-button>
     </div>
 
     <div class="script-row" v-for="(row, index) in rowList" :key="index">
@@ -42,10 +46,15 @@ export default {
         page: 1,
         size: 20,
         total: 100,
-      }
+      },
+      isPermission :false,
     }
   },
   methods: {
+    saveScript(e, id){
+      console.log("save--")
+      this.$router.push({path: "/script_save", query: {id}})
+    },
     inDetail(e, id) {
       this.$router.push({path: "/script_detail", query: {id}})
     },
@@ -62,12 +71,35 @@ export default {
         this.scriptPage.page = scriptSearchResult.page;
         this.scriptPage.size = scriptSearchResult.size;
       })
+    },
+    getCookie(cookieName) {
+      const cookies = document.cookie.split("; ")
+      for (let i = 0; i < cookies.length; i++) {
+        const [name, value] = cookies[i].split("=")
+        if (name === cookieName) {
+          return decodeURIComponent(value)
+        }
+      }
+      return ""
+    },
+    isPermissionAction() {
+      let token = this.getCookie("token");
+      if (!token) {
+        return;
+      }
 
+      this.$axios.post("/auth/query_permission", {
+        token,
+        pageUrl: this.$route.path
+      }).then(resp => {
+        this.isPermission = resp.data.data
+      })
     },
   },
 
   created() {
     this.searchScript()
+    this.isPermissionAction()
   },
 
   watch: {

@@ -115,8 +115,11 @@ export default {
         placeholder: '请输入定制脚本的描述\n包含需要定制脚本的网站地址\n网站账号',
         modules: {
           toolbar: [
-            ['bold', 'italic', 'underline'],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'header': 1 }, { 'header': 2 }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['image'],
+            ['clean'],
           ],
         },
       },
