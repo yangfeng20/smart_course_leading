@@ -9,7 +9,8 @@
             }}</el-tag>
         </div>
 
-        <el-button type="primary" round :href="scriptInfo.scriptUrl" target="_blank">点击下载</el-button>
+        <el-button type="primary" round ><i class="el-icon-download"></i><el-link :underline="false" :href="scriptInfo.scriptUrl" target="_blank">点击下载</el-link></el-button>
+
 
       </div>
 
@@ -102,7 +103,6 @@ export default {
 
       this.$axios.get("script_info/" + id).then(resp => {
         this.scriptInfo = resp.data.data;
-        console.log(this.scriptInfo.scriptCourse)
       })
     }
 

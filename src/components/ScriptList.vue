@@ -21,6 +21,7 @@
           </div>
           <div class="script-info-inner">脚本简介：{{ script.scriptDesc }}</div>
           <div class="script-info-inner">下载量：{{ script.downloadCount }}</div>
+          <el-button v-show="isPermission" type="primary" icon="el-icon-edit" circle @click="saveScript($event, script.id)"></el-button>
         </div>
       </div>
     </div>
@@ -52,7 +53,6 @@ export default {
   },
   methods: {
     saveScript(e, id){
-      console.log("save--")
       this.$router.push({path: "/script_save", query: {id}})
     },
     inDetail(e, id) {
@@ -62,7 +62,8 @@ export default {
 
       this.$axios.post("/script_info/search",
           {
-            scriptName: this.searchInput.trim()
+            scriptName: this.searchInput.trim(),
+            ...this.scriptPage
           }
       ).then(resp => {
         let scriptSearchResult = resp.data.data;
