@@ -6,16 +6,16 @@
           <h2>{{ scriptInfo.scriptName }}</h2>
           <el-tag :type="scriptInfo.scriptStatus.key === 1 ? 'info' : 'success'">{{
               scriptInfo.scriptStatus.desc
-            }}</el-tag>
+            }}
+          </el-tag>
         </div>
 
-        <el-button type="primary" round ><i class="el-icon-download"></i><el-link :underline="false" :href="scriptInfo.scriptUrl" target="_blank">点击下载</el-link></el-button>
+        <el-button type="primary" round icon="el-icon-download" @click="downAndUpdateCount">点击下载</el-button>
 
 
       </div>
 
       <el-divider></el-divider>
-
 
 
       <div style="display: flex; align-items: center">
@@ -32,7 +32,6 @@
         <h3>脚本教程：</h3>
         <RichTextShowReadonly :content="scriptInfo.scriptCourse"/>
       </div>
-
 
 
       <br/>
@@ -56,6 +55,7 @@
 <script>
 import RichTextShowReadonly from "@/components/RichTextShowReadonly";
 import ElementUI from "element-ui";
+import qs from "qs";
 
 export default {
   name: "ScriptDetail",
@@ -103,6 +103,15 @@ export default {
 
       this.$axios.get("script_info/" + id).then(resp => {
         this.scriptInfo = resp.data.data;
+      })
+    },
+    downAndUpdateCount() {
+      window.open(this.scriptInfo.scriptUrl, "_blank")
+      this.$axios.put("script_info/update_count", qs.stringify({id: this.$route.query.id}))
+          .then(resp => {
+
+          }).catch(error => {
+
       })
     }
 

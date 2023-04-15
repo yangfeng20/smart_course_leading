@@ -5,9 +5,12 @@
     <br/>
     <div class="search-bar" style="margin-top: 3%; display: flex">
       <el-input
+          ref="searchInput"
           placeholder="搜索脚本"
           v-model="searchInput"
-          clearable>
+          clearable
+          @keydown.enter.native="searchScript"
+      >
       </el-input>
       <el-button type="primary" icon="el-icon-search" @click="searchScript">搜索</el-button>
       <el-button type="primary" icon="el-icon-edit" @click="saveScript($event)" v-show="isPermission">新增脚本</el-button>
@@ -21,7 +24,8 @@
           </div>
           <div class="script-info-inner">脚本简介：{{ script.scriptDesc }}</div>
           <div class="script-info-inner">下载量：{{ script.downloadCount }}</div>
-          <el-button v-show="isPermission" type="primary" icon="el-icon-edit" circle @click="saveScript($event, script.id)"></el-button>
+          <el-button v-show="isPermission" type="primary" icon="el-icon-edit" circle
+                     @click="saveScript($event, script.id)"></el-button>
         </div>
       </div>
     </div>
@@ -48,18 +52,17 @@ export default {
         size: 20,
         total: 100,
       },
-      isPermission :false,
+      isPermission: false,
     }
   },
   methods: {
-    saveScript(e, id){
+    saveScript(e, id) {
       this.$router.push({path: "/script_save", query: {id}})
     },
     inDetail(e, id) {
       this.$router.push({path: "/script_detail", query: {id}})
     },
     searchScript() {
-
       this.$axios.post("/script_info/search",
           {
             scriptName: this.searchInput.trim(),
@@ -71,6 +74,7 @@ export default {
         this.scriptPage.total = scriptSearchResult.total;
         this.scriptPage.page = scriptSearchResult.page;
         this.scriptPage.size = scriptSearchResult.size;
+      }).catch(error => {
       })
     },
     getCookie(cookieName) {

@@ -1,16 +1,17 @@
 <template>
 
-  <div>
+  <div style="position: relative;">
 
     <el-button type="primary" icon="el-icon-edit" @click="dialog = true">新增定制</el-button>
-    <el-input v-model="searchParam.applyName" placeholder="申请名" v-show="isPermission" style="width: 10%" :clearable="true"></el-input>
+    <el-input v-model="searchParam.applyName" placeholder="定制申请名称" v-show="isPermission" style="width: 20%"
+              :clearable="true" @keydown.enter.native="searchScriptCustom"></el-input>
     <el-select v-model="searchParam.applyStatus" v-show="isPermission" placeholder="申请状态" :clearable="true">
       <el-option label="已提交" value="1"></el-option>
       <el-option label="制作中" value="2"></el-option>
       <el-option label="已拒绝" value="3"></el-option>
       <el-option label="已完成" value="4"></el-option>
     </el-select>
-    <el-button type="primary" icon="el-icon-refresh" @click="refreshList">刷新列表</el-button>
+    <el-button type="primary" icon="el-icon-refresh" :loading="listLoading" @click="refreshList">刷新列表</el-button>
 
     <div class="script-row" v-for="(row, index) in rowList" :key="index">
       <div class="script-block" v-for="(custom, index) in row" :key="index">
@@ -25,19 +26,24 @@
             </el-link>
           </div>
           <div class="script-info-inner">申请状态：
-            <el-tag>{{ custom.applyStatus?.desc }}</el-tag>
+            <el-tag :type="tagType(custom.applyStatus?.key)" ref="statusTag" :value="custom.applyStatus?.key">{{
+                custom.applyStatus?.desc
+              }}
+            </el-tag>
           </div>
           <div class="script-info-inner">申请时间：{{ custom.createdDate }}</div>
         </div>
       </div>
     </div>
 
-    <el-pagination
-        :current-page.sync="customPage.page"
-        :page-size.sync="customPage.size"
-        :total="customPage.total"
-        layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+    <div class="pagination-wrapper">
+      <el-pagination
+          :current-page.sync="customPage.page"
+          :page-size.sync="customPage.size"
+          :total="customPage.total"
+          layout="total, sizes, prev, pager, next, jumper">
+      </el-pagination>
+    </div>
 
     <!-- 侧边栏抽屉-->
     <el-drawer
@@ -62,8 +68,14 @@
           </el-form-item>
 
           <el-form-item label="账号信息" :label-width="formLabelWidth">
-            <el-input v-model="scriptCustomApplyForm.accountInfo" autocomplete="off"
-                      placeholder="定制脚本网站的账号（用于站长制造调试脚本，不会在列表显示）"></el-input>
+            <el-input
+                type="textarea"
+                :rows="2"
+                :autosize="{ minRows: 3, maxRows:8}"
+                placeholder="定制脚本网站的账号密码（用于站长制造调试脚本，不会在列表显示）"
+                autocomplete="off"
+                v-model="scriptCustomApplyForm.accountInfo">
+            </el-input>
           </el-form-item>
 
           <el-form-item label="申请描述" :label-width="formLabelWidth">
@@ -75,8 +87,8 @@
         <div class="drawer__footer" style="bottom: 10px; position: absolute">
           <el-button @click="cancelForm" type="warning">关 闭</el-button>
           <el-button @click="clearContent" type="danger">清 空</el-button>
-          <el-button type="primary" @click="$refs.drawer.closeDrawer()" :loading="loading">
-            {{ loading ? '提交中 ...' : '确 定' }}
+          <el-button type="primary" @click="commitAction" :loading="commitLoading">
+            {{ commitLoading ? '提交中 ...' : '确 定' }}
           </el-button>
         </div>
       </div>
@@ -96,6 +108,7 @@ export default {
   name: "ScriptCustom",
   data() {
     return {
+      listLoading: false,
       customList: [
         {applyName: '职教云1.0', applyStatus: {desc: "已提交"}, website: "", createdDate: "2020-23-12 23:23:00"},
         {applyName: '职教云1.0', applyStatus: {desc: "已提交"}, createdDate: "2020-23-12 23:23:00"},
@@ -112,40 +125,53 @@ export default {
       },
 
       editorOption: {
-        placeholder: '请输入定制脚本的描述\n包含需要定制脚本的网站地址\n网站账号',
+        placeholder: '请输入定制脚本的描述',
         modules: {
           toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
-            [{ 'header': 1 }, { 'header': 2 }],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            [{'header': 1}, {'header': 2}],
+            [{'list': 'ordered'}, {'list': 'bullet'}],
+            [{'color': []}, {'background': []}],
             ['image'],
+            [{'align': []}],
             ['clean'],
           ],
         },
       },
 
-      isPermission: false,
-
-
       dialog: false,
-      loading: false,
-      scriptCustomApplyForm: {
-        applyName: '',
-        applyContent: '',
-        website: "",
-        accountInfo: "",
-        applyStatus: 1
-      },
+      commitLoading: false,
+      isPermission: false,
+      scriptCustomApplyForm: {},
       formLabelWidth: '80px',
       timer: null,
     }
   },
 
   methods: {
+    tagType(status) {
+      if (!status) {
+        return
+      }
+      // 提交
+      if (status === 1) {
+        return 'success'
+        //  制作中
+      } else if (status === 2) {
+        return 'warning'
+      }
+      //  拒绝
+      else if (status === 3) {
+        return 'danger'
+        // 完成
+      } else {
+        return ''
+      }
+    },
     searchScriptCustom() {
+      this.listLoading = true
       this.$axios.post("/script_apply/search", {
-        page: 1,
-        size: 10,
+        ...this.customPage,
         applyName: this.searchParam.applyName,
         applyStatus: this.searchParam.applyStatus,
       }).then(resp => {
@@ -154,6 +180,9 @@ export default {
         this.customPage.total = customListResult.total;
         this.customPage.page = customListResult.page;
         this.customPage.size = customListResult.size;
+        setTimeout(() => {
+          this.listLoading = false
+        }, 500)
       })
     },
     inDetail(e) {
@@ -189,8 +218,9 @@ export default {
       this.scriptCustomApplyForm = {}
     },
     checkFormData() {
-      if (this.scriptCustomApplyForm.applyName === '' || this.scriptCustomApplyForm.applyContent === '') {
-        ElementUI.Message.warning("名称和描述都不可为空")
+      if (!this.scriptCustomApplyForm.applyName || !this.scriptCustomApplyForm.website
+          || !this.scriptCustomApplyForm.accountInfo) {
+        ElementUI.Message.warning("名称 | 网址 | 账号 不可为空")
         return false;
       }
 
@@ -198,37 +228,50 @@ export default {
     },
 
     addScriptCustomApply() {
+      this.scriptCustomApplyForm.applyStatus = 1
       this.$axios.post("script_apply/add", {
         ...this.scriptCustomApplyForm,
+      }).then(resp => {
+        this.scriptCustomApplyForm = {}
       })
     },
 
-    handleClose(done) {
-      if (this.loading) {
-        return;
-      }
+    commitAction() {
       if (!this.checkFormData()) {
         return;
       }
+      this.commitLoading = true
       this.$confirm('确定提交脚本定制申请吗？')
           .then(_ => {
             this.addScriptCustomApply();
-            this.loading = true;
-            this.timer = setTimeout(() => {
-              done();
-              // 动画关闭需要一定的时间
-              setTimeout(() => {
-                this.loading = false;
-              }, 400);
-            }, 1000);
+            this.$refs.drawer.closeDrawer()
           })
-          .catch((e) => {
-            // 点击取消或者叉号,都不关闭
+          .catch(e => {
+            this.commitLoading = false
+            // 点击取消或者叉号,都不关闭抽屉
             // this.cancelForm()
           });
     },
+
+    handleClose(done) {
+      if (this.commitLoading) {
+        // 提交时关闭
+        done()
+        this.commitLoading = false
+        return;
+      }
+
+      // 主动关闭抽屉
+      this.$confirm('放弃编辑？').then(_ => {
+        // 确认放弃编辑，关闭抽屉
+        done();
+        this.scriptCustomApplyForm = {}
+      }).catch(e => {
+      })
+    },
+
     cancelForm() {
-      this.loading = false;
+      this.commitLoading = false;
       this.dialog = false;
       clearTimeout(this.timer);
     }
@@ -256,6 +299,7 @@ export default {
   },
 
   computed: {
+
     rowList() {
       let result = []
       let tempRow = []
@@ -291,6 +335,14 @@ export default {
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.pagination-wrapper {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 20px;
+  z-index: 1000;
 }
 
 </style>
