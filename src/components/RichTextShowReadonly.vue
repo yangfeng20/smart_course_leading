@@ -1,14 +1,14 @@
 <template>
-<div>
-  <div class="container-parent">
-    <div class="container" v-html="value"></div>
-    <!--<quill-editor-->
-    <!--    v-model="value"-->
-    <!--    :options="editorOption"-->
-    <!--    style="height: 500px;width: 100%"-->
-    <!--/>-->
+  <div>
+    <div class="container-parent">
+      <div class="container" v-html="value"></div>
+      <!--<quill-editor-->
+      <!--    v-model="value"-->
+      <!--    :options="editorOption"-->
+      <!--    style="height: 500px;width: 100%"-->
+      <!--/>-->
+    </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -21,20 +21,19 @@ export default {
     quillEditor,
   },
   props: {
-    content: {
-    },
+    content: {},
     rows: {
       type: Number,
       default: 6,
     },
   },
   watch: {
-    content: function (newVal, oldVal){
+    content: function (newVal, oldVal) {
       if (this.render === true) {
         return;
       }
 
-      if (oldVal===''){
+      if (oldVal === undefined) {
         this.render = true
         this.value = newVal
       }
@@ -44,9 +43,7 @@ export default {
 
   data() {
     return {
-      editorOption: {
-      },
-      value:'',
+      value: '',
       render: false,
     }
   },
