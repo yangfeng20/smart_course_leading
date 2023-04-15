@@ -38,7 +38,9 @@
           </el-col>
         </el-row>
         <!--空白占位；用于展示分页组件-->
-        <el-row><div style="height: 40px"></div></el-row>
+        <el-row>
+          <div style="height: 40px"></div>
+        </el-row>
       </div>
       <div class="pagination-wrapper">
         <el-pagination
@@ -47,6 +49,8 @@
             :total="customPage.total"
             layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
+
+        <el-empty v-show="isShowEmptyList" description="没有满足条件的定制申请"></el-empty>
       </div>
     </div>
 
@@ -184,12 +188,13 @@ export default {
         this.customList = result.content === null ? [] : result.content;
         this.customPage.total = result.total;
 
-        if (result.page){
+        if (result.page) {
           this.customPage.page = result.page;
         }
-        if (result.size){
+        if (result.size) {
           this.customPage.size = result.size;
         }
+      }).finally(()=>{
         setTimeout(() => {
           this.listLoading = false
         }, 500)
@@ -307,6 +312,11 @@ export default {
       }
     }
   },
+  computed: {
+    isShowEmptyList() {
+      return !this.customList.length;
+    },
+  }
 }
 </script>
 
@@ -325,6 +335,7 @@ export default {
 .data-page {
   position: relative;
 }
+
 .el-pagination {
   position: absolute;
   bottom: 0;

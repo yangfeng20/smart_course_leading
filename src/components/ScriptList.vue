@@ -10,7 +10,9 @@
                 @keydown.enter.native="searchScript"
       >
       </el-input>
-      <el-button type="primary" icon="el-icon-search" @click="searchScript" style="margin-left: 10px">搜索</el-button>
+      <el-button type="primary" icon="el-icon-search" :loading="listLoading" @click="searchScript"
+                 style="margin-left: 10px">搜索
+      </el-button>
       <el-button type="primary" icon="el-icon-edit" @click="saveScript($event)" v-show="isPermission">新增脚本</el-button>
     </div>
 
@@ -41,6 +43,8 @@
             :total="scriptPage.total"
             layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
+
+        <el-empty v-show="isShowEmptyList" description="没有满足条件的脚本"></el-empty>
       </div>
     </div>
 
@@ -51,10 +55,9 @@
 export default {
   data() {
     return {
+      listLoading: false,
       searchInput: "",
-      scriptList: [
-        {scriptName: '职教云1.0', scriptDesc: '职教云刷课脚本', downloadCount: 2},
-      ],
+      scriptList: [],
       scriptPage: {
         page: 1,
         size: 20,
@@ -71,6 +74,7 @@ export default {
       this.$router.push({path: "/script_detail", query: {id}})
     },
     searchScript() {
+      this.listLoading = true
       this.$axios.post("/script_info/search",
           {
             scriptName: this.searchInput.trim(),
@@ -87,6 +91,10 @@ export default {
           this.scriptPage.size = result.size;
         }
       }).catch(error => {
+      }).finally(() => {
+        setTimeout(() => {
+          this.listLoading = false
+        }, 500)
       })
     },
     getCookie(cookieName) {
@@ -134,21 +142,9 @@ export default {
     }
   },
   computed: {
-    rowList() {
-      let result = []
-      let tempRow = []
-      this.scriptList.forEach((script, index) => {
-        if (index % 2 === 0 && index !== 0) {
-          result.push(tempRow)
-          tempRow = []
-        }
-        tempRow.push(script)
-        if (index === this.scriptList.length - 1) {
-          result.push(tempRow)
-        }
-      })
-      return result
-    }
+    isShowEmptyList() {
+      return !this.scriptList.length;
+    },
   }
 }
 </script>
