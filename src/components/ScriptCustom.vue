@@ -13,37 +13,43 @@
     </el-select>
     <el-button type="primary" icon="el-icon-refresh" :loading="listLoading" @click="refreshList">刷新列表</el-button>
 
-    <div class="script-row" v-for="(row, index) in rowList" :key="index">
-      <div class="script-block" v-for="(custom, index) in row" :key="index">
-        <div class="script-info">
-          <div class="script-info-inner" v-show="isPermission">申请Id：
-            <el-link type="primary" @click="inDetail">{{ custom.id }}</el-link>
-          </div>
-          <div class="script-info-inner">申请名称：{{ custom.applyName }}</div>
-          <div class="script-info-inner">网站地址：
-            <el-link :href="custom.website" target="_blank" :underline="false"><i
-                class="el-icon-view el-icon--right"></i> {{ custom.website }}
-            </el-link>
-          </div>
-          <div class="script-info-inner">申请状态：
-            <el-tag :type="tagType(custom.applyStatus?.key)" ref="statusTag" :value="custom.applyStatus?.key">{{
-                custom.applyStatus?.desc
-              }}
-            </el-tag>
-          </div>
-          <div class="script-info-inner">申请时间：{{ custom.createdDate }}</div>
-        </div>
+    <div class="data-page">
+      <div class="data-list-div">
+        <el-row :gutter="1">
+          <el-col v-for="(custom, index) in customList" :key="index" :span="8">
+            <div class="data-info">
+              <div class="script-info-inner" v-show="isPermission">申请Id：
+                <el-link type="primary" @click="inDetail">{{ custom.id }}</el-link>
+              </div>
+              <div class="script-info-inner">申请名称：{{ custom.applyName }}</div>
+              <div class="script-info-inner">网站地址：
+                <el-link :href="custom.website" target="_blank" :underline="false"><i
+                    class="el-icon-view el-icon--right"></i> {{ custom.website }}
+                </el-link>
+              </div>
+              <div class="script-info-inner">申请状态：
+                <el-tag :type="tagType(custom.applyStatus?.key)" ref="statusTag" :value="custom.applyStatus?.key">{{
+                    custom.applyStatus?.desc
+                  }}
+                </el-tag>
+              </div>
+              <div class="script-info-inner">申请时间：{{ custom.createdDate }}</div>
+            </div>
+          </el-col>
+        </el-row>
+        <!--空白占位；用于展示分页组件-->
+        <el-row><div style="height: 40px"></div></el-row>
+      </div>
+      <div class="pagination-wrapper">
+        <el-pagination
+            :current-page.sync="customPage.page"
+            :page-size.sync="customPage.size"
+            :total="customPage.total"
+            layout="total, sizes, prev, pager, next, jumper">
+        </el-pagination>
       </div>
     </div>
 
-    <div class="pagination-wrapper">
-      <el-pagination
-          :current-page.sync="customPage.page"
-          :page-size.sync="customPage.size"
-          :total="customPage.total"
-          layout="total, sizes, prev, pager, next, jumper">
-      </el-pagination>
-    </div>
 
     <!-- 侧边栏抽屉-->
     <el-drawer
@@ -53,8 +59,7 @@
         direction="rtl"
         custom-class="demo-drawer"
         ref="drawer"
-        :size="'40%'"
-    >
+        :size="'45%'">
       <div class="drawer__content">
         <el-form :model="scriptCustomApplyForm">
 
@@ -175,11 +180,16 @@ export default {
         applyName: this.searchParam.applyName,
         applyStatus: this.searchParam.applyStatus,
       }).then(resp => {
-        let customListResult = resp.data.data;
-        this.customList = customListResult.content === null ? [] : customListResult.content;
-        this.customPage.total = customListResult.total;
-        this.customPage.page = customListResult.page;
-        this.customPage.size = customListResult.size;
+        let result = resp.data.data;
+        this.customList = result.content === null ? [] : result.content;
+        this.customPage.total = result.total;
+
+        if (result.page){
+          this.customPage.page = result.page;
+        }
+        if (result.size){
+          this.customPage.size = result.size;
+        }
         setTimeout(() => {
           this.listLoading = false
         }, 500)
@@ -297,52 +307,28 @@ export default {
       }
     }
   },
-
-  computed: {
-
-    rowList() {
-      let result = []
-      let tempRow = []
-      this.customList.forEach((script, index) => {
-        if (index % 2 === 0 && index !== 0) {
-          result.push(tempRow)
-          tempRow = []
-        }
-        tempRow.push(script)
-        if (index === this.customList.length - 1) {
-          result.push(tempRow)
-        }
-      })
-      return result
-    }
-  }
 }
 </script>
 
 <style scoped>
 
-
-.script-row {
-  display: flex;
-  width: 100%;
-  margin: 10px 0;
-}
-
-.script-block {
-  width: calc(50% - 20px);
-  margin: 0 10px;
-  padding: 20px;
+.data-info {
+  height: 150px;
+  margin: 10px;
+  padding-top: 30px;
+  padding-left: 10px;
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.pagination-wrapper {
+.data-page {
+  position: relative;
+}
+.el-pagination {
   position: absolute;
   bottom: 0;
   right: 0;
-  margin: 20px;
-  z-index: 1000;
 }
 
 </style>

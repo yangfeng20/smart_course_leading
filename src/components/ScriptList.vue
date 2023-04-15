@@ -1,41 +1,49 @@
 <template>
   <div class="block-list">
-    <br/>
-    <br/>
-    <br/>
-    <div class="search-bar" style="margin-top: 3%; display: flex">
-      <el-input
-          ref="searchInput"
-          placeholder="搜索脚本"
-          v-model="searchInput"
-          clearable
-          @keydown.enter.native="searchScript"
+
+    <div class="search-bar" style="margin-top: 3%; display: flex;margin-left: 10px;">
+      <el-input style="width: 40%"
+                ref="searchInput"
+                placeholder="搜索脚本"
+                v-model="searchInput"
+                clearable
+                @keydown.enter.native="searchScript"
       >
       </el-input>
-      <el-button type="primary" icon="el-icon-search" @click="searchScript">搜索</el-button>
+      <el-button type="primary" icon="el-icon-search" @click="searchScript" style="margin-left: 10px">搜索</el-button>
       <el-button type="primary" icon="el-icon-edit" @click="saveScript($event)" v-show="isPermission">新增脚本</el-button>
     </div>
 
-    <div class="script-row" v-for="(row, index) in rowList" :key="index">
-      <div class="script-block" v-for="(script, index) in row" :key="index">
-        <div class="script-info">
-          <div class="script-info-inner">脚本名称：
-            <el-link type="primary" @click="inDetail($event, script.id)">{{ script.scriptName }}</el-link>
-          </div>
-          <div class="script-info-inner">脚本简介：{{ script.scriptDesc }}</div>
-          <div class="script-info-inner">下载量：{{ script.downloadCount }}</div>
-          <el-button v-show="isPermission" type="primary" icon="el-icon-edit" circle
-                     @click="saveScript($event, script.id)"></el-button>
-        </div>
+    <div class="data-page">
+      <div class="data-list-div">
+        <el-row :gutter="1">
+          <el-col v-for="(script, index) in scriptList" :key="index" :span="8">
+            <div class="data-info">
+              <div class="script-info-inner">脚本名称：
+                <el-link type="primary" @click="inDetail($event, script.id)">{{ script.scriptName }}</el-link>
+              </div>
+              <div class="script-info-inner">脚本简介：{{ script.scriptDesc }}</div>
+              <div class="script-info-inner">下载量：{{ script.downloadCount }}</div>
+              <el-button v-show="isPermission" type="primary" icon="el-icon-edit" circle
+                         @click="saveScript($event, script.id)"></el-button>
+            </div>
+          </el-col>
+        </el-row>
+        <!--空白占位；用于展示分页组件-->
+        <el-row>
+          <div style="height: 40px"></div>
+        </el-row>
+      </div>
+      <div class="pagination-wrapper">
+        <el-pagination
+            :current-page.sync="scriptPage.page"
+            :page-size.sync="scriptPage.size"
+            :total="scriptPage.total"
+            layout="total, sizes, prev, pager, next, jumper">
+        </el-pagination>
       </div>
     </div>
 
-    <el-pagination
-        :current-page.sync="scriptPage.page"
-        :page-size.sync="scriptPage.size"
-        :total="scriptPage.total"
-        layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
   </div>
 </template>
 
@@ -69,11 +77,15 @@ export default {
             ...this.scriptPage
           }
       ).then(resp => {
-        let scriptSearchResult = resp.data.data;
-        this.scriptList = scriptSearchResult.content;
-        this.scriptPage.total = scriptSearchResult.total;
-        this.scriptPage.page = scriptSearchResult.page;
-        this.scriptPage.size = scriptSearchResult.size;
+        let result = resp.data.data;
+        this.scriptList = result.content;
+        this.scriptPage.total = result.total;
+        if (result.page) {
+          this.scriptPage.page = result.page;
+        }
+        if (result.size) {
+          this.scriptPage.size = result.size;
+        }
       }).catch(error => {
       })
     },
@@ -141,39 +153,25 @@ export default {
 }
 </script>
 
-<style>
-.block-list {
-  display: flex;
-  flex-wrap: wrap;
-  margin: -10px;
-}
+<style scoped>
 
-.script-row {
-  display: flex;
-  width: 100%;
-  margin: 10px 0;
-}
-
-.script-block {
-  width: calc(50% - 20px);
-  margin: 0 10px;
-  padding: 20px;
+.data-info {
+  height: 150px;
+  margin: 10px;
+  padding-top: 30px;
+  padding-left: 10px;
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.script-info {
-  width: 50%;
-  text-align: center;
+.data-page {
+  position: relative;
 }
 
-.script-info-inner {
-  width: 50%;
-}
-
-.search-bar {
-  /*width: 50%;*/
-  margin-bottom: 20px;
+.el-pagination {
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 </style>
