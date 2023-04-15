@@ -1,62 +1,63 @@
 <template>
   <div>
+    <div v-show="isPermission">
+      <el-row style="height: 20%"></el-row>
+      <h3>&nbsp;请填写脚本信息</h3>
+      <el-col :span="12">
+        <el-row>
+          <el-tag>脚本名称</el-tag>
+          <el-input v-model="scriptInfo.scriptName" placeholder="脚本名称"></el-input>
+        </el-row>
+        <el-row>
+          <el-tag>脚本描述</el-tag>
+          <el-input
+              type="textarea"
+              :rows="2"
+              :autosize="{ minRows: 3}"
+              placeholder="脚本描述"
+              v-model="scriptInfo.scriptDesc">
+          </el-input>
+        </el-row>
 
-    <el-row style="height: 20%"></el-row>
-    <h3>&nbsp;请填写脚本信息</h3>
-    <el-col :span="12">
-      <el-row>
-        <el-tag>脚本名称</el-tag>
-        <el-input v-model="scriptInfo.scriptName" placeholder="脚本名称"></el-input>
-      </el-row>
-      <el-row>
-        <el-tag>脚本描述</el-tag>
-        <el-input
-            type="textarea"
-            :rows="2"
-            :autosize="{ minRows: 3}"
-            placeholder="脚本描述"
-            v-model="scriptInfo.scriptDesc">
-        </el-input>
-      </el-row>
+        <el-select v-model="status" placeholder="上架状态">
+          <el-option label="未上架" :value="1"></el-option>
+          <el-option label="已上架" :value="2"></el-option>
+        </el-select>
+      </el-col>
 
-      <el-select v-model="status" placeholder="上架状态">
-        <el-option label="未上架" :value="1"></el-option>
-        <el-option label="已上架" :value="2"></el-option>
-      </el-select>
-    </el-col>
+      <el-col :span="10" style="margin-left: 10px">
+        <el-row>
+          <el-col>
+            <el-upload drag action="#"
+                       ref="upload"
+                       :multiple="false"
+                       :auto-upload="false"
+                       :show-file-list="false"
+                       :on-change="handleChange">
+              <i class="el-icon-upload"></i>
+              <div class="el-upload__text">将脚本拖到此处，或<em>点击上传</em></div>
+            </el-upload>
+            <el-tag v-if="scriptInfo.fileName">{{ scriptInfo.fileName }}</el-tag>
+          </el-col>
+          <el-col>
+            <el-progress :width="80" type="circle" :percentage="schedule" status="success" ref="progress"></el-progress>
+            <el-tag type="info">上传进度</el-tag>
+            <el-button type="primary" @click="commitScript">提交脚本</el-button>
+          </el-col>
+        </el-row>
 
-    <el-col :span="10" style="margin-left: 10px">
-      <el-row>
-        <el-col>
-          <el-upload drag action="#"
-                     ref="upload"
-                     :multiple="false"
-                     :auto-upload="false"
-                     :show-file-list="false"
-                     :on-change="handleChange">
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">将脚本拖到此处，或<em>点击上传</em></div>
-          </el-upload>
-          <el-tag v-if="scriptInfo.fileName">{{ scriptInfo.fileName }}</el-tag>
-        </el-col>
-        <el-col>
-          <el-progress :width="80" type="circle" :percentage="schedule" status="success" ref="progress"></el-progress>
-          <el-tag type="info">上传进度</el-tag>
-          <el-button type="primary" @click="commitScript">提交脚本</el-button>
-        </el-col>
-      </el-row>
-
-    </el-col>
-
-
-    <el-col>
-      <div>
-        <quill-editor v-model="scriptInfo.scriptCourse" :options="editorOption"
-                      style="height: 400px"></quill-editor>
-      </div>
-    </el-col>
+      </el-col>
 
 
+      <el-col>
+        <div>
+          <quill-editor v-model="scriptInfo.scriptCourse" :options="editorOption"
+                        style="height: 400px"></quill-editor>
+        </div>
+      </el-col>
+
+
+    </div>
   </div>
 </template>
 
@@ -68,6 +69,7 @@ export default {
   name: "ScriptSave",
   data() {
     return {
+      isPermission:false,
       schedule: 0,
       scriptInfo: {},
       status: 1,
@@ -95,10 +97,39 @@ export default {
     },
   },
   created() {
+    this.isPermissionAction()
     this.refresh()
   },
 
   methods: {
+    getCookie(cookieName) {
+      const cookies = document.cookie.split("; ")
+      for (let i = 0; i < cookies.length; i++) {
+        const [name, value] = cookies[i].split("=")
+        if (name === cookieName) {
+          return decodeURIComponent(value)
+        }
+      }
+      return ""
+    },
+    isPermissionAction() {
+      let token = this.getCookie("token");
+      if (!token) {
+        this.scriptInfo = {}
+        this.isPermission = false
+        ElementUI.Message.error("禁止访问")
+        return;
+      }
+
+      this.$axios.post("/auth/query_permission", {
+        token,
+        pageUrl: this.$route.path
+      }).then(resp => {
+        this.isPermission = resp.data.data
+      }).catch(_=>{
+        this.isPermission = false
+      })
+    },
     handleChange(file) {
       if (file.status === 'ready') {
         this.scriptInfo.updateFile = true

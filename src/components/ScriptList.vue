@@ -7,9 +7,16 @@
                 placeholder="搜索脚本"
                 v-model="searchInput"
                 clearable
-                @keydown.enter.native="searchScript"
-      >
+                @keydown.enter.native="searchScript">
       </el-input>
+      <el-select v-model="status" placeholder="脚本状态" v-show="isPermission" :clearable="true">
+        <el-option
+            v-for="status in statusList"
+            :label="status.desc"
+            :value="status.key">
+        </el-option>
+
+      </el-select>
       <el-button type="primary" icon="el-icon-search" :loading="listLoading" @click="searchScript"
                  style="margin-left: 10px">搜索
       </el-button>
@@ -21,13 +28,29 @@
         <el-row :gutter="1">
           <el-col v-for="(script, index) in scriptList" :key="index" :span="8">
             <div class="data-info">
-              <div class="script-info-inner">脚本名称：
-                <el-link type="primary" @click="inDetail($event, script.id)">{{ script.scriptName }}</el-link>
+
+              <el-button v-show="isPermission" type="primary" icon="el-icon-edit" size="small" round
+                         @click="saveScript($event, script.id)">编辑</el-button>
+
+              <span v-show="!isPermission" style="margin-right: 20%"></span>
+              <span style="margin-right: 60%"></span>
+              <el-tag :type="getStatus(script.scriptStatus?.key)" effect="dark">{{ script.scriptStatus?.desc }}
+              </el-tag>
+
+              <div class="script-info-inner"><i class="el-icon-menu"></i>脚本名称：
+                <span><el-tag ect="plain">
+                  <el-link type="primary" @click="inDetail($event, script.id)" :underline="false">{{
+                      script.scriptName
+                    }}
+                  </el-link>
+                </el-tag></span>
               </div>
-              <div class="script-info-inner">脚本简介：{{ script.scriptDesc }}</div>
-              <div class="script-info-inner">下载量：{{ script.downloadCount }}</div>
-              <el-button v-show="isPermission" type="primary" icon="el-icon-edit" circle
-                         @click="saveScript($event, script.id)"></el-button>
+              <div class="script-info-inner"><i class="el-icon-date"></i>脚本简介：{{ script.scriptDesc }}</div>
+              <div class="script-info-inner"><i class="el-icon-s-data"></i>下载量：<i class="el-icon-star-on"
+                                                                                  :style="{color: getColor(script.downloadCount)}"></i>{{
+                  script.downloadCount
+                }}
+              </div>
             </div>
           </el-col>
         </el-row>
@@ -55,8 +78,19 @@
 export default {
   data() {
     return {
+      statusList: [
+        {
+          key: 2,
+          desc: "已上架"
+        },
+        {
+          key: 1,
+          desc: "未上架"
+        },
+      ],
       listLoading: false,
       searchInput: "",
+      status: 2,
       scriptList: [],
       scriptPage: {
         page: 1,
@@ -67,6 +101,19 @@ export default {
     }
   },
   methods: {
+    getStatus(status) {
+      if (status === 2) {
+        return 'success';
+      } else if (status === 1) {
+        return 'info'
+      }
+    },
+    getColor(downloadCount) {
+      let r = Math.floor(Math.random() * 256);
+      let g = Math.floor(Math.random() * 256);
+      let b = Math.floor(Math.random() * 256);
+      return "rgb(" + r + "," + g + "," + b + ")";
+    },
     saveScript(e, id) {
       this.$router.push({path: "/script_save", query: {id}})
     },
@@ -77,6 +124,7 @@ export default {
       this.listLoading = true
       this.$axios.post("/script_info/search",
           {
+            scriptStatus:this.status,
             scriptName: this.searchInput.trim(),
             ...this.scriptPage
           }
@@ -94,7 +142,7 @@ export default {
       }).finally(() => {
         setTimeout(() => {
           this.listLoading = false
-        }, 500)
+        }, 200)
       })
     },
     getCookie(cookieName) {
@@ -154,7 +202,7 @@ export default {
 .data-info {
   height: 150px;
   margin: 10px;
-  padding-top: 30px;
+  padding-top: 10px;
   padding-left: 10px;
   border-radius: 10px;
   background-color: #fff;

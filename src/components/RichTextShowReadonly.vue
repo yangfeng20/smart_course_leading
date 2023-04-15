@@ -22,8 +22,6 @@ export default {
   },
   props: {
     content: {
-      type: String,
-      required: true,
     },
     rows: {
       type: Number,

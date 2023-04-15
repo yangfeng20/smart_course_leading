@@ -197,7 +197,7 @@ export default {
       }).finally(()=>{
         setTimeout(() => {
           this.listLoading = false
-        }, 500)
+        }, 200)
       })
     },
     inDetail(e) {

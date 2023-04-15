@@ -4,8 +4,8 @@
       <div class="container">
         <div class="box1" slot="header">
           <h2>{{ scriptInfo.scriptName }}</h2>
-          <el-tag :type="scriptInfo.scriptStatus.key === 1 ? 'info' : 'success'">{{
-              scriptInfo.scriptStatus.desc
+          <el-tag :type="scriptInfo?.scriptStatus?.key === 1 ? 'info' : 'success'">{{
+              scriptInfo?.scriptStatus?.desc
             }}
           </el-tag>
         </div>
@@ -30,7 +30,7 @@
 
       <div style=" align-items: center">
         <h3>脚本教程：</h3>
-        <RichTextShowReadonly :content="scriptInfo.scriptCourse"/>
+        <RichTextShowReadonly :content="scriptInfo?.scriptCourse"/>
       </div>
 
 
@@ -65,20 +65,6 @@ export default {
   data() {
     return {
       scriptInfo: {
-        id: 0,
-        scriptName: "职教云全流程1.0",
-        scriptDesc: "智慧职教刷课",
-        scriptUrl: "http:www.baidu.com",
-        scriptCourse: "",
-        downloadCount: 12,
-        scriptStatus: {
-          key: 1,
-          desc: "已上架"
-        },
-        createdId: 1,
-        createdDate: "2023-04-10 22:22:07",
-        updatedId: 2,
-        updatedDate: "2023-04-10 22:22:07"
       }
     }
   },
