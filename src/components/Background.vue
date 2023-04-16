@@ -1,24 +1,27 @@
 <template>
   <div class="bg_container">
-    <Home></Home>
-    <vue-particles
-        color="#409EFF"
-        :particleOpacity="0.7"
-        :particlesNumber="80"
-        shapeType="circle"
-        :particleSize="4"
-        linesColor="#409EFF"
-        :linesWidth="1"
-        :lineLinked="true"
-        :lineOpacity="0.4"
-        :linesDistance="150"
-        :moveSpeed="3"
-        :hoverEffect="true"
-        hoverMode="grab"
-        :clickEffect="true"
-        clickMode="push">
-    </vue-particles>
+    <div style="z-index: -1;">
+      <vue-particles
+          color="#409EFF"
+          :particleOpacity="0.7"
+          :particlesNumber="80"
+          shapeType="circle"
+          :particleSize="4"
+          linesColor="#409EFF"
+          :linesWidth="1"
+          :lineLinked="true"
+          :lineOpacity="0.4"
+          :linesDistance="150"
+          :moveSpeed="3"
+          :hoverEffect="true"
+          hoverMode="grab"
+          :clickEffect="true"
+          clickMode="push"
 
+      />
+    </div>
+
+    <Home></Home>
   </div>
 </template>
 

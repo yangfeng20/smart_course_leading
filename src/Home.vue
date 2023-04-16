@@ -1,5 +1,5 @@
 <template>
-  <div style="background-color:rgba(255,255,255,0.3);">
+  <div style="background-color:rgba(255,255,255,0.5);">
     <div>
       <el-menu
           class="el-menu-demo"
@@ -27,7 +27,7 @@
     </div>
 
     <div>
-      <div class="home-show" v-if="!showLinkView">
+      <div class="home-show" v-if="!showLinkView" style="background-color:rgba(255,255,255,0.5);">
         <el-carousel :interval="2000" type="card" height="300px">
           <el-carousel-item v-for="item in carouselItems" :key="carouselItems.id">
             <img :src="item.src" alt="">
@@ -98,6 +98,15 @@ export default {
 </script>
 
 <style>
+
+.home-show{
+  /*height: 100px;*/
+  background-image: linear-gradient(-180deg, #1a1454 0%, #0e81a5 100%);
+  /*background-image: url("../images/bg_login.png");*/
+  background-repeat: no-repeat;
+  background-size: cover;
+  /*height: 100%;*/
+}
 
 /* 菜单平铺*/
 .el-menu-demo {
