@@ -2,6 +2,8 @@
   <div>
     <el-card>
       <div class="container">
+        <el-page-header @back="windowWith.history.back()" title="返回列表" content="脚本详情">
+        </el-page-header>
         <div class="box1" slot="header">
           <h2>{{ scriptInfo.scriptName }}</h2>
           <el-tag :type="scriptInfo?.scriptStatus?.key === 1 ? 'info' : 'success'">{{
@@ -89,6 +91,8 @@ export default {
 
       this.$axios.get("script_info/" + id).then(resp => {
         this.scriptInfo = resp.data.data;
+      }).catch(e=>{
+
       })
     },
     downAndUpdateCount() {
@@ -100,7 +104,11 @@ export default {
 
       })
     }
-
+  },
+  computed:{
+    windowWith(){
+      return window;
+    }
   }
 
 }

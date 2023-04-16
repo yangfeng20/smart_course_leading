@@ -30,7 +30,8 @@
             <div class="data-info">
 
               <el-button v-show="isPermission" icon="el-icon-edit" size="small" round type="primary" plain
-                         @click="saveScript($event, script.id)">编辑</el-button>
+                         @click="saveScript($event, script.id)">编辑
+              </el-button>
 
               <span v-show="!isPermission" style="margin-right: 20%"></span>
               <span style="margin-right: 60%"></span>
@@ -46,12 +47,15 @@
                 </el-tag></span>
               </div>
               <!--<div class="script-info-inner"><i class="el-icon-date"></i>脚本简介：{{ script.scriptDesc }}</div>-->
-              <div class="script-info-inner"><i class="el-icon-date"></i>脚本简介：              <el-input
-                  :value="script.scriptDesc"
-                  :autosize="{ minRows: 1, maxRows: 3}"
-                  style="width: 90%"
-                  :disabled="true">
-              </el-input></div>
+              <div class="script-info-inner"><i class="el-icon-date"></i>脚本简介：
+                <el-input
+                    :value="script.scriptDesc"
+                    :autosize="{ minRows: 2, maxRows: 3}"
+                    style="width: 90%"
+                    :disabled="true"
+                >
+                </el-input>
+              </div>
               <div class="script-info-inner"><i class="el-icon-s-data"></i>下载量：<i class="el-icon-star-on"
                                                                                   :style="{color: getColor(script.downloadCount)}"></i>{{
                   script.downloadCount
@@ -130,7 +134,7 @@ export default {
       this.listLoading = true
       this.$axios.post("/script_info/search",
           {
-            scriptStatus:this.status,
+            scriptStatus: this.status,
             scriptName: this.searchInput.trim(),
             ...this.scriptPage
           }

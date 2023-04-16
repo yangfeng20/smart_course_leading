@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" v-show="isPermission">
     <div class="header">
       <div class="apply-name">{{ scriptCustomApply.applyName }}</div>
       <div class="website-icon">
@@ -69,6 +69,7 @@ export default {
 
   data() {
     return {
+      isPermission:false,
       scriptCustomApply: {
         applyName: '',
         website: "",
@@ -101,12 +102,14 @@ export default {
 
       this.$axios.get("script_apply/" + id).then(resp => {
         this.scriptCustomApply = resp.data.data;
+        this.isPermission = true
+      }).catch(e => {
       })
     },
     updateApplyStatus() {
       this.$axios.get("script_apply/" + this.$route.query.id).then(resp => {
         let scriptApply = resp.data.data
-        if (this.newApplyStatus === "" || this.newApplyStatus === scriptApply.applyStatus?.key+"") {
+        if (this.newApplyStatus === "" || this.newApplyStatus === scriptApply.applyStatus?.key + "") {
           return;
         }
 
