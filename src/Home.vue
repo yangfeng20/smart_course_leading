@@ -1,36 +1,44 @@
 <template>
   <div style="background-color:rgba(255,255,255,0.3);">
-    <el-menu
-        class="el-menu-demo"
-        mode="horizontal"
-        background-color="#545c64"
-        text-color="#fff"
-        active-text-color="#ffd04b">
+    <div>
+      <el-menu
+          class="el-menu-demo"
+          mode="horizontal"
+          background-color="#545c64"
+          text-color="#fff"
+          @select="selectMenu"
+          active-text-color="#ffd04b">
 
-      <el-menu-item index="1">
-        <i class="el-icon-s-goods"></i>
-        <router-link to="/script_list">脚本列表</router-link>
-      </el-menu-item>
+        <el-menu-item index="script_list">
+          <i class="el-icon-s-goods"></i>
+          脚本列表
+        </el-menu-item>
 
-      <el-menu-item index="2">
-        <i class="el-icon-s-marketing"></i>
-        <router-link to="script_custom">脚本定制</router-link>
-      </el-menu-item>
+        <el-menu-item index="script_custom">
+          <i class="el-icon-s-marketing"></i>
+          脚本定制
+        </el-menu-item>
 
-      <el-menu-item index="3">
-        <i class="el-icon-user"></i>
-        <router-link to="about_author">关于作者</router-link>
-      </el-menu-item>
-    </el-menu>
+        <el-menu-item index="about_author">
+          <i class="el-icon-user"></i>
+          关于作者
+        </el-menu-item>
+      </el-menu>
+    </div>
 
+    <div>
+      <div class="home-show" v-if="!showLinkView">
+        <el-carousel :interval="2000" type="card" height="300px">
+          <el-carousel-item v-for="item in carouselItems" :key="carouselItems.id">
+            <img :src="item.src" alt="">
+          </el-carousel-item>
+        </el-carousel>
+        <h2>可靠的脚本网站</h2>
+      </div>
 
-    <el-carousel :interval="2000" type="card" height="300px" v-show="isShow">
-      <el-carousel-item v-for="item in carouselItems" :key="carouselItems.id">
-        <img :src="item.src" alt="">
-      </el-carousel-item>
-    </el-carousel>
+      <router-view v-if="showLinkView"></router-view>
+    </div>
 
-    <router-view></router-view>
 
   </div>
 </template>
@@ -38,17 +46,29 @@
 
 <script>
 export default {
+  methods: {
+    selectMenu(e) {
+      if (this.$route.path === '/') {
+        this.showLinkView = false
+      } else {
+        this.showLinkView = true
+      }
+      this.$router.push({path: "/" + e})
+    }
+  },
   watch: {
     $route() {
       if (this.$route.path === '/') {
-        this.isShow = true
+        this.showLinkView = false
+      } else {
+        this.showLinkView = true
       }
     },
   },
   data() {
     return {
-      // 是否显示走马灯
-      isShow: false,
+      // 显示管理的路由视图
+      showLinkView: true,
       carouselItems: [
         {
           id: 2,

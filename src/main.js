@@ -7,6 +7,7 @@ import router from './router'
 import axios from "@/axios";
 import VueQuillEditor from 'vue-quill-editor'
 import globalFunc from './js/globalFunc'
+import Home from "@/Home";
 
 // 富文本 样式
 import 'quill/dist/quill.core.css'
