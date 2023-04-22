@@ -9,20 +9,42 @@
           @select="selectMenu"
           active-text-color="#ffd04b">
 
-        <el-menu-item index="script_list">
-          <i class="el-icon-s-goods"></i>
-          脚本列表
-        </el-menu-item>
+        <el-col span="6">
 
-        <el-menu-item index="script_custom">
+
+          <el-menu-item index="script_list">
+          <span class="menu-text">
+          <i class="el-icon-s-goods"></i>
+          脚本列表</span>
+          </el-menu-item>
+        </el-col>
+
+        <el-col span="6">
+          <el-menu-item index="script_custom">
+          <span class="menu-text">
           <i class="el-icon-s-marketing"></i>
           脚本定制
-        </el-menu-item>
+          </span>
+          </el-menu-item>
+        </el-col>
 
-        <el-menu-item index="about_author">
+        <el-col span="6">
+          <el-menu-item index="about_author">
+          <span class="menu-text">
           <i class="el-icon-user"></i>
           关于作者
-        </el-menu-item>
+          </span>
+          </el-menu-item>
+        </el-col>
+
+        <el-col span="6">
+          <el-menu-item index="feedback">
+          <span class="menu-text">
+          <i class="el-icon-user"></i>
+          留言反馈
+          </span>
+          </el-menu-item>
+        </el-col>
       </el-menu>
     </div>
 
@@ -99,7 +121,7 @@ export default {
 
 <style>
 
-.home-show{
+.home-show {
   /*height: 100px;*/
   background-image: linear-gradient(-180deg, #1a1454 0%, #0e81a5 100%);
   /*background-image: url("../images/bg_login.png");*/
@@ -109,16 +131,20 @@ export default {
 }
 
 /* 菜单平铺*/
-.el-menu-demo {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
+/*.el-menu-demo {*/
+/*  display: grid;*/
+/*  grid-template-columns: repeat(4, 1fr);*/
+/*}*/
 
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
-}
+/*.el-carousel__item:nth-child(2n) {*/
+/*  background-color: #99a9bf;*/
+/*}*/
 
-.el-carousel__item:nth-child(2n+1) {
-  background-color: #d3dce6;
+/*.el-carousel__item:nth-child(2n+1) {*/
+/*  background-color: #d3dce6;*/
+/*}*/
+
+.menu-text {
+  padding-left: 20%;
 }
 </style>
