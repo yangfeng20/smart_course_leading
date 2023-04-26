@@ -5,20 +5,25 @@
       <div class="bg-img"></div>
       <el-card class="card" shadow="hover">
         <div class="avatar">
-          <img src="../assets/image/avatar.png" alt="头像">
+          <img src="../assets/image/枫叶icon.png" alt="头像" width="100">
         </div>
         <h2 class="name">{{ name }}</h2>
-        <p class="desc">{{ desc }}</p>
+        <p class="desc" v-html="desc"></p>
         <div class="tags">
-          <el-tag v-for="tag in tags" :key="tag">{{ tag }}</el-tag>
+          <el-tag v-for="tag in tags" :key="tag" style="margin: 4px">{{ tag }}</el-tag>
         </div>
+        <el-divider></el-divider>
+        <div>作者是个俗人，服务器和域名都是需要开销的，脚本也是作者抽空写的；可以扫描下方的二维码适当支持一下哟。</div>
       </el-card>
+
     </div>
 
     <div class="demo-image__placeholder">
       <div class="block">
-        <el-image :src="src" style="width: 40%;padding-left: 5%;padding-right: 5%"> </el-image>
-        <el-image :src="src" style="width: 40%;padding-left: 5%;padding-right: 5%"> </el-image>
+        <el-image :src="require('../assets/image/wx.jpg')"
+                  style="width: 30%;padding-left: 10%;padding-right: 10%"></el-image>
+        <el-image :src="require('../assets/image/zfb.jpg')"
+                  style="width: 30%;padding-left: 10%;padding-right: 10%"></el-image>
       </div>
     </div>
 
@@ -34,9 +39,8 @@ export default {
   data() {
     return {
       name: "maple",
-      desc: "个人简介",
-      tags: ['java', 'python'],
-      src: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg'
+      desc: "无论人生上到哪一层台阶，阶下有人在仰望你，阶上亦有人在俯视你。<br/>你抬头自卑，低头自得，唯有平视，才能看见真实的自己。",
+      tags: ['Java', 'Python', "架构", "爬虫"],
     }
   },
 }
@@ -47,6 +51,11 @@ export default {
 .profile {
   position: relative;
   height: 400px;
+  padding: 40px;
+}
+
+.block {
+  padding: 50px;
 }
 
 .bg-img {
