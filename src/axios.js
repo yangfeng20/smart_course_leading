@@ -23,6 +23,7 @@ const request = axios.create({
  * @type {string}
  */
 request.defaults.baseURL = 'http://localhost:8090/'
+// request.defaults.baseURL = 'http://smartcourse.ltd:8090/'
 
 /**
  * 请求拦截器
@@ -83,6 +84,7 @@ request.interceptors.response.use(resp => {
      */
     error => {
 
+        console.log(error)
         // 获取后端返回的错误信息
         if (error.response.data) {
             error.message = error.response.data.message;

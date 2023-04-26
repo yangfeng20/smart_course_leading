@@ -33,5 +33,9 @@ export default new vueRouter({
             path: "/script_save",
             component: () => import("@/components/ScriptSave")
         },
+        {
+            path: "/feedback",
+            component: () => import("@/components/Feedback")
+        },
     ]
 })
