@@ -5,7 +5,7 @@
       <div class="bg-img"></div>
       <el-card class="card" shadow="hover">
         <div class="avatar">
-          <img src="../assets/image/枫叶icon.png" alt="头像" width="100">
+          <img src="../assets/image/avatar.png" alt="头像" width="180">
         </div>
         <h2 class="name">{{ name }}</h2>
         <p class="desc" v-html="desc"></p>
