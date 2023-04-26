@@ -118,10 +118,7 @@ export default {
   data() {
     return {
       listLoading: false,
-      customList: [
-        {applyName: '职教云1.0', applyStatus: {desc: "已提交"}, website: "", createdDate: "2020-23-12 23:23:00"},
-        {applyName: '职教云1.0', applyStatus: {desc: "已提交"}, createdDate: "2020-23-12 23:23:00"},
-      ],
+      customList: [],
       customPage: {
         page: 1,
         size: 10,
