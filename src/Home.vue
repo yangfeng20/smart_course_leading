@@ -51,9 +51,9 @@
     <div>
       <div class="home-show" v-if="!showLinkView" style="background-color:rgba(255,255,255,0.5);">
         <el-carousel :interval="2000" type="card" height="300px">
-          <el-carousel-item v-for="item in carouselItems" :key="carouselItems.id">
-            <img :src="item.src" alt="">
-          </el-carousel-item>
+          <el-carousel-item><img :src="require('./assets/image/home/1.png')" alt="" width="130%"></el-carousel-item>
+          <el-carousel-item><img :src="require('./assets/image/home/2.jpg')" alt="" width="130%"></el-carousel-item>
+          <el-carousel-item><img :src="require('./assets/image/home/3.png')" alt="" width="100%"></el-carousel-item>
         </el-carousel>
         <h2>可靠的脚本网站</h2>
       </div>
@@ -91,28 +91,6 @@ export default {
     return {
       // 显示管理的路由视图
       showLinkView: true,
-      carouselItems: [
-        {
-          id: 2,
-          src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
-        },
-        {
-          id: 3,
-          src: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg'
-        },
-        {
-          id: 4,
-          src: 'https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg'
-        },
-        {
-          id: 5,
-          src: 'https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg'
-        },
-        {
-          id: 6,
-          src: 'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg'
-        },
-      ]
     }
   }
 
@@ -130,19 +108,10 @@ export default {
   /*height: 100%;*/
 }
 
-/* 菜单平铺*/
-/*.el-menu-demo {*/
-/*  display: grid;*/
-/*  grid-template-columns: repeat(4, 1fr);*/
-/*}*/
+.el-carousel__item {
+  border-radius: 10px;
+}
 
-/*.el-carousel__item:nth-child(2n) {*/
-/*  background-color: #99a9bf;*/
-/*}*/
-
-/*.el-carousel__item:nth-child(2n+1) {*/
-/*  background-color: #d3dce6;*/
-/*}*/
 
 .menu-text {
   padding-left: 20%;
