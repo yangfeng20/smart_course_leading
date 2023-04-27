@@ -1,16 +1,16 @@
 <template>
   <div class="bg_container">
-    <div style="z-index: -1;">
+    <div>
       <vue-particles
           color="#409EFF"
-          :particleOpacity="0.7"
-          :particlesNumber="80"
+          :particleOpacity="1"
+          :particlesNumber="100"
           shapeType="circle"
           :particleSize="4"
           linesColor="#409EFF"
           :linesWidth="1"
           :lineLinked="true"
-          :lineOpacity="0.4"
+          :lineOpacity="0.8"
           :linesDistance="150"
           :moveSpeed="3"
           :hoverEffect="true"
@@ -44,10 +44,10 @@ export default {
 <style scoped>
 .bg_container {
   background-image: linear-gradient(-180deg, #1a1454 0%, #0e81a5 100%);
-  /*background-image: url("../images/bg_login.png");*/
+  /*background-image: url("../assets/image/bg01.jpg");*/
   background-repeat: no-repeat;
   background-size: cover;
-  height: 100%;
+  height: 800px;
 }
 
 </style>

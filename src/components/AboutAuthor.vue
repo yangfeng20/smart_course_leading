@@ -16,15 +16,15 @@
         <div>作者是个俗人，服务器和域名都是需要开销的，脚本也是作者抽空写的；可以扫描下方的二维码适当支持一下哟。</div>
       </el-card>
 
-    </div>
-
-    <div class="demo-image__placeholder">
-      <div class="block">
-        <el-image :src="require('../assets/image/wx.jpg')"
-                  style="width: 30%;padding-left: 10%;padding-right: 10%"></el-image>
-        <el-image :src="require('../assets/image/zfb.jpg')"
-                  style="width: 30%;padding-left: 10%;padding-right: 10%"></el-image>
+      <div class="demo-image__placeholder">
+        <div class="block">
+          <el-image :src="require('../assets/image/wx.jpg')"
+                    style="width: 18%;padding-left: 16%;padding-top:350px;padding-right: 10%"></el-image>
+          <el-image :src="require('../assets/image/zfb.jpg')"
+                    style="width: 18%;padding-left: 16%;padding-top:350px;padding-right: 10%"></el-image>
+        </div>
       </div>
+
     </div>
 
 
@@ -59,7 +59,7 @@ export default {
 }
 
 .bg-img {
-  background-image: url('../assets/image/bg01.jpg');
+  /*background-image: url('../assets/image/bg01.jpg');*/
   background-size: cover;
   position: absolute;
   top: 0;
@@ -71,12 +71,12 @@ export default {
 
 .card {
   position: absolute;
-  top: 50%;
+  top: 42%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
   width: 60%;
-  padding: 40px 30px;
+  /*padding: 40px 30px;*/
   border-radius: 20px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
@@ -105,5 +105,9 @@ export default {
 
 .tags {
   margin-top: 16px;
+}
+
+body{
+  /*height: 100%;*/
 }
 </style>
