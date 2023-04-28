@@ -88,6 +88,16 @@ request.interceptors.response.use(resp => {
     error => {
 
         console.log(error)
+
+        // 到达前端axios设置的超时时间
+        if (error.code==='ECONNABORTED'){
+            // 弹窗提示，3秒
+            ElementUI.Message.error("网络超时", {duration: 2000})
+            // 使请求不进入正常的响应处理函数
+            return Promise.reject(()=>{
+            })
+        }
+
         // 获取后端返回的错误信息
         if (error.response.data) {
             error.message = error.response.data.message;

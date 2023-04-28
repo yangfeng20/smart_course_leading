@@ -167,7 +167,8 @@ export default {
       if (this.scriptInfo.scriptStatus?.key) {
         this.scriptInfo.scriptStatus = this.scriptInfo.scriptStatus.key
       }
-      this.$axios.post("/script_info/" + url, this.scriptInfo).then(resp => {
+      // 上传接口需要单独设置超时时间 【20秒】
+      this.$axios.post("/script_info/" + url, this.scriptInfo, {timeout: 20000}).then(resp => {
         ElementUI.Message.success("脚本提交成功");
         this.$router.push({path: "/script_detail", query: {id: resp.data.data}})
       })
