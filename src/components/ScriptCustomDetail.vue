@@ -60,7 +60,7 @@
 
 <script>
 import ElementUI from 'element-ui'
-import RichTextShow from "@/components/RichTextShow";
+import RichTextShow from "../components/RichTextShow";
 
 export default {
   name: "ScriptCustomDetail",

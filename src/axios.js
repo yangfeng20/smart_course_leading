@@ -22,8 +22,11 @@ const request = axios.create({
  * 全局的url 【指定了全局url之后, mock的模拟请求前面也需要这个前缀】
  * @type {string}
  */
-request.defaults.baseURL = 'http://localhost:8090/'
-// request.defaults.baseURL = 'http://smartcourse.ltd:8090/'
+if (process.env.NODE_ENV === 'production') {
+    request.defaults.baseURL = 'http://smartcourse.ltd:8090/'
+} else {
+    request.defaults.baseURL = 'http://localhost:8090/'
+}
 
 /**
  * 请求拦截器

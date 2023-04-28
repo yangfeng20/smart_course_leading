@@ -110,7 +110,7 @@
 <script>
 import {quillEditor} from 'vue-quill-editor';
 import ElementUI from 'element-ui'
-import RichTextShow from "@/components/RichTextShow";
+import RichTextShow from "../components/RichTextShow";
 
 export default {
   components: {quillEditor, RichTextShow},

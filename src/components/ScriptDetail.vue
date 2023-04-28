@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import RichTextShowReadonly from "@/components/RichTextShowReadonly";
+import RichTextShowReadonly from "../components/RichTextShowReadonly";
 import ElementUI from "element-ui";
 import qs from "qs";
 
