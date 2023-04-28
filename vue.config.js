@@ -44,17 +44,21 @@ module.exports = {
         if (process.env.NODE_ENV === 'production' && encryption === true) {
             return {
                 plugins: [
-                    new CompressionPlugin({
-                        algorithm: 'gzip', //'brotliCompress'
-                        test: /\.js$|\.html$|\.css/, // + $|\.svg$|\.png$|\.jpg
-                        threshold: 10240, //对超过10k的数据压缩
-                        deleteOriginalAssets: false //不删除原文件
-                    }),
+
+                    // 压缩
+                    // new CompressionPlugin({
+                    //     algorithm: 'gzip', //'brotliCompress'
+                    //     test: /\.js$|\.html$|\.css/, // + $|\.svg$|\.png$|\.jpg
+                    //     threshold: 10240, //对超过10k的数据压缩
+                    //     deleteOriginalAssets: false //不删除原文件
+                    // }),
+
+
                     //js代码加密
                     new JavaScriptObfuscator({
                         rotateUnicodeArray: true, // 必须为true
                         compact: true, // 紧凑 从输出混淆代码中删除换行符。
-                        // controlFlowFlattening: false, // 此选项极大地影响了运行速度降低1.5倍的性能。 启用代码控制流展平。控制流扁平化是源代码的结构转换，阻碍了程序理解。
+                        controlFlowFlattening: false, // 此选项极大地影响了运行速度降低1.5倍的性能。 启用代码控制流展平。控制流扁平化是源代码的结构转换，阻碍了程序理解。
                         controlFlowFlatteningThreshold: 0.8,
                         deadCodeInjection: true, // 此选项大大增加了混淆代码的大小（最多200％） 此功能将随机的死代码块（即：不会执行的代码）添加到混淆输出中，从而使得更难以进行反向工程设计。
                         deadCodeInjectionThreshold: 0.5,
@@ -79,9 +83,10 @@ module.exports = {
                         sourceMapMode: 'separate',
                         stringArray: true, // 将stringArray数组移位固定和随机（在代码混淆时生成）的位置。这使得将删除的字符串的顺序与其原始位置相匹配变得更加困难。如果原始源代码不小，建议使用此选项，因为辅助函数可以引起注意。
                         stringArrayEncoding: ["rc4"], // 此选项可能会略微降低脚本速度。使用Base64或RC4对stringArray的所有字符串文字进行编码，并插入一个特殊的函数，用于在运行时将其解码回来。
-                        stringArrayThreshold: 0.8, // 您可以使用此设置调整字符串文字将插入stringArray的概率（从0到1）。此设置在大型代码库中很有用，因为对stringArray函数的重复调用会降低代码的速度。
+                        //  此处是影响性能的关键
+                        stringArrayThreshold: 0.2, // 您可以使用此设置调整字符串文字将插入stringArray的概率（从0到1）。此设置在大型代码库中很有用，因为对stringArray函数的重复调用会降低代码的速度。
                         target: 'browser', // 您可以将混淆代码的目标环境设置为以下之一： Browser 、Browser No Eval 、Node 目前浏览器和节点的输出是相同的。
-                        transformObjectKeys: false, // 转换（混淆）对象键。例如，此代码var a = {enabled：true};使用此选项进行模糊处理时，将隐藏已启用的对象键：var a = {};a [_0x2ae0 [（'0x0'）] = true;。 理想情况下与String Array设置一起使用。
+                        transformObjectKeys: true, // 转换（混淆）对象键。例如，此代码var a = {enabled：true};使用此选项进行模糊处理时，将隐藏已启用的对象键：var a = {};a [_0x2ae0 [（'0x0'）] = true;。 理想情况下与String Array设置一起使用。
                         unicodeEscapeSequence: true, // 将所有字符串转换为其unicode表示形式。例如，字符串“Hello World！”将被转换为“'\ x48 \ x65 \ x6c \ x6c \ x6f \ x20 \ x57 \ x6f \ x72 \ x6c \ x64 \ x21”。
                     }, ['abc.js']) // abc.js 是不混淆的代码
                 ],
