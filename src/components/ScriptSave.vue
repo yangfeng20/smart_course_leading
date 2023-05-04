@@ -19,7 +19,7 @@
           </el-input>
         </el-row>
 
-        <el-select v-model="status" placeholder="上架状态">
+        <el-select v-model="scriptInfo.scriptStatus.key" placeholder="上架状态">
           <el-option label="未上架" :value="1"></el-option>
           <el-option label="已上架" :value="2"></el-option>
         </el-select>
@@ -69,10 +69,11 @@ export default {
   name: "ScriptSave",
   data() {
     return {
-      isPermission:false,
+      isPermission: false,
       schedule: 0,
-      scriptInfo: {},
-      status: 1,
+      scriptInfo: {
+        scriptStatus: {},
+      },
       editorOption: {
         placeholder: '脚本教程',
         modules: {
@@ -126,7 +127,7 @@ export default {
         pageUrl: this.$route.path
       }).then(resp => {
         this.isPermission = resp.data.data
-      }).catch(_=>{
+      }).catch(_ => {
         this.isPermission = false
       })
     },
@@ -182,7 +183,6 @@ export default {
 
       this.$axios.get("script_info/" + id).then(resp => {
         this.scriptInfo = resp.data.data;
-        this.status = resp.data.data.scriptStatus?.key
       })
     }
 
