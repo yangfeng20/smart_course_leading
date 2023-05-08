@@ -131,7 +131,7 @@ export default {
       },
 
       editorOption: {
-        placeholder: '请输入定制脚本的描述',
+        placeholder: '请输入定制脚本的描述\n并留下您的邮件，以便告知脚本制造进度。',
         modules: {
           toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
