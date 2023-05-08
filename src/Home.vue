@@ -129,7 +129,8 @@ export default {
 .aaa {
   position: absolute;
   width: 99%;
-  height: 110%;
+  height: auto;
+  min-height: 110%;
   top: 0;
   overflow-y: hidden;
 }

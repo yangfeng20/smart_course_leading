@@ -135,7 +135,6 @@ export default {
       if (file.status === 'ready') {
         this.scriptInfo.updateFile = true
         this.scriptInfo.fileName = file.name
-        this.scriptInfo.scriptStatus = this.status
 
         this.fileToBase64(file.raw).then(dataStr => {
           this.scriptInfo.byteContentStr = dataStr
