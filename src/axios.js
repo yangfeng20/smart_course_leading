@@ -54,7 +54,7 @@ request.interceptors.response.use(resp => {
 
         // 创建更新时间格式
         function formatDate(result) {
-            let formatStr = 'YYYY-MM-DD hh:mm:ss'
+            let formatStr = 'YYYY-MM-DD HH:mm:ss'
             if (result?.data?.createdDate) {
                 result.data.createdDate = new Moment(result.data.createdDate).format(formatStr)
             }
