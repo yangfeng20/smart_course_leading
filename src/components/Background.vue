@@ -3,8 +3,8 @@
     <div>
       <vue-particles
           color="#409EFF"
-          :particleOpacity="1"
-          :particlesNumber="100"
+          :particleOpacity="0.5"
+          :particlesNumber="50"
           shapeType="circle"
           :particleSize="4"
           linesColor="#409EFF"
@@ -12,7 +12,7 @@
           :lineLinked="true"
           :lineOpacity="0.8"
           :linesDistance="150"
-          :moveSpeed="3"
+          :moveSpeed="1"
           :hoverEffect="true"
           hoverMode="grab"
           :clickEffect="true"
@@ -44,7 +44,6 @@ export default {
 <style scoped>
 .bg_container {
   background-image: linear-gradient(-180deg, #1a1454 0%, #0e81a5 100%);
-  /*background-image: url("../assets/image/bg01.jpg");*/
   background-repeat: no-repeat;
   background-size: cover;
   height: 800px;

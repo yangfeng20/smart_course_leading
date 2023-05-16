@@ -55,8 +55,8 @@
     <div>
       <div class="home-show" v-if="!showLinkView" style="background-color:rgba(255,255,255,0.5);">
         <el-carousel :interval="2000" type="card" height="300px">
-          <el-carousel-item><img :src="require('./assets/image/home/1.png')" alt="" width="110%"></el-carousel-item>
-          <el-carousel-item><img :src="require('./assets/image/home/2.jpg')" alt="" width="130%"></el-carousel-item>
+          <el-carousel-item><img :src="require('./assets/image/home/1.jpg')" alt="" width="100%"></el-carousel-item>
+          <el-carousel-item><img :src="require('./assets/image/home/2.jpg')" alt="" width="100%"></el-carousel-item>
           <el-carousel-item><img :src="require('./assets/image/home/3.png')" alt="" width="104%"></el-carousel-item>
         </el-carousel>
       </div>
