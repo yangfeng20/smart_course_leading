@@ -58,6 +58,7 @@
           <el-carousel-item><img :src="require('./assets/image/home/1.jpg')" alt="" width="100%"></el-carousel-item>
           <el-carousel-item><img :src="require('./assets/image/home/2.jpg')" alt="" width="100%"></el-carousel-item>
           <el-carousel-item><img :src="require('./assets/image/home/3.png')" alt="" width="104%"></el-carousel-item>
+          <el-carousel-item><img :src="require('./assets/image/home/4.jpg')" alt="" width="40%"></el-carousel-item>
         </el-carousel>
       </div>
 
@@ -68,7 +69,8 @@
       <!--首页展示文本-->
       <div v-if="!showLinkView" align="center" style="padding-top: 10px">
         <h1>智能课程</h1>
-        你的学习好帮手
+        <p>你的学习好帮手</p>
+        <p>由于很多人使用脚本的过程中出现各种问题，同时无法沟通的问题，创建了一个群，可扫描上方二维码添加</p>
       </div>
 
 
