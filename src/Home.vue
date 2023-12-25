@@ -2,55 +2,77 @@
   <div style="background-color:rgba(255,255,255,0.5);" class="aaa">
 
 
-    <div>
+    <div class="page-header">
       <el-menu
           class="el-menu-demo"
           mode="horizontal"
           background-color="#545c64"
           text-color="#fff"
           @select="selectMenu"
-          active-text-color="#ffd04b">
+          active-text-color="#ffd04b"
+          :router="true">
 
-        <el-col :span="6">
+        <!--<el-col :span="6">-->
+          <el-menu-item index="/">
+          <span class="menu-text">
+            <el-image
+                style="width: 70px; height: 70px; border-radius: 30%;"
+                :src="require('./assets/logo.png')"
+                fit="contain"></el-image>
+            </span>
+          </el-menu-item>
+        <!--</el-col>-->
 
-
+        <!--<el-col :span="6">-->
           <el-menu-item index="script_list">
           <span class="menu-text">
           <i class="el-icon-s-goods"></i>
           脚本列表</span>
           </el-menu-item>
-        </el-col>
+        <!--</el-col>-->
 
-        <el-col :span="6">
+        <!--<el-col :span="6">-->
           <el-menu-item index="script_custom">
           <span class="menu-text">
           <i class="el-icon-s-marketing"></i>
           脚本定制
           </span>
           </el-menu-item>
-        </el-col>
+        <!--</el-col>-->
 
-        <el-col :span="6">
+        <!--<el-col :span="6">-->
           <el-menu-item index="about_author">
           <span class="menu-text">
           <i class="el-icon-user"></i>
           关于作者
           </span>
           </el-menu-item>
-        </el-col>
+        <!--</el-col>-->
 
-        <el-col :span="6">
+        <!--<el-col :span="6">-->
           <el-menu-item index="feedback">
           <span class="menu-text">
           <i class="el-icon-user"></i>
           留言反馈
           </span>
           </el-menu-item>
-        </el-col>
+        <!--</el-col>-->
+
+        <!--<el-col :span="6">-->
+          <el-menu-item index="user" style="margin-right: 10px">
+          <span class="menu-text">
+          <!--<i class="el-icon-user"></i>-->
+              <el-image
+                  style="width: 35px; height: 35px; border-radius: 80%;"
+                  src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+                  fit="cover"></el-image>
+          </span>
+          </el-menu-item>
+        <!--</el-col>-->
       </el-menu>
     </div>
 
-    <div style="height: 10px"></div>
+    <!--<div style="height: 10px"></div>-->
 
     <div>
       <div class="home-show" v-if="!showLinkView" style="background-color:rgba(255,255,255,0.5);">
@@ -89,12 +111,12 @@
 export default {
   methods: {
     selectMenu(e) {
-      if (this.$route.path === '/') {
-        this.showLinkView = false
-      } else {
-        this.showLinkView = true
-      }
-      this.$router.push({path: "/" + e})
+      // if (this.$route.path === '/') {
+      //   this.showLinkView = false
+      // } else {
+      //   this.showLinkView = true
+      // }
+      // this.$router.push({path: "/" + e})
     }
   },
   watch: {
@@ -129,12 +151,11 @@ export default {
 
 /* 合并home组件和background组件*/
 .aaa {
-  position: absolute;
-  width: 99%;
+  /*position: absolute;*/
+  width: auto;
   height: auto;
-  min-height: 110%;
   top: 0;
-  overflow-y: hidden;
+  /*overflow-y: hidden;*/
 }
 
 .el-carousel__item {
@@ -143,6 +164,6 @@ export default {
 
 
 .menu-text {
-  padding-left: 20%;
+  /*padding-left: 20%;*/
 }
 </style>

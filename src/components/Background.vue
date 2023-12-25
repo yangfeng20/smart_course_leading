@@ -2,6 +2,7 @@
   <div class="bg_container">
     <div>
       <vue-particles
+          class="particles"
           color="#409EFF"
           :particleOpacity="0.5"
           :particlesNumber="50"
@@ -20,8 +21,9 @@
 
       />
     </div>
-
-    <Home></Home>
+    <!-- 使用 <slot> 定义插槽 -->
+    <!--<slot></slot>-->
+    <Home style=" z-index: 2;"></Home>
   </div>
 </template>
 
@@ -42,11 +44,16 @@ export default {
 </script>
 
 <style scoped>
+
+.particles {
+  position: absolute;
+}
+
 .bg_container {
   background-image: linear-gradient(-180deg, #1a1454 0%, #0e81a5 100%);
   background-repeat: no-repeat;
   background-size: cover;
-  height: 800px;
+  height: auto;
 }
 
 </style>

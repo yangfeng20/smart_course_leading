@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Background from "./components/Background";
+import Home from "./Home";
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import VueParticles from 'vue-particles'
@@ -24,5 +25,5 @@ Vue.config.productionTip = false
 
 new Vue({
     router,
-    render: h => h(Background),
+    render: h => h(Background, [h(Home)]),
 }).$mount('#home')

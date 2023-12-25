@@ -4,6 +4,7 @@ import vueRouter from 'vue-router'
 Vue.use(vueRouter)
 
 export default new vueRouter({
+    mode: 'history',
     routes: [
         {
             path: "/",
@@ -36,6 +37,10 @@ export default new vueRouter({
         {
             path: "/feedback",
             component: () => import("../components/Feedback")
+        },
+        {
+            path: "/user",
+            component: () => import("../components/Login")
         },
     ]
 })
