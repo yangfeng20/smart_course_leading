@@ -15,26 +15,28 @@
 
     <div class="data-page">
       <div class="data-list-div">
-        <el-row :gutter="1">
+        <el-row :gutter="1" style="margin-left: 20px;margin-right: 20px;">
           <el-col v-for="(custom, index) in customList" :key="index" :span="8">
-            <div class="data-info">
-              <div class="script-info-inner" v-show="isPermission">申请Id：
-                <el-link type="primary" @click="inDetail">{{ custom.id }}</el-link>
+            <transition :name="getTransitionName(index)">
+              <div v-show="show2" class="data-info">
+                <div class="script-info-inner" v-show="isPermission">申请Id：
+                  <el-link type="primary" @click="inDetail">{{ custom.id }}</el-link>
+                </div>
+                <div class="script-info-inner">申请名称：{{ custom.applyName }}</div>
+                <div class="script-info-inner">网站地址：
+                  <el-link :href="custom.website" target="_blank" :underline="false"><i
+                      class="el-icon-view el-icon--right"></i> {{ custom.website }}
+                  </el-link>
+                </div>
+                <div class="script-info-inner">申请状态：
+                  <el-tag :type="tagType(custom.applyStatus?.key)" ref="statusTag" :value="custom.applyStatus?.key">{{
+                      custom.applyStatus?.desc
+                    }}
+                  </el-tag>
+                </div>
+                <div class="script-info-inner">申请时间：{{ custom.createdDate }}</div>
               </div>
-              <div class="script-info-inner">申请名称：{{ custom.applyName }}</div>
-              <div class="script-info-inner">网站地址：
-                <el-link :href="custom.website" target="_blank" :underline="false"><i
-                    class="el-icon-view el-icon--right"></i> {{ custom.website }}
-                </el-link>
-              </div>
-              <div class="script-info-inner">申请状态：
-                <el-tag :type="tagType(custom.applyStatus?.key)" ref="statusTag" :value="custom.applyStatus?.key">{{
-                    custom.applyStatus?.desc
-                  }}
-                </el-tag>
-              </div>
-              <div class="script-info-inner">申请时间：{{ custom.createdDate }}</div>
-            </div>
+            </transition>
           </el-col>
         </el-row>
         <!--空白占位；用于展示分页组件-->
@@ -117,12 +119,13 @@ export default {
   name: "ScriptCustom",
   data() {
     return {
+      show2: true,
       listLoading: false,
       customList: [],
       customPage: {
         page: 1,
-        size: 10,
-        total: 10
+        size: 9,
+        total: 9
       },
 
       searchParam: {
@@ -191,7 +194,7 @@ export default {
         if (result.size) {
           this.customPage.size = result.size;
         }
-      }).finally(()=>{
+      }).finally(() => {
         setTimeout(() => {
           this.listLoading = false
         }, 200)
@@ -224,8 +227,28 @@ export default {
       })
     },
     refreshList() {
+      this.show2 = false
       this.searchScriptCustom()
+      setTimeout(() => {
+        this.show2 = true
+      }, 300)
+
     },
+
+    getTransitionName(index) {
+      let toTopArr = [0, 1, 2, 5]
+      let centerArr = [4]
+      let toBottomArr = [3, 6, 7, 8]
+      if (toTopArr.includes(index)) {
+        return "el-zoom-in-bottom";
+      } else if (toBottomArr.includes(index)) {
+        return "el-zoom-in-top";
+      } else if (centerArr.includes(index)) {
+        return "el-zoom-in-center";
+      }
+      return "el-zoom-in-center";
+    },
+
     clearContent() {
       this.scriptCustomApplyForm = {}
     },
