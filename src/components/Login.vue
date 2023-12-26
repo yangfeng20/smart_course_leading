@@ -2,40 +2,81 @@
   <div :class="containerClass">
     <div class="forms-container">
       <div class="signin-signup">
-        <form action="#" class="sign-in-form"><h2 class="title" style="color: white">Login</h2>
-          <div class="input-field"><i class="el-icon-s-promotion"></i><input v-model="loginForm.account" type="text"
-                                                                     placeholder="账号" @focus="resetError"/>
+
+        <form action="#" class="sign-in-form">
+          <h2 class="title" style="color: white" v-text="'Login / '+(loginType ? '密码' : '验证码')"></h2>
+          <div class="input-field"><i class="el-icon-s-promotion"></i>
+            <input v-model="loginForm.account" type="text"
+                   placeholder="账号" @focus="resetError"
+                   autocomplete="on"
+                   oninput="if(value.length>30)value=value.slice(0,30)"/>
           </div>
-          <div class="input-field"><i class="el-icon-key"></i><input v-model="loginForm.pwd" type="password"
-                                                                     placeholder="密码" @focus="resetError"
-                                                                     oninput="if(value.length>12)value=value.slice(0,12)"/>
+
+          <div v-show="loginType" class="input-field"><i class="el-icon-key"></i>
+            <input v-model="loginForm.pwd" type="password"
+                   placeholder="密码" @focus="resetError"
+                   autocomplete="on"
+                   oninput="if(value.length>12)value=value.slice(0,12)"/>
+          </div>
+
+          <div v-show="!loginType" class="input-field"><i class="el-icon-s-comment"></i>
+            <input v-model="loginForm.emailCode" type="text"
+                   placeholder="验证码" @focus="resetError"
+                   autocomplete="on"
+                   oninput="if(value.length>4)value=value.slice(0,4)"/>
+            <div class="sc-dOSRxR jmvKBE" @click="sendEmailVerifyCodeHandler"
+                 v-text="codeName"></div>
+          </div>
+
+          <div>
+            <span class="login-type" @click="switchLoginType" v-text="'切换为'+(loginType ? '验证码': '密码')+'登录'"></span>
+            <span class="forget-pwd">忘记密码？</span>
           </div>
           <input type="button" @click="signIn" value="Login" class="btn solid"/>
         </form>
+
         <form action="#" class="sign-up-form"><h2 class="title" style="color: white">Register</h2>
-          <div class="input-field"><i class="el-icon-s-promotion"></i><input v-model="loginForm.account" type="text"
-                                                                     placeholder="邮箱" @focus="resetError"/>
+          <div class="input-field"><i class="el-icon-s-promotion"></i>
+            <input v-model="loginForm.account" type="text"
+                   placeholder="邮箱" @focus="resetError"
+                   autocomplete="on"
+                   oninput="if(value.length>30)value=value.slice(0,30)"/>
           </div>
-          <div class="input-field"><i class="el-icon-key"></i><input v-model="loginForm.pwd" type="password"
-                                                                     placeholder="密码" @focus="resetError"
-                                                                     oninput="if(value.length>12)value=value.slice(0,12)"/>
+          <div class="input-field"><i class="el-icon-key"></i>
+            <input v-model="loginForm.pwd" type="password"
+                   placeholder="密码" @focus="resetError"
+                   autocomplete="on"
+                   oninput="if(value.length>12)value=value.slice(0,12)"/>
           </div>
-          <div class="input-field"><i class="el-icon-key"></i><input v-model="loginForm.pwd2" type="password"
-                                                                      placeholder="确认密码" @focus="resetError"
-                                                                      oninput="if(value.length>12)value=value.slice(0,12)"/>
+          <div class="input-field"><i class="el-icon-key"></i>
+            <input v-model="loginForm.pwd2" type="password"
+                   placeholder="确认密码" @focus="resetError"
+                   autocomplete="on"
+                   oninput="if(value.length>12)value=value.slice(0,12)"/>
           </div>
+
+          <!--暂时仅需要邮箱验证码-->
           <div class="input-field">
             <i class="el-icon-s-comment"></i>
-            <input class="input-verify" v-model="loginForm.code" oninput="if(value.length>5)value=value.slice(0,5)"
-                   placeholder="验证码" @focus="resetError"/>
-            <el-image class="verify-core" :src="imgBase64Code" @click="getVerifyCode" alt="验证码加载失败">
-              <div slot="error" class="image-slot">
-                <i class="el-icon-warning-outline"></i>
-                <i class="el-icon-picture-outline"></i>
-                <i class="el-icon-warning-outline"></i>
-              </div>
-            </el-image>
+            <input class="input-verify" v-model="loginForm.emailCode" oninput="if(value.length>5)value=value.slice(0,5)"
+                   placeholder="验证码"/>
+            <div class="sc-dOSRxR jmvKBE" @click="getEmailVerityCode">获取验证码</div>
           </div>
+
+          <!--图片验证码，暂时不需要-->
+          <!--<div class="input-field">-->
+          <!--  <i class="el-icon-s-comment"></i>-->
+          <!--  <input class="input-verify" v-model="loginForm.code" oninput="if(value.length>5)value=value.slice(0,5)"-->
+          <!--         placeholder="验证码" @focus="resetError"/>-->
+          <!--  <el-image class="verify-core" :src="imgBase64Code" @click="getVerifyCode" alt="验证码加载失败">-->
+          <!--    <div slot="error" class="image-slot">-->
+          <!--      <i class="el-icon-warning-outline"></i>-->
+          <!--      <span class="code-class" @click="getVerifyCode">验证码加载失败</span>-->
+          <!--    </div>-->
+          <!--  </el-image>-->
+          <!--</div>-->
+
+
           <input type="submit" @click="signUp" class="btn" value="REGISTER"/>
         </form>
       </div>
@@ -66,37 +107,98 @@ export default {
   name: "Login",
   data() {
     return {
+      // 登录方式，默认是密码登录=true
+      loginType: true,
       containerClass: "container",
       loginForm: {
         account: null,
         pwd: null,
         pwd2: null,
         token: null,
+        emailCode: null,
         code: null,
 
       },
       imgBase64Code: "",
       // 表达校验状态
-      result: false,
+      paramCheckFail: false,
       errorMsg: "",
-      isRegister: false
+      isRegister: false,
+
+      isSend: true,
+      codeName: "获取验证码",
+      totalTime: 60, //一般是60
+      timer: '', //定时器
 
     }
   },
+
   methods: {
+    switchLoginType() {
+      this.loginForm.pwd = ""
+      this.loginForm.emailCode = ""
+      this.containerClass = "container sign-up-mode"
+      setTimeout(() => {
+        this.loginType = !this.loginType
+        this.containerClass = "container"
+      }, 1250)
+    },
+
+    sendEmailVerifyCodeHandler() {
+      if (!this.isSend) {
+        return
+      }
+      //邮箱格式
+      let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(this.loginForm.account)) {
+        this.paramCheckFail = true;
+        ElementUI.Message.error("邮箱地址错误");
+        return;
+      }
+      // 发送验证码
+      this.sendEmailVerifyCode()
+      this.isSend = false
+      this.codeName = this.totalTime + 's后重新发送'
+      this.timer = setInterval(() => {
+        this.totalTime--
+        this.codeName = this.totalTime + 's后重新发送'
+        if (this.totalTime < 0) {
+          clearInterval(this.timer)
+          this.codeName = '重新获取验证码'
+          this.totalTime = 60
+          this.isSend = true
+        }
+      }, 1000)
+    },
+
+    sendEmailVerifyCode() {
+      this.$axios.post("/user/send_email_verify", {
+        email: this.loginForm.account
+      }).then(
+          resp => {
+            console.log(resp.data.data);
+          }).catch(e => {
+        console.log("获取验证码失败")
+      })
+    },
+
     // 点击注册
     signUp() {
       if (this.containerClass === 'container sign-up-mode') {
+        console.log("注册")
         this.isRegister = true
         this.checkForm();
-        if (!this.result) {
-          this.doLogin();
-        }else {
+        if (!this.paramCheckFail) {
+          this.doRegister();
+        } else {
           ElementUI.Message.error(this.errorMsg)
         }
+        this.isRegister = false;
         return;
-
       }
+
+      // 切换为注册页面
+      console.log("切换为注册")
       this.resetError();
       this.containerClass = "container sign-up-mode"
     },
@@ -104,76 +206,98 @@ export default {
     // 点击登录
     signIn() {
       if (this.containerClass === 'container') {
+        console.log("登录")
         this.checkForm();
-        if (!this.result) {
-          this.doRegister();
-        }else {
+        if (!this.paramCheckFail) {
+          this.doLogin();
+        } else {
           ElementUI.Message.error(this.errorMsg)
         }
         return;
       }
+
+      // 切换为登录页面
+      console.log("切换为登录")
       this.resetError();
       this.containerClass = "container"
     },
 
     doLogin() {
-      this.$axios.post("/login?"+qs.stringify({
-        username:this.loginForm.account,
-        password:this.loginForm.pwd,
-        verifyCode: this.loginForm.code,
+      this.$axios.post("/user/login", {
+        email: this.loginForm.account,
+        password: this.loginForm.pwd,
+        emailVerifyCode: this.loginForm.emailCode,
+
+        imgVerifyCode: this.loginForm.code,
         token: this.loginForm.token
-      })).then(
-          resp => {
-            console.log(resp.data.data);
-          })
+      }).then(resp => {
+        // 登录成功，跳转首页
+        this.$router.push('/');
+      }).catch(e => {
+        console.log("登录失败")
+      })
     },
     doRegister() {
-
+      this.$axios.post("/user/register", {
+        email: this.loginForm.account,
+        password: this.loginForm.pwd,
+        imgVerifyCode: this.loginForm.code,
+        token: this.loginForm.token
+      }).then(
+          resp => {
+            console.log(resp.data.data);
+          }).catch(e => {
+        console.log("注册失败")
+      })
     },
 
     // 校验表单参数
     checkForm() {
-      //手机号格式
+      //邮箱格式
       let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(this.loginForm.account)) {
-        this.result = true;
+        this.paramCheckFail = true;
         this.errorMsg = "邮箱格式错误";
         return;
       }
 
       let pwd_ = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{0,12}$/;
-      if (!pwd_.test(this.loginForm.pwd)) {
-        this.result = true;
+      if (this.loginType && !pwd_.test(this.loginForm.pwd)) {
+        this.paramCheckFail = true;
         this.errorMsg = "密码格式错误(数字加字母，长度应为6-12之间)";
         return;
       }
-      if (this.loginForm.pwd.length < 6 || this.loginForm.pwd.length > 12) {
-        this.result = true;
+      if (this.loginType && (this.loginForm.pwd.length < 6 || this.loginForm.pwd.length > 12)) {
+        this.paramCheckFail = true;
         this.errorMsg = "密码长度应为6-12之间";
         return;
       }
-      if (this.isRegister && (this.loginForm.pwd2 === null || this.loginForm.pwd2 !== this.loginForm.pwd)) {
-        this.result = true;
+      if (this.loginType && this.isRegister && (this.loginForm.pwd2 === null || this.loginForm.pwd2 !== this.loginForm.pwd)) {
+        this.paramCheckFail = true;
         this.errorMsg = "两次密码输入不一致";
       }
       if (this.isRegister && (this.loginForm.code === null || this.loginForm.code.length < 5)) {
-        this.result = true;
+        this.paramCheckFail = true;
         this.errorMsg = "验证码格式不正确";
-        this.isRegister = false;
+      }
+
+      if (!this.loginType && this.loginForm.emailCode.length !== 4) {
+        this.paramCheckFail = true;
+        this.errorMsg = "验证码格式不正确";
       }
     },
 
     // 重置错误信息
     resetError() {
       this.errorMsg = ""
-      this.result = false
+      this.paramCheckFail = false
     },
 
     /**
      * 获取验证码
      */
     getVerifyCode() {
-      this.$axios.get("/api/user_api/user_common/v1/auth/get_verify_code").then(
+      this.$axios.get("/user/get_verify_code").then(
           // 箭头函数没有this，使用外部的this
           (resp) => {
             this.loginForm.token = resp.data.data.token
@@ -183,6 +307,18 @@ export default {
           }
       )
     },
+
+    /**
+     * 获取邮箱验证码
+     */
+    getEmailVerityCode() {
+      let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(this.loginForm.account)) {
+        ElementUI.Message.error("邮箱地址错误");
+        return;
+      }
+
+    },
   },
   /**
    * 界面创建生命周期钩子函数
@@ -190,6 +326,12 @@ export default {
   created() {
     // 界面加载，获取验证码 todo 是否需要修改为切换到注册页面就需要获取验证码
     // this.getVerifyCode();
+
+    // 页面滑动动态效果
+    this.containerClass = "container sign-up-mode"
+    setTimeout(() => {
+      this.containerClass = "container"
+    }, 100)
   }
 }
 
@@ -606,6 +748,39 @@ form.sign-in-form {
 .checkMsg {
   font-size: 18px;
   color: red;
+}
+
+.code-class {
+  padding-top: 9px;
+  color: rgb(136, 156, 183);
+}
+
+.jmvKBE {
+  color: rgb(3, 100, 255);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  position: absolute;
+  top: 18px;
+  right: 28px;
+  cursor: pointer;
+}
+
+.forget-pwd {
+  cursor: pointer;
+  margin-top: -18px;
+  margin-left: 270px;
+  display: flex;
+  -webkit-box-pack: end;
+  justify-content: flex-end;
+  color: rgb(136, 156, 183);
+  font-size: 13px;
+}
+
+.login-type {
+  cursor: pointer;
+  color: rgb(3, 100, 255);
+  font-size: 14px;
 }
 
 </style>
