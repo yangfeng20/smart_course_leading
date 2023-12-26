@@ -231,6 +231,7 @@ export default {
         imgVerifyCode: this.loginForm.code,
         token: this.loginForm.token
       }).then(resp => {
+        localStorage.setItem('token', resp.headers['authorization']);
         // 登录成功，跳转首页
         this.$router.push('/');
       }).catch(e => {
