@@ -233,8 +233,7 @@ export default {
       }).then(resp => {
         localStorage.setItem('token', resp.headers['authorization']);
         // 登录成功，跳转首页
-        this.$router.push('/');
-        location.reload();
+        location.href='/'
       }).catch(e => {
         console.log("登录失败")
       })

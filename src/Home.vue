@@ -173,8 +173,7 @@ export default {
       localStorage.clear()
       this.$axios.post('/user/logout', {}).then(_ => {
         ElementUI.Message.success("退出登录成功")
-        this.$router.push('/');
-        location.reload();
+        location.href = '/'
       })
     },
 
