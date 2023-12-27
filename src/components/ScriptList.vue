@@ -17,22 +17,23 @@
         </el-option>
 
       </el-select>
-      <el-button type="primary" icon="el-icon-search" :loading="listLoading" @click="searchScript"
-                 style="margin-left: 10px">搜索
-      </el-button>
-      <el-button type="primary" icon="el-icon-edit" @click="saveScript($event)" v-show="isPermission">新增脚本</el-button>
+      <div style="z-index: 3">
+        <el-button type="primary" icon="el-icon-search" :loading="listLoading" @click="searchScript"
+                   style="margin-left: 10px">搜索
+        </el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="saveScript($event)" v-show="isPermission">新增脚本</el-button>
+      </div>
     </div>
 
     <div class="data-page">
       <div class="data-list-div">
         <el-row :gutter="1">
           <el-col v-for="(script, index) in scriptList" :key="index" :span="8">
-            <div class="data-info">
-
+            <transition :name="getTransitionName(index)">
+            <div v-show="listShowRender" class="data-info">
               <el-button v-show="isPermission" icon="el-icon-edit" size="small" round type="primary" plain
                          @click="saveScript($event, script.id)">编辑
               </el-button>
-
               <span v-show="!isPermission" style="margin-right: 20%"></span>
               <span style="margin-right: 60%"></span>
               <el-tag :type="getStatus(script.scriptStatus?.key)" effect="dark">{{ script.scriptStatus?.desc }}
@@ -62,6 +63,7 @@
                 }}
               </div>
             </div>
+            </transition>
           </el-col>
         </el-row>
         <!--空白占位；用于展示分页组件-->
@@ -70,14 +72,14 @@
         </el-row>
       </div>
       <div class="pagination-wrapper">
-        <el-pagination
+        <el-pagination v-show="listShowRender"
             :current-page.sync="scriptPage.page"
             :page-size.sync="scriptPage.size"
             :total="scriptPage.total"
             layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
 
-        <el-empty v-show="isShowEmptyList" description="没有满足条件的脚本"></el-empty>
+        <el-empty v-show="isShowEmptyList && listShowRender" description="没有满足条件的脚本"></el-empty>
       </div>
     </div>
 
@@ -98,6 +100,7 @@ export default {
           desc: "未上架"
         },
       ],
+      listShowRender: true,
       listLoading: false,
       searchInput: "",
       status: 2,
@@ -111,6 +114,19 @@ export default {
     }
   },
   methods: {
+    getTransitionName(index) {
+      let toTopArr = [0, 1, 2, 5]
+      let centerArr = [4]
+      let toBottomArr = [3, 6, 7, 8]
+      if (toTopArr.includes(index)) {
+        return "el-zoom-in-bottom";
+      } else if (toBottomArr.includes(index)) {
+        return "el-zoom-in-top";
+      } else if (centerArr.includes(index)) {
+        return "el-zoom-in-center";
+      }
+      return "el-zoom-in-center";
+    },
     getStatus(status) {
       if (status === 2) {
         return 'success';
@@ -132,6 +148,7 @@ export default {
     },
     searchScript() {
       this.listLoading = true
+      this.listShowRender = false
       this.$axios.post("/script_info/search",
           {
             scriptStatus: this.status,
@@ -152,6 +169,7 @@ export default {
       }).finally(() => {
         setTimeout(() => {
           this.listLoading = false
+          this.listShowRender = true
         }, 200)
       })
     },

@@ -18,7 +18,7 @@
         <el-row :gutter="1" style="margin-left: 20px;margin-right: 20px;">
           <el-col v-for="(custom, index) in customList" :key="index" :span="8">
             <transition :name="getTransitionName(index)">
-              <div v-show="show2" class="data-info">
+              <div v-show="listShowRender" class="data-info">
                 <div class="script-info-inner" v-show="isPermission">申请Id：
                   <el-link type="primary" @click="inDetail">{{ custom.id }}</el-link>
                 </div>
@@ -52,7 +52,7 @@
             layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
 
-        <el-empty v-show="isShowEmptyList" description="没有满足条件的定制申请"></el-empty>
+        <el-empty v-show="isShowEmptyList && listShowRender" description="没有满足条件的定制申请"></el-empty>
       </div>
     </div>
 
@@ -119,7 +119,7 @@ export default {
   name: "ScriptCustom",
   data() {
     return {
-      show2: true,
+      listShowRender: true,
       listLoading: false,
       customList: [],
       customPage: {
@@ -179,6 +179,7 @@ export default {
     },
     searchScriptCustom() {
       this.listLoading = true
+      this.listShowRender = false
       this.$axios.post("/script_apply/search", {
         ...this.customPage,
         applyName: this.searchParam.applyName,
@@ -199,6 +200,7 @@ export default {
       }).finally(() => {
         setTimeout(() => {
           this.listLoading = false
+          this.listShowRender = true
         }, 200)
       })
     },
@@ -229,12 +231,7 @@ export default {
       })
     },
     refreshList() {
-      this.show2 = false
       this.searchScriptCustom()
-      setTimeout(() => {
-        this.show2 = true
-      }, 300)
-
     },
 
     getTransitionName(index) {
@@ -355,7 +352,7 @@ export default {
 }
 
 .data-page {
-  position: static;
+  position: relative;
 }
 
 .el-pagination {
