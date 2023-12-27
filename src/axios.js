@@ -63,7 +63,7 @@ request.interceptors.response.use(resp => {
             }
 
             if (result?.data?.content) {
-                result.data.content.forEach(item=>{
+                result.data.content.forEach(item => {
                     if (item?.createdDate) {
                         item.createdDate = new Moment(item.createdDate).format(formatStr)
                     }
@@ -72,6 +72,15 @@ request.interceptors.response.use(resp => {
                     }
                 })
             }
+        }
+
+        if (result.code === 401) {
+            let goToRouter = 'user'
+            ElementUI.Message.error({
+                message: result.message + ` : <a href=${goToRouter}>点击登录</a>`,
+                dangerouslyUseHTMLString: true,
+            });
+            return Promise.reject(result.message)
         }
 
         // 代码执行下来，说明code不为200，或者result有问题【使用弹窗提示,可能为空白】
@@ -90,11 +99,11 @@ request.interceptors.response.use(resp => {
         console.log(error)
 
         // 到达前端axios设置的超时时间
-        if (error.code==='ECONNABORTED'){
+        if (error.code === 'ECONNABORTED') {
             // 弹窗提示，3秒
             ElementUI.Message.error("网络超时", {duration: 2000})
             // 使请求不进入正常的响应处理函数
-            return Promise.reject(()=>{
+            return Promise.reject(() => {
             })
         }
 

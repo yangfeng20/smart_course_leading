@@ -194,6 +194,8 @@ export default {
         if (result.size) {
           this.customPage.size = result.size;
         }
+      }).catch(e => {
+
       }).finally(() => {
         setTimeout(() => {
           this.listLoading = false
