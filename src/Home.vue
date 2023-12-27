@@ -85,6 +85,11 @@
             <span v-text="'金币：'+coin_number">金币：0</span>
           </el-menu-item>
           <el-menu-item>
+            <el-link :underline="false" type="primary" @click="signIn">
+              <i class="el-icon-place"></i>
+              签到</el-link>
+          </el-menu-item>
+          <el-menu-item>
             <el-link :underline="false" type="primary" @click="logout">
               <i class="el-icon-switch-button"></i>
               退出登录</el-link>
@@ -156,9 +161,17 @@ export default {
 
   methods: {
 
-    logout(){
+    signIn() {
+      this.$axios.post('/user/sign_in').then(_ => {
+        ElementUI.Message.success("签到成功")
+      }).catch(e => {
+        ElementUI.Message.info(e)
+      })
+    },
+
+    logout() {
       localStorage.clear()
-      this.$axios.post('/user/logout', {}).then(_=> {
+      this.$axios.post('/user/logout', {}).then(_ => {
         ElementUI.Message.success("退出登录成功")
         this.$router.push('/');
         location.reload();

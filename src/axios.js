@@ -83,8 +83,10 @@ request.interceptors.response.use(resp => {
             return Promise.reject(result.message)
         }
 
-        // 代码执行下来，说明code不为200，或者result有问题【使用弹窗提示,可能为空白】
-        ElementUI.Message.error(result.message ? result.message : '系统异常');
+        if (!result.code || result.code === 500) {
+            // 代码执行下来，说明code不为200，或者result有问题【使用弹窗提示,可能为空白】
+            ElementUI.Message.error(result.message ? result.message : '系统异常');
+        }
         // 使请求不进入正常的响应处理函数
         return Promise.reject(result.message)
     },
