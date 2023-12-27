@@ -1,5 +1,5 @@
 <template>
-  <div style="background-color:rgba(255,255,255,0.5);" class="aaa">
+  <div style="background-color:rgba(255,255,255,0.5);" class="home-body">
 
 
     <div class="page-header">
@@ -207,10 +207,10 @@ export default {
 }
 
 /* 合并home组件和background组件*/
-.aaa {
+.home-body {
   /*position: absolute;*/
   width: auto;
-  height: auto;
+  height: 801px;
   top: 0;
   /*overflow-y: hidden;*/
 }

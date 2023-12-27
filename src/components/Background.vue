@@ -23,7 +23,7 @@
     </div>
     <!-- 使用 <slot> 定义插槽 -->
     <!--<slot></slot>-->
-    <Home style=" z-index: 2;"></Home>
+    <Home style=" z-index: 1;"></Home>
   </div>
 </template>
 
@@ -46,7 +46,10 @@ export default {
 <style scoped>
 
 .particles {
-  position: absolute;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 .bg_container {

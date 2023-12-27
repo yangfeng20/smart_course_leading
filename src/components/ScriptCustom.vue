@@ -355,7 +355,7 @@ export default {
 }
 
 .data-page {
-  position: relative;
+  position: static;
 }
 
 .el-pagination {
