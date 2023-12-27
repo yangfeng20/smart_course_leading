@@ -19,7 +19,7 @@
                    oninput="if(value.length>12)value=value.slice(0,12)"/>
           </div>
 
-          <div v-show="!loginType" class="input-field"><i class="el-icon-s-comment"></i>
+          <div v-show="!loginType" class="input-field"><i class="el-icon-message"></i>
             <input v-model="loginForm.emailCode" type="text"
                    placeholder="验证码" @focus="resetError"
                    autocomplete="on"
@@ -57,7 +57,7 @@
 
           <!--暂时仅需要邮箱验证码-->
           <div class="input-field">
-            <i class="el-icon-s-comment"></i>
+            <i class="el-icon-message"></i>
             <input class="input-verify" v-model="loginForm.emailCode" oninput="if(value.length>5)value=value.slice(0,5)"
                    placeholder="验证码"/>
             <div class="sc-dOSRxR jmvKBE" @click="getEmailVerityCode">获取验证码</div>
@@ -65,7 +65,7 @@
 
           <!--图片验证码，暂时不需要-->
           <!--<div class="input-field">-->
-          <!--  <i class="el-icon-s-comment"></i>-->
+          <!--  <i class="el-icon-message"></i>-->
           <!--  <input class="input-verify" v-model="loginForm.code" oninput="if(value.length>5)value=value.slice(0,5)"-->
           <!--         placeholder="验证码" @focus="resetError"/>-->
           <!--  <el-image class="verify-core" :src="imgBase64Code" @click="getVerifyCode" alt="验证码加载失败">-->
@@ -234,6 +234,7 @@ export default {
         localStorage.setItem('token', resp.headers['authorization']);
         // 登录成功，跳转首页
         this.$router.push('/');
+        location.reload();
       }).catch(e => {
         console.log("登录失败")
       })

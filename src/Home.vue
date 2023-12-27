@@ -12,63 +12,93 @@
           active-text-color="#ffd04b"
           :router="true">
 
-        <!--<el-col :span="6">-->
-          <el-menu-item index="/">
+
+        <el-menu-item index="/">
           <span class="menu-text">
             <el-image
                 style="width: 70px; height: 70px; border-radius: 30%;"
                 :src="require('./assets/logo.png')"
                 fit="contain"></el-image>
             </span>
-          </el-menu-item>
-        <!--</el-col>-->
+        </el-menu-item>
 
-        <!--<el-col :span="6">-->
-          <el-menu-item index="script_list">
+
+        <el-menu-item index="script_list">
           <span class="menu-text">
           <i class="el-icon-s-goods"></i>
           脚本列表</span>
-          </el-menu-item>
-        <!--</el-col>-->
+        </el-menu-item>
 
-        <!--<el-col :span="6">-->
-          <el-menu-item index="script_custom">
+
+        <el-menu-item index="script_custom">
           <span class="menu-text">
           <i class="el-icon-s-marketing"></i>
           脚本定制
           </span>
-          </el-menu-item>
-        <!--</el-col>-->
+        </el-menu-item>
 
-        <!--<el-col :span="6">-->
-          <el-menu-item index="about_author">
+
+        <el-menu-item index="ai_chat">
+          <span class="menu-text">
+          <i class="el-icon-chat-line-square"></i>
+          AI会话
+          </span>
+        </el-menu-item>
+
+        <el-menu-item index="card_list">
+          <span class="menu-text">
+          <i class="el-icon-document-copy"></i>
+          交流广场
+          </span>
+        </el-menu-item>
+
+
+        <el-menu-item index="about_author">
           <span class="menu-text">
           <i class="el-icon-user"></i>
           关于作者
           </span>
-          </el-menu-item>
-        <!--</el-col>-->
+        </el-menu-item>
 
-        <!--<el-col :span="6">-->
-          <el-menu-item index="feedback">
+
+        <el-menu-item index="feedback">
           <span class="menu-text">
-          <i class="el-icon-user"></i>
+          <i class="el-icon-edit-outline"></i>
           留言反馈
           </span>
-          </el-menu-item>
-        <!--</el-col>-->
+        </el-menu-item>
 
-        <!--<el-col :span="6">-->
-          <el-menu-item index="user" style="margin-right: 10px">
-          <span class="menu-text">
-          <!--<i class="el-icon-user"></i>-->
+
+        <el-submenu v-if="login" index="" style="margin-right: 10px">
+          <template slot="title">
+            <span class="menu-text">
               <el-image
                   style="width: 35px; height: 35px; border-radius: 80%;"
                   src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
                   fit="cover"></el-image>
-          </span>
+            </span>
+          </template>
+
+
+          <el-menu-item>
+            <i class="el-icon-coin"></i>
+            <span v-text="'金币：'+coin_number">金币：0</span>
           </el-menu-item>
-        <!--</el-col>-->
+          <el-menu-item>
+            <el-link :underline="false" type="primary" @click="logout">
+              <i class="el-icon-switch-button"></i>
+              退出登录</el-link>
+          </el-menu-item>
+        </el-submenu>
+
+
+        <el-menu-item v-if="!login" index="user" style="margin-right: 10px">
+          <span class="menu-text">
+            <i class="el-icon-position"></i>
+              点击登录
+          </span>
+        </el-menu-item>
+
       </el-menu>
     </div>
 
@@ -108,8 +138,33 @@
 
 
 <script>
+import ElementUI from "element-ui";
+
 export default {
+
+  created() {
+    this.$axios.post('/user/info').then(resp => {
+      let userInfo = resp.data.data
+      if (!userInfo) {
+        return;
+      }
+      this.coin_number = userInfo.coin ? userInfo.coin : 0
+      this.login = true
+      localStorage.setItem("user", JSON.stringify(userInfo))
+    })
+  },
+
   methods: {
+
+    logout(){
+      localStorage.clear()
+      this.$axios.post('/user/logout', {}).then(_=> {
+        ElementUI.Message.success("退出登录成功")
+        this.$router.push('/');
+        location.reload();
+      })
+    },
+
     selectMenu(e) {
       // if (this.$route.path === '/') {
       //   this.showLinkView = false
@@ -132,6 +187,8 @@ export default {
     return {
       // 显示管理的路由视图
       showLinkView: true,
+      login: false,
+      coin_number: 0,
     }
   }
 
@@ -164,6 +221,9 @@ export default {
 
 
 .menu-text {
-  /*padding-left: 20%;*/
+  margin-left: 30px;
+  margin-right: 30px;
 }
+
+
 </style>
