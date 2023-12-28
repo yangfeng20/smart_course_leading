@@ -12,8 +12,9 @@
           </el-tag>
         </div>
 
-        <el-button type="primary" round icon="el-icon-download" @click="downAndUpdateCount">点击下载</el-button>
-
+        <div>
+          <el-button style="transform: translateY(-50%);" type="primary" round icon="el-icon-download" @click="downAndUpdateCount">点击下载</el-button>
+        </div>
 
       </div>
 

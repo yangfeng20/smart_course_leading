@@ -1,7 +1,7 @@
 <template>
   <div class="block-list">
 
-    <div class="search-bar" style="margin-top: 3%; display: flex;margin-left: 10px;">
+    <div class="search-bar" style="margin-top: 10px; display: flex;margin-left: 10px;">
       <el-input style="width: 40%"
                 ref="searchInput"
                 placeholder="搜索脚本"

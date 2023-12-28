@@ -2,16 +2,18 @@
 
   <div style="position: relative;">
 
-    <el-button type="primary" icon="el-icon-edit" @click="dialog = true">新增定制</el-button>
-    <el-input v-model="searchParam.applyName" placeholder="定制申请名称" v-show="isPermission" style="width: 20%"
-              :clearable="true" @keydown.enter.native="searchScriptCustom"></el-input>
-    <el-select v-model="searchParam.applyStatus" v-show="isPermission" placeholder="申请状态" :clearable="true">
-      <el-option label="已提交" value="1"></el-option>
-      <el-option label="制作中" value="2"></el-option>
-      <el-option label="已拒绝" value="3"></el-option>
-      <el-option label="已完成" value="4"></el-option>
-    </el-select>
-    <el-button type="primary" icon="el-icon-refresh" :loading="listLoading" @click="refreshList">刷新列表</el-button>
+    <div data-v-4a9485b9="" class="search-bar" style="margin-top: 10px;display: flex;margin-left: 30px;">
+      <el-input v-model="searchParam.applyName" placeholder="定制申请名称" v-show="isPermission" style="width: 20%"
+                :clearable="true" @keydown.enter.native="searchScriptCustom"></el-input>
+      <el-select v-model="searchParam.applyStatus" v-show="isPermission" placeholder="申请状态" :clearable="true">
+        <el-option label="已提交" value="1"></el-option>
+        <el-option label="制作中" value="2"></el-option>
+        <el-option label="已拒绝" value="3"></el-option>
+        <el-option label="已完成" value="4"></el-option>
+      </el-select>
+      <el-button type="primary" style="margin-left: 10px;" icon="el-icon-refresh" :loading="listLoading" @click="refreshList">刷新列表</el-button>
+      <el-button type="primary" icon="el-icon-edit" @click="dialog = true">新增定制</el-button>
+    </div>
 
     <div class="data-page">
       <div class="data-list-div">
