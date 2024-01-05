@@ -45,7 +45,7 @@
           </span>
         </el-menu-item>
 
-        <el-menu-item index="card_list">
+        <el-menu-item index="article">
           <span class="menu-text">
           <i class="el-icon-document-copy"></i>
           交流广场
