@@ -87,12 +87,14 @@
           <el-menu-item>
             <el-link :underline="false" type="primary" @click="signIn">
               <i class="el-icon-place"></i>
-              签到</el-link>
+              签到
+            </el-link>
           </el-menu-item>
           <el-menu-item>
             <el-link :underline="false" type="primary" @click="logout">
               <i class="el-icon-switch-button"></i>
-              退出登录</el-link>
+              退出登录
+            </el-link>
           </el-menu-item>
         </el-submenu>
 
@@ -156,6 +158,8 @@ export default {
       this.coin_number = userInfo.coin ? userInfo.coin : 0
       this.login = true
       localStorage.setItem("user", JSON.stringify(userInfo))
+    }).catch(e => {
+
     })
   },
 

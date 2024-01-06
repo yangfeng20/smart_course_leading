@@ -98,12 +98,20 @@ request.interceptors.response.use(resp => {
      */
     error => {
 
-        console.log(error)
+        console.error("发生异常：", error)
 
         // 到达前端axios设置的超时时间
         if (error.code === 'ECONNABORTED') {
-            // 弹窗提示，3秒
+            // 弹窗提示
             ElementUI.Message.error("网络超时", {duration: 2000})
+            // 使请求不进入正常的响应处理函数
+            return Promise.reject(() => {
+            })
+        }
+        // 网络不通，无法访问后端，或者服务器不在线
+        if (error.code === 'ERR_NETWORK') {
+            // 弹窗提示
+            ElementUI.Message.error("系统异常,请稍后重试", {duration: 2000})
             // 使请求不进入正常的响应处理函数
             return Promise.reject(() => {
             })
