@@ -8,9 +8,8 @@
             <el-card class="box-card">
               <div slot="header" class="clearfix">
                 <span>{{ topItem.name }}</span>
-                <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
               </div>
-              <div>
+              <div class="top-card-body">
                 {{ topItem.content }}
               </div>
             </el-card>
@@ -66,9 +65,10 @@
                 </el-header>
                 <el-container>
                   <el-main>
-                    <el-container v-for="article in articleList">
-                      <el-main style="padding-top: 0px">
-                        <el-descriptions :title="article.title" class="article-item" column="1" :colon="false">
+                    <el-container v-for="article in articleList" style="background-color: #ffffff;border-bottom: 1px solid rgba(228,230,235,0.5);">
+                      <el-main style="padding-top: 0;padding-bottom: 0;background-color: #ffffff;">
+                        <el-descriptions class="article-item" column="1" :colon="false">
+                          <el-descriptions-item><span class="article-title">{{ article.title }}</span></el-descriptions-item>
                           <el-descriptions-item>{{ article.content }}</el-descriptions-item>
                           <el-descriptions-item>
                             <el-row :gutter="0" class="article-last-row">
@@ -268,10 +268,11 @@ body > .el-container {
 
 .top-card {
   padding: 10px 5px;
+  text-align: left;
 }
 
 .article-item {
-  background-color: aliceblue;
+  /*background-color: #f0f8ff;*/
 }
 
 .article-icon {
@@ -285,6 +286,18 @@ body > .el-container {
 
 .article-tag-div {
   float: right;
+}
+
+.article-title{
+  font-weight: 600;
+  margin-top: 10px;
+  font-size: 15px;
+  color: #252933;
+}
+
+.top-card-body{
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 </style>
