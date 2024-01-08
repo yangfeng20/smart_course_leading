@@ -296,15 +296,17 @@ body > .el-container {
 .article-item-parent{
   padding-top: 0;
   padding-bottom: 0;
-  background-color: #ffffff;
+  background-color: transparent;
+}
+.article-item > :first-child{
+  background-color: transparent;
 }
 
-
-/*todo 鼠标悬停文章效果*/
-/*.articleList-div:hover {*/
-/*  cursor: pointer;*/
-/*  background: #eff0f1;*/
-/*}*/
+/*鼠标悬停文章效果*/
+.articleList-div:hover,.article-item-parent:hover,.article-item:hover {
+  cursor: pointer;
+  background: #eff0f1;
+}
 
 .article-hit-dev{
   background-color: #ffffff;
