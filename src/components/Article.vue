@@ -9,7 +9,7 @@
               <div slot="header" class="clearfix">
                 <span>{{ topItem.name }}</span>
               </div>
-              <div class="top-card-body">
+              <div>
                 {{ topItem.content }}
               </div>
             </el-card>
@@ -43,11 +43,11 @@
         <el-container>
 
           <!--todo 底部到底，内部内容和侧边-->
-          <el-main>
+          <el-main style="padding: 0">
             <div class="content-div">
               <el-container>
                 <el-header>
-                  <div style="margin-top: 15px;">
+                  <div style="margin-top: 5px;width: 77%">
                     <el-input placeholder="请输入内容" v-model="userInput" class="input-with-select" clearable>
                       <el-select v-model="articleType" slot="prepend" placeholder="请选择">
                         <i class="el-icon-discover">
@@ -64,11 +64,14 @@
                   </div>
                 </el-header>
                 <el-container>
-                  <el-main>
-                    <el-container v-for="article in articleList" style="background-color: #ffffff;border-bottom: 1px solid rgba(228,230,235,0.5);">
-                      <el-main style="padding-top: 0;padding-bottom: 0;background-color: #ffffff;">
-                        <el-descriptions class="article-item" column="1" :colon="false">
-                          <el-descriptions-item><span class="article-title">{{ article.title }}</span></el-descriptions-item>
+                  <el-main style="padding-top: 0;min-height: 610px;">
+                    <!--文章内容+图片-->
+                    <el-container v-for="article in articleList" class="articleList-div" @click="clickArticle">
+                      <!--文章主体内容-->
+                      <el-main class="article-item-parent">
+                        <el-descriptions class="article-item" :column="1" :colon="false">
+                          <el-descriptions-item><span class="article-title">{{ article.title }}</span>
+                          </el-descriptions-item>
                           <el-descriptions-item>{{ article.content }}</el-descriptions-item>
                           <el-descriptions-item>
                             <el-row :gutter="0" class="article-last-row">
@@ -102,7 +105,8 @@
                         </el-descriptions>
                       </el-main>
 
-                      <el-aside width="200px" style="padding-top: 10px;">
+                      <!--文章首页图片-->
+                      <el-aside width="130px" style="padding-top: 10px;">
                         <el-image
                             style="width: 100px; height: 100px"
                             :src="article.coverImgUrl"
@@ -111,15 +115,26 @@
 
                     </el-container>
                   </el-main>
-                  <el-aside width="200px">热文,广告</el-aside>
+                  <el-aside>
+                    <div>
+                      <el-row class="article-hit-dev">
+                        <el-col>热帖 TOP</el-col>
+                        <el-divider/>
+                        <el-col v-for="hotItem in hotList">{{ hotItem.title }}</el-col>
+                      </el-row>
+                    </div>
+                    <div>广告</div>
+                    <div>赞赏</div>
+                  </el-aside>
                 </el-container>
               </el-container>
             </div>
           </el-main>
-
         </el-container>
       </el-container>
     </el-container>
+    <!--回到顶部-->
+    <el-backtop :bottom="100"></el-backtop>
   </div>
 
 </template>
@@ -127,6 +142,12 @@
 <script>
 export default {
   name: "Article",
+  methods:{
+    clickArticle(e){
+      console.log("点击", e)
+      location.href=article.id
+    },
+  },
   data() {
     return {
       userInput: "",
@@ -141,39 +162,6 @@ export default {
           starQuantity: 4,
           type: "任务",
           coverImgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          tagList: ["大数据", "python", "java", "java", "javaaaaaaa", "javavvvv"]
-        },
-        {
-          id: 2,
-          title: "关于管理办法",
-          content: "这是我的管理aaaaaaaaaa-ABDCDDIOWFJEIOJO",
-          author: "小松鼠哈哈哈哈",
-          readingQuantity: 34534899,
-          starQuantity: 394,
-          type: "系统公告",
-          coverImgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          tagList: ["大数据", "python", "java", "java", "javaaaaaaa", "javavvvv"]
-        },
-        {
-          id: 2,
-          title: "关于管理办法",
-          content: "这是我的管理aaaaaaaaaa-ABDCDDIOWFJEIOJO",
-          author: "小松鼠哈哈哈哈",
-          readingQuantity: 34534899,
-          starQuantity: 394,
-          type: "系统公告",
-          coverImgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          tagList: ["大数据", "python", "java", "java", "javaaaaaaa", "javavvvv"]
-        },
-        {
-          id: 2,
-          title: "关于管理办法",
-          content: "这是我的管理aaaaaaaaaa-ABDCDDIOWFJEIOJO",
-          author: "小松鼠哈哈哈哈",
-          readingQuantity: 34534899,
-          starQuantity: 394,
-          type: "系统公告",
-          coverImgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
           tagList: ["大数据", "python", "java", "java", "javaaaaaaa", "javavvvv"]
         },
         {
@@ -220,6 +208,17 @@ export default {
           "name": "顶部卡片2",
           "content": "Hello World"
         },
+      ],
+      hotList:[
+        {id:1, title:"发布会招呼"},
+        {id:1, title:"关于我的世界来着"},
+        {id:1, title:"python的代码任何写"},
+        {id:1, title:"哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈"},
+        {id:1, title:"java的代码任何写"},
+        {id:1, title:"java的代码任何写"},
+        {id:1, title:"java的代码任何写"},
+        {id:1, title:"java的代码任何写"},
+        {id:1, title:"java的代码任何写"},
       ]
     }
   },
@@ -247,19 +246,11 @@ export default {
   background-color: #E9EEF3;
   color: #333;
   text-align: center;
+  padding: 8px;
 }
 
 body > .el-container {
   margin-bottom: 40px;
-}
-
-.el-container:nth-child(5) .el-aside,
-.el-container:nth-child(6) .el-aside {
-  line-height: 260px;
-}
-
-.el-container:nth-child(7) .el-aside {
-  line-height: 320px;
 }
 
 .body {
@@ -267,12 +258,8 @@ body > .el-container {
 }
 
 .top-card {
-  padding: 10px 5px;
+  padding: 5px 3px;
   text-align: left;
-}
-
-.article-item {
-  /*background-color: #f0f8ff;*/
 }
 
 .article-icon {
@@ -288,16 +275,43 @@ body > .el-container {
   float: right;
 }
 
-.article-title{
+.article-title {
   font-weight: 600;
   margin-top: 10px;
   font-size: 15px;
   color: #252933;
 }
 
-.top-card-body{
+
+/*顶部卡片内边距*/
+.box-card > :first-child,
+.box-card > :nth-child(2) {
+  padding: 5px;
+}
+
+.articleList-div {
+  border-bottom: 1px solid rgba(228, 230, 235, 0.5);
+  background-color: #ffffff;
+}
+.article-item-parent{
   padding-top: 0;
   padding-bottom: 0;
+  background-color: #ffffff;
+}
+
+
+/*todo 鼠标悬停文章效果*/
+/*.articleList-div:hover {*/
+/*  cursor: pointer;*/
+/*  background: #eff0f1;*/
+/*}*/
+
+.article-hit-dev{
+  background-color: #ffffff;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  text-align: left;
 }
 
 </style>
