@@ -66,43 +66,50 @@
                 <el-container>
                   <el-main style="padding-top: 0;min-height: 610px;">
                     <!--文章内容+图片-->
-                    <el-container v-for="article in articleList" class="articleList-div" @click="clickArticle">
+                    <el-container v-for="article in articleList" class="articleList-div">
                       <!--文章主体内容-->
                       <el-main class="article-item-parent">
-                        <el-descriptions class="article-item" :column="1" :colon="false">
-                          <el-descriptions-item><span class="article-title">{{ article.title }}</span>
-                          </el-descriptions-item>
-                          <el-descriptions-item>{{ article.content }}</el-descriptions-item>
-                          <el-descriptions-item>
-                            <el-row :gutter="0" class="article-last-row">
-                              <el-col :span="6">
-                                <div class="grid-content bg-purple">
-                                  <el-tag>{{ article.type }}</el-tag>
-                                  | {{ article.author }}
-                                </div>
-                              </el-col>
+                        <div @click="clickArticle(article)">
+                          <el-descriptions class="article-item" :column="1" :colon="false">
+                            <el-descriptions-item><span class="article-title">{{ article.title }}</span>
+                            </el-descriptions-item>
+                            <el-descriptions-item>{{ article.content }}</el-descriptions-item>
+                            <el-descriptions-item>
+                              <el-row :gutter="0" class="article-last-row">
+                                <el-col :span="6">
+                                  <div class="grid-content bg-purple">
+                                    <el-tag effect="dark">{{ article.type }}</el-tag>
+                                    | {{ article.author }}
+                                  </div>
+                                </el-col>
 
-                              <el-col :span="4" class="article-icon">
-                                <div class="grid-content bg-purple">
-                                  <i class="el-icon-view"></i>
-                                  {{ article.readingQuantity }}
-                                  <i class="el-icon-star-on"></i>
-                                  {{ article.starQuantity }}
-                                </div>
-                              </el-col>
+                                <el-col :span="4" class="article-icon">
+                                  <div class="grid-content bg-purple">
+                                    <i class="el-icon-view"></i>
+                                    {{ article.readingQuantity }}
+                                    <i class="el-icon-star-on"></i>
+                                    {{ article.starQuantity }}
+                                  </div>
+                                </el-col>
 
-                              <el-col :span="14">
-                                <el-row :gutter="5" class="article-tag-div">
-                                  <el-col :span="3.5" v-for="tag in article.tagList">
-                                    <el-tag>{{ tag }}</el-tag>
-                                  </el-col>
-                                </el-row>
-                              </el-col>
+                                <el-col :span="14">
+                                  <el-row :gutter="5" class="article-tag-div">
+                                    <el-col :span="3.5" v-for="tag in article.tagList">
+                                      <el-tag ref="articleTag"
+                                              @mouseenter.native="articleTagMouseEntry"
+                                              @mouseout.native="articleTagMouseOut"
+                                              @click.stop=""
+                                              effect="plain">{{ tag }}
+                                      </el-tag>
+                                    </el-col>
+                                  </el-row>
+                                </el-col>
 
-                            </el-row>
+                              </el-row>
 
-                          </el-descriptions-item>
-                        </el-descriptions>
+                            </el-descriptions-item>
+                          </el-descriptions>
+                        </div>
                       </el-main>
 
                       <!--文章首页图片-->
@@ -142,11 +149,17 @@
 <script>
 export default {
   name: "Article",
-  methods:{
-    clickArticle(e){
-      console.log("点击", e)
-      location.href=article.id
+  methods: {
+    clickArticle(article) {
+      location.href = 'article/' + article.id
     },
+
+    articleTagMouseEntry(event) {
+      event.target.style.backgroundColor = '#ecf5ff';
+    },
+    articleTagMouseOut(event) {
+      event.target.style.removeProperty('background-color');
+    }
   },
   data() {
     return {
@@ -209,16 +222,16 @@ export default {
           "content": "Hello World"
         },
       ],
-      hotList:[
-        {id:1, title:"发布会招呼"},
-        {id:1, title:"关于我的世界来着"},
-        {id:1, title:"python的代码任何写"},
-        {id:1, title:"哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈"},
-        {id:1, title:"java的代码任何写"},
-        {id:1, title:"java的代码任何写"},
-        {id:1, title:"java的代码任何写"},
-        {id:1, title:"java的代码任何写"},
-        {id:1, title:"java的代码任何写"},
+      hotList: [
+        {id: 1, title: "发布会招呼"},
+        {id: 1, title: "关于我的世界来着"},
+        {id: 1, title: "python的代码任何写"},
+        {id: 1, title: "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈"},
+        {id: 1, title: "java的代码任何写"},
+        {id: 1, title: "java的代码任何写"},
+        {id: 1, title: "java的代码任何写"},
+        {id: 1, title: "java的代码任何写"},
+        {id: 1, title: "java的代码任何写"},
       ]
     }
   },
@@ -293,22 +306,24 @@ body > .el-container {
   border-bottom: 1px solid rgba(228, 230, 235, 0.5);
   background-color: #ffffff;
 }
-.article-item-parent{
+
+.article-item-parent {
   padding-top: 0;
   padding-bottom: 0;
   background-color: transparent;
 }
-.article-item > :first-child{
+
+.article-item > :first-child {
   background-color: transparent;
 }
 
 /*鼠标悬停文章效果*/
-.articleList-div:hover,.article-item-parent:hover,.article-item:hover {
+.articleList-div:hover, .article-item-parent:hover, .article-item:hover {
   cursor: pointer;
   background: #eff0f1;
 }
 
-.article-hit-dev{
+.article-hit-dev {
   background-color: #ffffff;
   margin-left: 10px;
   margin-right: 10px;
