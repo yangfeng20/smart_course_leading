@@ -18,25 +18,25 @@
 
       </el-header>
       <el-container>
-        <el-aside width="200px" class="type-aside">
-          <div>
-            <p>
-              <el-button icon="el-icon-discover" type="text">综合</el-button>
+        <el-aside width="150px" class="type-aside">
+          <div ref="articleTypeBtnGroup">
+            <p style="background-color: #ecf5ff">
+              <el-button icon="el-icon-discover" type="text" @click="selectArticleType(1)">综合</el-button>
             </p>
             <p>
-              <el-button icon="el-icon-chat-round" type="text">闲聊</el-button>
+              <el-button icon="el-icon-chat-round" type="text" @click="selectArticleType(2)">闲聊</el-button>
             </p>
             <p>
-              <el-button icon="el-icon-cpu" type="text">脚本</el-button>
+              <el-button icon="el-icon-cpu" type="text" @click="selectArticleType(3)">脚本</el-button>
             </p>
             <p>
-              <el-button icon="el-icon-collection" type="text">教程</el-button>
+              <el-button icon="el-icon-collection" type="text" @click="selectArticleType(4)">教程</el-button>
             </p>
             <p>
-              <el-button icon="el-icon-folder-checked" type="text">任务</el-button>
+              <el-button icon="el-icon-folder-checked" type="text" @click="selectArticleType(5)">任务</el-button>
             </p>
             <p>
-              <el-button icon="el-icon-date" type="text">系统公告</el-button>
+              <el-button icon="el-icon-date" type="text" @click="selectArticleType(6)">系统公告</el-button>
             </p>
           </div>
         </el-aside>
@@ -153,6 +153,17 @@ export default {
     clickArticle(article) {
       location.href = 'article/' + article.id
     },
+    selectArticleType(type){
+      let btnGroup = this.$refs.articleTypeBtnGroup;
+      for (let i = 0; i < btnGroup.childNodes.length; i++) {
+        if (i + 1 === type) {
+          btnGroup.childNodes[i].style.backgroundColor = '#ecf5ff'
+        } else {
+          btnGroup.childNodes[i].style.removeProperty('background-color');
+        }
+      }
+
+    },
 
     articleTagMouseEntry(event) {
       event.target.style.backgroundColor = '#ecf5ff';
@@ -165,6 +176,7 @@ export default {
     return {
       userInput: "",
       articleType: 1,
+      selectedArticleType: 1,
       articleList: [
         {
           id: 1,
