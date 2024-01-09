@@ -151,7 +151,7 @@ export default {
   name: "Article",
   methods: {
     clickArticle(article) {
-      location.href = 'article/' + article.id
+      location.href = 'article/detail/' + article.id
     },
     selectArticleType(type){
       let btnGroup = this.$refs.articleTypeBtnGroup;

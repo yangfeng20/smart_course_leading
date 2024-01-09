@@ -46,5 +46,9 @@ export default new vueRouter({
             path: "/article",
             component: () => import("../components/Article")
         },
+        {
+            path: "/article/detail/*",
+            component: () => import("../components/ArticleDetail")
+        },
     ]
 })
