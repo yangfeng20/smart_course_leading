@@ -23,14 +23,14 @@
         </el-menu-item>
 
 
-        <el-menu-item index="script_list">
+        <el-menu-item index="/script_list">
           <span class="menu-text">
           <i class="el-icon-s-goods"></i>
           脚本列表</span>
         </el-menu-item>
 
 
-        <el-menu-item index="script_custom">
+        <el-menu-item index="/script_custom">
           <span class="menu-text">
           <i class="el-icon-s-marketing"></i>
           脚本定制
@@ -38,14 +38,14 @@
         </el-menu-item>
 
 
-        <el-menu-item index="ai_chat">
+        <el-menu-item index="/ai_chat">
           <span class="menu-text">
           <i class="el-icon-chat-line-square"></i>
           AI会话
           </span>
         </el-menu-item>
 
-        <el-menu-item index="article">
+        <el-menu-item index="/article">
           <span class="menu-text">
           <i class="el-icon-document-copy"></i>
           交流广场
@@ -53,7 +53,7 @@
         </el-menu-item>
 
 
-        <el-menu-item index="about_author">
+        <el-menu-item index="/about_author">
           <span class="menu-text">
           <i class="el-icon-user"></i>
           关于作者
@@ -61,7 +61,7 @@
         </el-menu-item>
 
 
-        <el-menu-item index="feedback">
+        <el-menu-item index="/feedback">
           <span class="menu-text">
           <i class="el-icon-edit-outline"></i>
           留言反馈
