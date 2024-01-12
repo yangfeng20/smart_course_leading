@@ -1,20 +1,36 @@
 <template>
   <div class="body">
     <el-container>
-      <el-header>Header</el-header>
-      <el-container>
-        <el-aside width="200px">Aside</el-aside>
-        <el-main>
-          <mavon-editor
-              :subfield="false"
-              :toolbarsFlag="false"
-              defaultOpen="preview"
-              :navigation="true"
-              @navigationToggle="addUrl"
-              style="max-height: 10000px"
-              v-model="article.content"></mavon-editor>
-        </el-main>
-      </el-container>
+      <el-aside width="200px" class="catalogue">
+        <div>
+          <div><span style="font-size:18px;padding-left:5px;padding-top: 10px;">目录</span></div>
+          <el-divider></el-divider>
+          <div v-for="item in catalogue">
+            <el-link :underline="false" type="primary" @click="slide(item.href)">{{ item.name }}</el-link>
+          </div>
+        </div>
+        <div></div>
+      </el-aside>
+      <el-main class="article-aside-main">
+        <el-container>
+          <el-main class="one-article-main">
+            <el-container>
+              <el-header class="article-top"><h1>{{ article.title }}</h1></el-header>
+              <mavon-editor
+                  :subfield="false"
+                  :toolbarsFlag="false"
+                  defaultOpen="preview"
+                  :navigation="true"
+                  :boxShadow="false"
+                  previewBackground="#fff"
+                  style="max-height: 10000px"
+                  v-model="article.content"></mavon-editor>
+              <el-footer>Footer</el-footer>
+            </el-container>
+          </el-main>
+          <el-aside width="260px" class="aside-right">Aside</el-aside>
+        </el-container>
+      </el-main>
     </el-container>
   </div>
 </template>
@@ -31,36 +47,55 @@ export default {
   },
   data() {
     return {
+      catalogue: [],
       article: {
-        content: "# 文章标题\n## 标题1\n### 标题1-1 \n" +
+        content: "\n## 标题1\n### 标题1-1 \n" +
             "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
             "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
             "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
-            "\n## 标题2 \n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n我的内容"
+            "\n## 标题2 \n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n我的内容",
+        title: "关于Java"
       }
     }
   },
 
-  methods: {
-    test(status, val) {
-      console.log(status, val)
-    },
-    addUrl() {
-      console.log("aaaa")
-      this.$nextTick(function () {
-        let _aList = document.querySelectorAll(".v-note-navigation-content a");
-        for (let i = 0; i < _aList.length; i++) {
-          let _aParent = _aList[i].parentNode;
-          let _a = _aParent.firstChild;
-          if (!_a.id) continue; // 把不属于导航中的a标签去掉，否则会报错
-          let _text = _aParent.lastChild;
-          let text = _text.textContent;
-          _a.href = "#" + _a.id;
-          _a.innerText = text;
-          _aParent.removeChild(_text);
-          // _a.style.color = "red";
+  mounted() {
+    this.$nextTick(() => {
+      let originalCatalogue = document.querySelector(".v-note-navigation-wrapper.transition");
+      originalCatalogue.style = 'display: none;';
+
+      let titleList = document.querySelectorAll(".v-note-navigation-wrapper.transition a");
+      let catalogue = []
+      titleList.forEach(item => {
+        if (item.id) {
+          catalogue.push({
+            href: item.id,
+            name: item.parentElement.innerText
+          })
         }
-      });
+      })
+
+      this.catalogue = catalogue
+    })
+  },
+  methods: {
+    slide(id) {
+      // 获取指定元素
+      let element = document.getElementById(id);
+
+      if (element) {
+        // 获取元素的位置信息
+        let position = element.getBoundingClientRect();
+
+        // 调整位置信息的top属性，减去80个像素
+        let newPositionTop = position.top + window.scrollY - 120.8;
+
+        // 使用原生JavaScript的scrollTo方法实现页面滚动效果
+        window.scrollTo({
+          top: newPositionTop,
+          behavior: 'smooth'  // 添加平滑滚动效果
+        });
+      }
     },
 
     isIntegerString(str) {
@@ -85,17 +120,17 @@ export default {
       return;
     }
 
-    // this.$axios.post('/article' + articleId).then(resp => {
-    //   let article = resp.data.data
-    //   if (article) {
-    //     this.article = article;
-    //   }
-    //   ElementUI.Message.warning("文章不存在，正在跳转列表")
-    //   setTimeout(() => {
-    //     this.$router.push("/article")
-    //   }, 2000)
-    // }).catch(_ => {
-    // })
+    this.$axios.post('/article' + articleId).then(resp => {
+      let article = resp.data.data
+      if (article) {
+        this.article = article;
+      }
+      ElementUI.Message.warning("文章不存在，正在跳转列表")
+      setTimeout(() => {
+        this.$router.push("/article")
+      }, 2000)
+    }).catch(_ => {
+    })
   },
 }
 </script>
@@ -103,10 +138,42 @@ export default {
 <style scoped>
 .body {
   position: relative;
+  background-color: #f2f3f5;
 }
 
+.el-card__body, .el-main {
+  padding: 0;
+}
 
-.v-note-navigation-wrapper.transition{
-  display: none;
+.article-top {
+  background-color: #ffffff;
+}
+
+.catalogue {
+  background-color: #ffffff;
+  margin-top: 40px;
+}
+
+.el-link{
+  line-height: 22px;
+  display: inline-block;
+  padding: 0 20px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.article-aside-main{
+  padding-top: 40px;
+  padding-left: 20px;
+  padding-right: 40px;
+}
+
+.one-article-main{
+  padding-right: 20px;
+}
+
+.aside-right{
+  background-color: #ffffff;
 }
 </style>
