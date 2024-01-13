@@ -2,12 +2,24 @@
   <div class="body">
     <el-container>
       <el-aside width="200px" class="catalogue">
-        <div>
+        <div style="border-bottom: 1px solid rgba(228, 230, 235, 0.5);">
           <div><span style="font-size:18px;padding-left:5px;padding-top: 10px;">目录</span></div>
           <el-divider></el-divider>
           <div v-for="item in catalogue">
             <el-link :underline="false" type="primary" @click="slide(item.href)">{{ item.name }}</el-link>
           </div>
+        </div>
+
+        <!--点赞，评论，收藏-->
+        <div style="border-bottom: 1px solid rgba(228, 230, 235, 0.5);padding: 20px">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <div class="grid-content bg-purple icon"><i class="el-icon-star-off"></i></div>
+            </el-col>
+            <el-col :span="12">
+              <div class="grid-content bg-purple icon"><i class="el-icon-s-comment"></i></div>
+            </el-col>
+          </el-row>
         </div>
         <div></div>
       </el-aside>
@@ -15,7 +27,15 @@
         <el-container>
           <el-main class="one-article-main">
             <el-container>
-              <el-header class="article-top"><h1>{{ article.title }}</h1></el-header>
+              <el-header class="article-top">
+                <div>
+                  <el-descriptions class="article-item" :column="1" :colon="false">
+                    <el-descriptions-item><h1>{{ article.title }}</h1></el-descriptions-item>
+                    <el-descriptions-item><h1>{{ article.type }}</h1></el-descriptions-item>
+
+                  </el-descriptions>
+                </div>
+              </el-header>
               <mavon-editor
                   :subfield="false"
                   :toolbarsFlag="false"
@@ -54,8 +74,15 @@ export default {
             "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
             "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
             "\n## 标题2 \n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n我的内容",
-        title: "关于Java"
+        title: "关于Java",
+        author: "作者",
+        readingQuantity: 120,
+        starQuantity: 4,
+        type: "任务",
+        coverImgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+        tagList: ["大数据", "python", "java", "java", "javaaaaaaa", "javavvvv"]
       }
+
     }
   },
 
@@ -154,7 +181,7 @@ export default {
   margin-top: 40px;
 }
 
-.el-link{
+.el-link {
   line-height: 22px;
   display: inline-block;
   padding: 0 20px 8px;
@@ -163,17 +190,21 @@ export default {
   text-overflow: ellipsis;
 }
 
-.article-aside-main{
+.article-aside-main {
   padding-top: 40px;
   padding-left: 20px;
   padding-right: 40px;
 }
 
-.one-article-main{
+.one-article-main {
   padding-right: 20px;
 }
 
-.aside-right{
+.aside-right {
   background-color: #ffffff;
+}
+
+.grid-content.bg-purple.icon {
+  font-size: 2em;
 }
 </style>
