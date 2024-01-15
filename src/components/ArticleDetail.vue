@@ -29,13 +29,40 @@
             <el-container>
               <el-header class="article-top">
                 <div>
-                  <el-descriptions class="article-item" :column="1" :colon="false">
-                    <el-descriptions-item><h1>{{ article.title }}</h1></el-descriptions-item>
-                    <el-descriptions-item><h1>{{ article.type }}</h1></el-descriptions-item>
-
-                  </el-descriptions>
+                  <h1>{{ article.title }}</h1>
                 </div>
               </el-header>
+              <el-row :gutter="0" class="article-last-row">
+                <el-col :span="6">
+                  <div class="grid-content bg-purple">
+                    <el-tag effect="dark">{{ article.type }}</el-tag>
+                    | {{ article.author }}
+                  </div>
+                </el-col>
+
+                <el-col :span="4" class="article-icon">
+                  <div class="grid-content bg-purple">
+                    <i class="el-icon-view"></i>
+                    {{ article.readingQuantity }}
+                    <i class="el-icon-star-on"></i>
+                    {{ article.starQuantity }}
+                  </div>
+                </el-col>
+
+                <el-col :span="14">
+                  <el-row :gutter="5" class="article-tag-div">
+                    <el-col :span="3.5" v-for="tag in article.tagList">
+                      <el-tag ref="articleTag"
+                              @mouseenter.native="articleTagMouseEntry"
+                              @mouseout.native="articleTagMouseOut"
+                              @click.stop=""
+                              effect="plain">{{ tag }}
+                      </el-tag>
+                    </el-col>
+                  </el-row>
+                </el-col>
+
+              </el-row>
               <mavon-editor
                   :subfield="false"
                   :toolbarsFlag="false"
@@ -45,7 +72,19 @@
                   previewBackground="#fff"
                   style="max-height: 10000px"
                   v-model="article.content"></mavon-editor>
-              <el-footer>Footer</el-footer>
+              <el-footer>
+                <div class="footer-body">
+                  <div v-for="message in messageList">
+                    <el-row>
+                      <el-col :span="2">
+                        <el-image class="message-created-icon"
+                            :src="message.createdUser.imgUrl"></el-image>
+                      </el-col>
+                      <el-col :span="4" class="message-created-name">{{message.createdUser.name}}</el-col>
+                    </el-row>
+                  </div>
+                </div>
+              </el-footer>
             </el-container>
           </el-main>
           <el-aside width="260px" class="aside-right">Aside</el-aside>
@@ -81,8 +120,27 @@ export default {
         type: "任务",
         coverImgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
         tagList: ["大数据", "python", "java", "java", "javaaaaaaa", "javavvvv"]
-      }
-
+      },
+      messageList: [
+        {
+          id: 1,
+          msgContent: "哈哈哈，我是评论",
+          createdUser: {
+            name: "小王",
+            imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+          },
+          subMessageList: [
+            {
+              id: 2,
+              msgContent: "我是子评论",
+              createdUser: {
+                name: "小李",
+                imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+              },
+            },
+          ]
+        }
+      ]
     }
   },
 
@@ -206,5 +264,25 @@ export default {
 
 .grid-content.bg-purple.icon {
   font-size: 2em;
+}
+
+.article-last-row {
+  background-color: #ffffff;
+  padding-left: 20px;
+}
+
+.footer-body{
+  margin: 40px 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+
+.message-created-icon{
+  width: 40px; height: 40px;border-radius: 50%;
+}
+
+.message-created-name{
+  top: 10px;
+  position: relative;
 }
 </style>
