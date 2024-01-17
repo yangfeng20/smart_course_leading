@@ -1,6 +1,6 @@
 <template>
   <div class="body">
-    <el-container>
+    <el-container style="height: 100%">
       <el-aside width="200px" class="catalogue">
         <div style="border-bottom: 1px solid rgba(228, 230, 235, 0.5);">
           <div><span style="font-size:18px;padding-left:5px;padding-top: 10px;">目录</span></div>
@@ -74,15 +74,7 @@
                   v-model="article.content"></mavon-editor>
               <el-footer>
                 <div class="footer-body">
-                  <div v-for="message in messageList">
-                    <el-row>
-                      <el-col :span="2">
-                        <el-image class="message-created-icon"
-                            :src="message.createdUser.imgUrl"></el-image>
-                      </el-col>
-                      <el-col :span="4" class="message-created-name">{{message.createdUser.name}}</el-col>
-                    </el-row>
-                  </div>
+                  <Remark :message-list="messageList"></Remark>
                 </div>
               </el-footer>
             </el-container>
@@ -97,12 +89,14 @@
 <script>
 import ElementUI from 'element-ui'
 import {mavonEditor} from 'mavon-editor';
+import Remark from "../components/Remark";
 import 'mavon-editor/dist/css/index.css';
 
 export default {
   name: "ArticleDetail",
   components: {
-    mavonEditor
+    mavonEditor,
+    Remark
   },
   data() {
     return {
@@ -252,10 +246,12 @@ export default {
   padding-top: 40px;
   padding-left: 20px;
   padding-right: 40px;
+  overflow: visible;
 }
 
 .one-article-main {
   padding-right: 20px;
+  overflow: visible;
 }
 
 .aside-right {
@@ -277,12 +273,7 @@ export default {
   background-color: #ffffff;
 }
 
-.message-created-icon{
-  width: 40px; height: 40px;border-radius: 50%;
-}
-
-.message-created-name{
-  top: 10px;
-  position: relative;
+.el-footer{
+  padding: 0;
 }
 </style>
