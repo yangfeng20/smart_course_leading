@@ -26,7 +26,8 @@
         </el-row>
         <el-row>
           <el-col :span="2"></el-col>
-          <el-col style="padding-left: 50px" :span="22" class="message-created-name">{{ message.msgContent }}</el-col>
+          <el-col style="padding-left: 50px" :span="22" class="message-created-name"
+                  v-html="message.msgContent"></el-col>
         </el-row>
       </div>
 

@@ -125,7 +125,7 @@
                   <el-aside>
                     <HotArticleList></HotArticleList>
                     <Sponsor></Sponsor>
-                    <div>广告</div>
+                    <SiteManager></SiteManager>
                   </el-aside>
                 </el-container>
               </el-container>
@@ -143,10 +143,13 @@
 <script>
 import HotArticleList from "../components/HotArticleList";
 import Sponsor from "../components/Sponsor";
+import SiteManager from "../components/SiteManager";
+
 export default {
   components:{
     HotArticleList,
-    Sponsor
+    Sponsor,
+    SiteManager
   },
   name: "Article",
   methods: {

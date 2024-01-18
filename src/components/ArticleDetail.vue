@@ -1,29 +1,32 @@
 <template>
   <div class="body">
     <el-container style="height: 100%">
-
       <el-aside width="200px" class="catalogue" style="position: fixed;">
-
 
         <!--点赞，评论，收藏-->
         <div style="border-bottom: 1px solid rgba(228, 230, 235, 0.5);padding: 10px 10px">
-          <el-row :gutter="20">
-            <el-col :span="8">
+          <el-row :gutter="8">
+            <el-col :span="6">
+              <div class="grid-content bg-purple icon">
+                <i @click="windowWith.history.back()" class="el-icon-back opt-icon"></i>
+              </div>
+            </el-col>
+            <el-col :span="6">
               <div class="grid-content bg-purple icon">
                 <i @click="shareArticle" class="el-icon-share opt-icon"></i>
               </div>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="6">
               <div class="grid-content bg-purple icon"  @click="starArticle">
-                <el-badge :value="article.starQuantity" :max="99" class="item">
+                <el-badge :value="article.starQuantity" :max="99" class="item" type="primary">
                   <i v-if="stared" class="el-icon-star-on opt-icon"></i>
                   <i v-if="!stared" class="el-icon-star-off opt-icon"></i>
                 </el-badge>
               </div>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="6">
               <div class="grid-content bg-purple icon">
-                <el-badge :value="messageTotal" :max="99" class="item">
+                <el-badge :value="messageTotal" :max="99" class="item" type="warning">
                   <i @click="slide('commentList')" class="el-icon-s-comment opt-icon"></i>
                 </el-badge>
               </div>
@@ -94,7 +97,7 @@
               </el-footer>
             </el-container>
           </el-main>
-          <el-aside width="260px" class="aside-right">
+          <el-aside width="280px" class="aside-right">
             <div style="height: 200px">
               <UserInfoCard :user-info="authorUserInfo"></UserInfoCard>
             </div>
@@ -116,6 +119,10 @@
               <Sponsor></Sponsor>
             </div>
 
+            <div style="margin-top: 40px">
+              <SiteManager></SiteManager>
+            </div>
+
           </el-aside>
         </el-container>
       </el-main>
@@ -132,6 +139,7 @@ import UserInfoCard from "../components/UserInfoCard";
 import 'mavon-editor/dist/css/index.css';
 import HotArticleList from "../components/HotArticleList";
 import Sponsor from "../components/Sponsor";
+import SiteManager from "../components/SiteManager";
 
 export default {
   name: "ArticleDetail",
@@ -140,7 +148,8 @@ export default {
     Remark,
     UserInfoCard,
     HotArticleList,
-    Sponsor
+    Sponsor,
+    SiteManager
   },
   data() {
     return {
@@ -183,7 +192,7 @@ export default {
           subMessageList: [
             {
               id: 2,
-              msgContent: "我是子评论",
+              msgContent: "我是子评论<br>fafjeiw\nfafjeiw\n哈哈哈哈",
               createdUser: {
                 name: "小李",
                 imgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
@@ -317,6 +326,11 @@ export default {
       const isInteger = !isNaN(Number(str));
 
       return isNumberString && startsWithNumber && isInteger;
+    }
+  },
+  computed:{
+    windowWith(){
+      return window;
     }
   },
   created() {
