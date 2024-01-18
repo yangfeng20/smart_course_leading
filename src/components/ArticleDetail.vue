@@ -1,28 +1,45 @@
 <template>
   <div class="body">
     <el-container style="height: 100%">
-      <el-aside width="200px" class="catalogue">
-        <div style="border-bottom: 1px solid rgba(228, 230, 235, 0.5);">
+
+      <el-aside width="200px" class="catalogue" style="position: fixed;">
+
+
+        <!--点赞，评论，收藏-->
+        <div style="border-bottom: 1px solid rgba(228, 230, 235, 0.5);padding: 10px 10px">
+          <el-row :gutter="20">
+            <el-col :span="8">
+              <div class="grid-content bg-purple icon">
+                <i @click="shareArticle" class="el-icon-share opt-icon"></i>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div class="grid-content bg-purple icon"  @click="starArticle">
+                <el-badge :value="article.starQuantity" :max="99" class="item">
+                  <i v-if="stared" class="el-icon-star-on opt-icon"></i>
+                  <i v-if="!stared" class="el-icon-star-off opt-icon"></i>
+                </el-badge>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div class="grid-content bg-purple icon">
+                <el-badge :value="messageTotal" :max="99" class="item">
+                  <i @click="slide('commentList')" class="el-icon-s-comment opt-icon"></i>
+                </el-badge>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+
+        <div style="border-bottom: 1px solid rgba(228, 230, 235, 0.5);min-height: 900px">
           <div><span style="font-size:18px;padding-left:5px;padding-top: 10px;">目录</span></div>
-          <el-divider></el-divider>
+          <div style="height: 20px"></div>
           <div v-for="item in catalogue">
             <el-link :underline="false" type="primary" @click="slide(item.href)">{{ item.name }}</el-link>
           </div>
         </div>
-
-        <!--点赞，评论，收藏-->
-        <div style="border-bottom: 1px solid rgba(228, 230, 235, 0.5);padding: 20px">
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <div class="grid-content bg-purple icon"><i class="el-icon-star-off"></i></div>
-            </el-col>
-            <el-col :span="12">
-              <div class="grid-content bg-purple icon"><i class="el-icon-s-comment"></i></div>
-            </el-col>
-          </el-row>
-        </div>
-        <div></div>
       </el-aside>
+
       <el-main class="article-aside-main">
         <el-container>
           <el-main class="one-article-main">
@@ -53,8 +70,6 @@
                   <el-row :gutter="5" class="article-tag-div">
                     <el-col :span="3.5" v-for="tag in article.tagList">
                       <el-tag ref="articleTag"
-                              @mouseenter.native="articleTagMouseEntry"
-                              @mouseout.native="articleTagMouseOut"
                               @click.stop=""
                               effect="plain">{{ tag }}
                       </el-tag>
@@ -72,17 +87,22 @@
                   previewBackground="#fff"
                   style="max-height: 10000px"
                   v-model="article.content"></mavon-editor>
-              <el-footer>
-                <div class="footer-body">
-                  <Remark :message-list="messageList"></Remark>
+              <el-footer style="height: 100%">
+                <div class="footer-body" id="commentList">
+                  <Remark :message-list="messageList" :show-create-comment="true"></Remark>
                 </div>
               </el-footer>
             </el-container>
           </el-main>
-          <el-aside width="260px" class="aside-right">Aside</el-aside>
+          <el-aside width="260px" class="aside-right">
+            <div style="height: 200px">
+              <UserInfoCard :user-info="authorUserInfo"></UserInfoCard>
+            </div>
+          </el-aside>
         </el-container>
       </el-main>
     </el-container>
+    <el-backtop style="right: 1px"></el-backtop>
   </div>
 </template>
 
@@ -90,23 +110,37 @@
 import ElementUI from 'element-ui'
 import {mavonEditor} from 'mavon-editor';
 import Remark from "../components/Remark";
+import UserInfoCard from "../components/UserInfoCard";
 import 'mavon-editor/dist/css/index.css';
 
 export default {
   name: "ArticleDetail",
   components: {
     mavonEditor,
-    Remark
+    Remark,
+    UserInfoCard
   },
   data() {
     return {
+      authorUserInfo:{
+        userId: 35,
+        name: "test_8fb",
+        imgUrl: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
+        briefInfo: "我是简介,hahahahhf我发较为覅偶尔哦",
+        articleCount: 93,
+        starArticleCount: 48
+      },
+      stared: false,
+      messageTotal: 12,
       catalogue: [],
       article: {
-        content: "\n## 标题1\n### 标题1-1 \n" +
+        content: "\n## 标题1\n我的内容\n我的内容\n我的内容\n\n我的内容\n我的内容\n我的内容\n我的内容我的内容\n我的内容\n### 标题1-1 \n" +
             "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
-            "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
-            "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
-            "\n## 标题2 \n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n## 后续标题\n我的内容",
+            "哈哈哈哈\n我的内容\n我的内容哈哈哈哈哈哈哈哈哈哈\n我的内容\n我的内容\n我的内容哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
+            "哈哈哈哈哈哈哈哈哈哈哈哈哈哈\n我的内容\n我的内容哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
+            "\n## 标题2 \n我的内容\n我的内容\n我的内容\n我的内容\n我的内容\n## 后续标题\n我的内容\n我的内容\n我的内容" +
+            "\n## 后续标题\n## 后续标题\n我的内容\n我的内容\n我的内容\n我的内容\n我的内容\n## 后续标题\n## 后续标题" +
+            "\n我的内容\n我的内容\n我的内容\n我的内容\n我的内容\n我的内容\n## 后续标题\n我的内容",
         title: "关于Java",
         author: "作者",
         readingQuantity: 120,
@@ -119,6 +153,7 @@ export default {
         {
           id: 1,
           msgContent: "哈哈哈，我是评论",
+          createdDate: "2023-10-23",
           createdUser: {
             name: "小王",
             imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
@@ -129,11 +164,46 @@ export default {
               msgContent: "我是子评论",
               createdUser: {
                 name: "小李",
-                imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+                imgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
               },
             },
+            {
+              id: 2,
+              msgContent: "我是子评论",
+              createdUser: {
+                name: "小李",
+                imgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
+              },
+              subMessageList: [
+                {
+                  id: 2,
+                  msgContent: "我是子评论",
+                  createdUser: {
+                    name: "小李",
+                    imgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
+                  },
+                },
+              ]
+            },
           ]
-        }
+        },
+        {
+          id: 4,
+          msgContent: "就是措施，我是评论",
+          createdDate: "2023-10-23",
+          createdUser: {
+            name: "丽丽",
+            imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+          },
+        },
+        {
+          id: 2,
+          msgContent: "我是子评论",
+          createdUser: {
+            name: "小李",
+            imgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
+          },
+        },
       ]
     }
   },
@@ -158,6 +228,43 @@ export default {
     })
   },
   methods: {
+    starArticle() {
+      this.stared = !this.stared
+      if (this.stared) {
+        this.$notify({
+          title: '收藏文章失败',
+          message: '已经收藏过文章了哟',
+          type: 'warning'
+        });
+      } else {
+        this.$notify({
+          title: '收藏文章',
+          message: '文章已经放进你的收藏夹了哟',
+          type: 'success'
+        })
+      }
+    },
+    shareArticle() {
+      this.copyToClipboard(location.href)
+      this.$notify({
+        title: '链接复制成功',
+        message: '文章链接已复制到剪辑版，快去分享吧！',
+        type: 'success'
+      });
+    },
+    copyToClipboard(content) {
+      // 创建一个临时的textarea元素
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      document.body.appendChild(textarea);
+
+      // 选择并复制文本
+      textarea.select();
+      document.execCommand('copy');
+
+      // 移除临时元素
+      document.body.removeChild(textarea);
+    },
     slide(id) {
       // 获取指定元素
       let element = document.getElementById(id);
@@ -167,7 +274,7 @@ export default {
         let position = element.getBoundingClientRect();
 
         // 调整位置信息的top属性，减去80个像素
-        let newPositionTop = position.top + window.scrollY - 120.8;
+        let newPositionTop = position.top + window.scrollY - 100;
 
         // 使用原生JavaScript的scrollTo方法实现页面滚动效果
         window.scrollTo({
@@ -244,7 +351,7 @@ export default {
 
 .article-aside-main {
   padding-top: 40px;
-  padding-left: 20px;
+  padding-left: 220px;
   padding-right: 40px;
   overflow: visible;
 }
@@ -256,10 +363,11 @@ export default {
 
 .aside-right {
   background-color: #ffffff;
+  padding: 10px;
 }
 
 .grid-content.bg-purple.icon {
-  font-size: 2em;
+  font-size: 1.5em;
 }
 
 .article-last-row {
@@ -267,13 +375,30 @@ export default {
   padding-left: 20px;
 }
 
-.footer-body{
-  margin: 40px 0;
+.footer-body {
+  /*margin: 40px 0;*/
+  margin: 40px 0 0 0;
   padding: 0;
   background-color: #ffffff;
 }
 
-.el-footer{
+.el-footer {
   padding: 0;
+}
+
+.opt-icon {
+  border-radius: 50%;
+  background-color: #f2f3f5;
+  padding: 5px;
+}
+
+/*鼠标悬停文章效果*/
+.opt-icon:hover {
+  cursor: pointer;
+}
+
+.item > :nth-child(2) {
+  top: 5px;
+  right: 12px;
 }
 </style>
