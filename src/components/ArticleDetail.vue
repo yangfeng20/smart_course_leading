@@ -98,6 +98,16 @@
             <div style="height: 200px">
               <UserInfoCard :user-info="authorUserInfo"></UserInfoCard>
             </div>
+            <div v-if="article.type === '任务'">
+              <el-card shadow="hover">
+                <el-steps direction="vertical" :space="100" :active="2" finish-status="success">
+                  <el-step title="申请" icon="el-icon-collection-tag"></el-step>
+                  <el-step title="提交" icon="el-icon-edit-outline"></el-step>
+                  <el-step title="审核" icon="el-icon-monitor"></el-step>
+                  <el-step title="完成" icon="el-icon-folder-checked"></el-step>
+                </el-steps>
+              </el-card>
+            </div>
           </el-aside>
         </el-container>
       </el-main>
