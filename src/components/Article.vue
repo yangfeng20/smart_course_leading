@@ -64,7 +64,7 @@
                   </div>
                 </el-header>
                 <el-container>
-                  <el-main style="padding-top: 0;min-height: 610px;">
+                  <el-main style="padding-top: 0;min-height: 610px;text-align: center;">
                     <!--文章内容+图片-->
                     <el-container v-for="article in articleList" class="articleList-div">
                       <!--文章主体内容-->
@@ -123,13 +123,7 @@
                     </el-container>
                   </el-main>
                   <el-aside>
-                    <div>
-                      <el-row class="article-hit-dev">
-                        <el-col>热帖 TOP</el-col>
-                        <el-divider/>
-                        <el-col v-for="hotItem in hotList">{{ hotItem.title }}</el-col>
-                      </el-row>
-                    </div>
+                    <HotArticleList></HotArticleList>
                     <div>广告</div>
                     <div>赞赏</div>
                   </el-aside>
@@ -147,7 +141,11 @@
 </template>
 
 <script>
+import HotArticleList from "../components/HotArticleList";
 export default {
+  components:{
+    HotArticleList
+  },
   name: "Article",
   methods: {
     clickArticle(article) {
@@ -270,7 +268,6 @@ export default {
 .el-main {
   background-color: #E9EEF3;
   color: #333;
-  text-align: center;
   padding: 8px;
 }
 

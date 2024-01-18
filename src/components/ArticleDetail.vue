@@ -108,6 +108,9 @@
                 </el-steps>
               </el-card>
             </div>
+            <div style="margin-top: 40px">
+              <HotArticleList></HotArticleList>
+            </div>
           </el-aside>
         </el-container>
       </el-main>
@@ -122,13 +125,15 @@ import {mavonEditor} from 'mavon-editor';
 import Remark from "../components/Remark";
 import UserInfoCard from "../components/UserInfoCard";
 import 'mavon-editor/dist/css/index.css';
+import HotArticleList from "../components/HotArticleList";
 
 export default {
   name: "ArticleDetail",
   components: {
     mavonEditor,
     Remark,
-    UserInfoCard
+    UserInfoCard,
+    HotArticleList
   },
   data() {
     return {
