@@ -124,8 +124,8 @@
                   </el-main>
                   <el-aside>
                     <HotArticleList></HotArticleList>
+                    <Sponsor></Sponsor>
                     <div>广告</div>
-                    <div>赞赏</div>
                   </el-aside>
                 </el-container>
               </el-container>
@@ -142,9 +142,11 @@
 
 <script>
 import HotArticleList from "../components/HotArticleList";
+import Sponsor from "../components/Sponsor";
 export default {
   components:{
-    HotArticleList
+    HotArticleList,
+    Sponsor
   },
   name: "Article",
   methods: {

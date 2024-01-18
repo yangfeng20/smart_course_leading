@@ -20,7 +20,7 @@
         <div class="block">
           <el-image :src="require('../assets/image/wx.jpg')"
                     style="width: 18%;padding-left: 16%;padding-top:350px;padding-right: 10%"></el-image>
-          <el-image :src="require('../assets/image/zfb.jpg')"
+          <el-image :src="require('../assets/image/zfb1.jpg')"
                     style="width: 18%;padding-left: 16%;padding-top:350px;padding-right: 10%"></el-image>
         </div>
       </div>

@@ -111,6 +111,11 @@
             <div style="margin-top: 40px">
               <HotArticleList></HotArticleList>
             </div>
+
+            <div style="margin-top: 40px">
+              <Sponsor></Sponsor>
+            </div>
+
           </el-aside>
         </el-container>
       </el-main>
@@ -126,6 +131,7 @@ import Remark from "../components/Remark";
 import UserInfoCard from "../components/UserInfoCard";
 import 'mavon-editor/dist/css/index.css';
 import HotArticleList from "../components/HotArticleList";
+import Sponsor from "../components/Sponsor";
 
 export default {
   name: "ArticleDetail",
@@ -133,7 +139,8 @@ export default {
     mavonEditor,
     Remark,
     UserInfoCard,
-    HotArticleList
+    HotArticleList,
+    Sponsor
   },
   data() {
     return {
