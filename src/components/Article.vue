@@ -42,25 +42,29 @@
         </el-aside>
         <el-container>
 
-          <!--todo 底部到底，内部内容和侧边-->
           <el-main style="padding: 0">
             <div class="content-div">
               <el-container>
                 <el-header>
-                  <div style="margin-top: 5px;width: 77%">
-                    <el-input placeholder="请输入内容" v-model="userInput" class="input-with-select" clearable>
-                      <el-select v-model="articleType" slot="prepend" placeholder="请选择">
-                        <i class="el-icon-discover">
-                          <el-option label="综合" value="1"></el-option>
-                        </i>
-                        <el-option label="闲聊" value="2"></el-option>
-                        <el-option label="脚本" value="3"></el-option>
-                        <el-option label="教程" value="4"></el-option>
-                        <el-option label="任务" value="5"></el-option>
-                        <el-option label="系统公告" value="6"></el-option>
-                      </el-select>
-                      <el-button type="primary" slot="append" icon="el-icon-search"></el-button>
-                    </el-input>
+                  <div style="display: flex">
+                    <div style="margin-top: 5px;width: 78%">
+                      <el-input placeholder="请输入内容" v-model="userInput" class="input-with-select" clearable>
+                        <el-select v-model="articleType" slot="prepend" placeholder="请选择">
+                          <i class="el-icon-discover">
+                            <el-option label="综合" value="1"></el-option>
+                          </i>
+                          <el-option label="闲聊" value="2"></el-option>
+                          <el-option label="脚本" value="3"></el-option>
+                          <el-option label="教程" value="4"></el-option>
+                          <el-option label="任务" value="5"></el-option>
+                          <el-option label="系统公告" value="6"></el-option>
+                        </el-select>
+                        <el-button type="primary" slot="append" icon="el-icon-search"></el-button>
+                      </el-input>
+                    </div>
+                    <div style="margin-top: 5px;margin-left: 5px">
+                      <el-button @click="newArticle(null)" type="primary" icon="el-icon-edit">写文章</el-button>
+                    </div>
                   </div>
                 </el-header>
                 <el-container>
@@ -146,17 +150,24 @@ import Sponsor from "../components/Sponsor";
 import SiteManager from "../components/SiteManager";
 
 export default {
-  components:{
+  components: {
     HotArticleList,
     Sponsor,
     SiteManager
   },
   name: "Article",
   methods: {
+    newArticle(articleId) {
+      if (articleId) {
+        this.$router.push('article/edit/' + articleId)
+      } else {
+        this.$router.push('article/edit/')
+      }
+    },
     clickArticle(article) {
       this.$router.push('article/detail/' + article.id)
     },
-    selectArticleType(type){
+    selectArticleType(type) {
       let btnGroup = this.$refs.articleTypeBtnGroup;
       for (let i = 0; i < btnGroup.childNodes.length; i++) {
         if (i + 1 === type) {

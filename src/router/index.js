@@ -50,5 +50,9 @@ export default new vueRouter({
             path: "/article/detail/*",
             component: () => import("../components/ArticleDetail")
         },
+        {
+            path: "/article/edit/*",
+            component: () => import("../components/EditArticle")
+        },
     ]
 })
