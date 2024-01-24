@@ -72,9 +72,10 @@
                 <el-col :span="14">
                   <el-row :gutter="5" class="article-tag-div">
                     <el-col :span="3.5" v-for="tag in article.tagList">
-                      <el-tag ref="articleTag"
+                      <el-tag style="color: #eff0f1" ref="articleTag"
+                              :color="tag.color"
                               @click.stop=""
-                              effect="plain">{{ tag }}
+                              effect="plain">{{ tag.name }}
                       </el-tag>
                     </el-col>
                   </el-row>
@@ -178,7 +179,7 @@ export default {
         starQuantity: 4,
         type: "任务",
         coverImgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-        tagList: ["大数据", "python", "java", "java", "javaaaaaaa", "javavvvv"]
+        tagList: [{name:"大数据",color:"red"}, {name:"python",color:"green"}, "java", "java", "javaaaaaaa", "javavvvv"]
       },
       messageList: [
         {

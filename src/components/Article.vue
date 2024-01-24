@@ -82,7 +82,7 @@
                               <el-row :gutter="0" class="article-last-row">
                                 <el-col :span="6">
                                   <div class="grid-content bg-purple">
-                                    <el-tag effect="dark">{{ article.type }}</el-tag>
+                                    <el-tag effect="dark">{{ article.type.key }}</el-tag>
                                     | {{ article.author }}
                                   </div>
                                 </el-col>
@@ -99,11 +99,12 @@
                                 <el-col :span="14">
                                   <el-row :gutter="5" class="article-tag-div">
                                     <el-col :span="3.5" v-for="tag in article.tagList">
-                                      <el-tag ref="articleTag"
+                                      <el-tag style="color: #eff0f1" ref="articleTag"
+                                              :color="tag.color"
                                               @mouseenter.native="articleTagMouseEntry"
                                               @mouseout.native="articleTagMouseOut"
                                               @click.stop=""
-                                              effect="plain">{{ tag }}
+                                              effect="plain">{{ tag.name }}
                                       </el-tag>
                                     </el-col>
                                   </el-row>
@@ -180,10 +181,17 @@ export default {
     },
 
     articleTagMouseEntry(event) {
-      event.target.style.backgroundColor = '#ecf5ff';
+      // 暂存标签原值
+      event.target.temp1 =event.target.style.backgroundColor;
+      event.target.temp2 =event.target.style.color;
+
+      event.target.style.backgroundColor = '#fff';
+      event.target.style.color = '#606278';
     },
     articleTagMouseOut(event) {
-      event.target.style.removeProperty('background-color');
+      // 还原标签颜色
+      event.target.style.backgroundColor = event.target.temp1;
+      event.target.style.color = event.target.temp2;
     }
   },
   data() {
@@ -201,7 +209,7 @@ export default {
           starQuantity: 4,
           type: "任务",
           coverImgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          tagList: ["大数据", "python", "java", "java", "javaaaaaaa", "javavvvv"]
+          tagList: [{name:"大数据",color:"red"}, {name:"😂",color:"green"}, "java", "java", "javaaaaaaa", "javavvvv"]
         },
         {
           id: 2,

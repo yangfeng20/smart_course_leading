@@ -22,6 +22,7 @@
             placeholder="编辑文章..."
             style="min-height: 700px"
             @imgAdd="imgAdd"
+            @keydown.native="deleteWord"
             v-model="article.content"></mavon-editor>
       </el-main>
     </el-container>
@@ -31,10 +32,11 @@
 <script>
 import {mavonEditor} from 'mavon-editor';
 import 'mavon-editor/dist/css/index.css';
+import ElementUI from "element-ui";
 
 export default {
   name: "EditArticle",
-  components: {
+  components:{
     mavonEditor,
   },
   data() {
@@ -42,7 +44,62 @@ export default {
       article: {}
     }
   },
+
+  created() {
+    let pathArr = this.$route.path.split("/");
+    let articleId = pathArr[pathArr.length - 1];
+    if (!this.isIntegerString(articleId)) {
+      return;
+    }
+
+    // 存在文章，获取文章数据
+    this.$axios.post('/article' + articleId).then(resp => {
+      let article = resp.data.data
+      if (article) {
+        this.article = article;
+      }
+      ElementUI.Message.warning("文章不存在，正在跳转列表")
+      setTimeout(() => {
+        this.$router.push("/article")
+      }, 2000)
+    }).catch(_ => {
+    })
+  },
   methods: {
+    deleteWord(event) {
+      // 检查按下的键是否是 Backspace 键，并且是否按下了 Ctrl 键
+      if (event.key === 'Backspace' && event.ctrlKey) {
+        event.preventDefault(); // 阻止默认行为（删除一个字符）
+
+        let textarea = document.querySelector(".auto-textarea-input.no-border.no-resize");
+
+        // 获取文本框内容
+        const text = textarea.value;
+
+        // 寻找最后一个单词的起始位置
+        const lastWordStart = text.lastIndexOf(' ', textarea.selectionStart - 1) + 1;
+
+        // 截取字符串，保留最后一个单词之前的内容和之后的内容
+        const newText = text.slice(0, lastWordStart) + text.slice(textarea.selectionEnd);
+
+        // 更新文本框内容
+        textarea.value = newText;
+        this.article.content = newText;
+      }
+    },
+    isIntegerString(str) {
+      // 检查字符串是否只包含数字字符
+      const isNumberString = /^[0-9]*$/.test(str);
+
+      // 检查字符串是否以数字开头
+      const startsWithNumber = !isNaN(parseInt(str.charAt(0)));
+
+      // 检查字符串是否为整数
+      const isInteger = !isNaN(Number(str));
+
+      return isNumberString && startsWithNumber && isInteger;
+    },
+
     async imgAdd(pos, $file) {
       console.debug("上传文件大小", $file.size / 1024, 'KB', $file)
 
