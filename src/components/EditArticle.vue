@@ -5,7 +5,7 @@
         <el-input class="title-edit" v-model="article.title" placeholder="文章标题"></el-input>
         <div class="but-opt">
           <el-button type="primary" plain>保存草稿</el-button>
-          <el-button type="primary">发布文章</el-button>
+          <el-button type="primary" @click="saveArticleDialogVisible = true">发布文章</el-button>
           <div style="margin-left: 10px">
             <el-image
                 style="width: 40px; height: 40px;border-radius: 50%;"
@@ -26,6 +26,96 @@
             v-model="article.content"></mavon-editor>
       </el-main>
     </el-container>
+
+    <el-dialog
+        title="发布文章"
+        :visible.sync="saveArticleDialogVisible"
+        width="40%">
+      <div>
+        <el-dialog
+            width="30%"
+            title="创建标签"
+            :visible.sync="newTagInnerVisible"
+            append-to-body>
+          <div class="block">
+            预览效果：
+            <el-tag style="color: #eff0f1" ref="articleTag"
+                    :color="newTag.color"
+                    @mouseenter.native="articleTagMouseEntry"
+                    @mouseout.native="articleTagMouseOut"
+                    @click.stop=""
+                    effect="plain">{{ newTag.name }}
+            </el-tag>
+            <el-divider></el-divider>
+            标签内容：
+            <el-input
+                style="width: 45%"
+                type="text"
+                placeholder="标签内容"
+                v-model="newTag.name"
+                :maxlength="9"
+                :minlength="2"
+                show-word-limit/>
+            <span class="demonstration"> 标签背景色：</span>
+            <el-color-picker style="position: relative;top: 13px;" v-model="newTag.color"
+                             @active-change="colorChange"></el-color-picker>
+          </div>
+          <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="saveNewTag">确 定
+            </el-button>
+          </div>
+        </el-dialog>
+        <div>
+          文章类型：
+          <el-radio-group v-model="article.type">
+            <el-radio-button v-for="item in typeList" :label="item.key" border>{{ item.desc }}</el-radio-button>
+          </el-radio-group>
+          <br>
+          <br>
+          文章标签：
+          <el-select
+              v-model="article.tagList"
+              multiple
+              filterable
+              remote
+              reserve-keyword
+              placeholder="请输入标签"
+              :remote-method="remoteMethod"
+              :loading="loading">
+            <el-option
+                v-for="item in searchTagsTemp"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+            </el-option>
+          </el-select>
+          <el-button type="primary" @click="newTagInnerVisible = true">创建标签</el-button>
+          <div style="margin-top: 10px;">
+            <el-upload
+                style="width: 280px"
+                class="upload-demo"
+                drag
+                :limit="1"
+                :before-upload="upCompressImg"
+                :on-success="uploadSuccess"
+                :on-remove="removeImg"
+                :on-exceed="(files, fileList)=>this.$notify({title: '上传文章封面失败',message: '请先移除之前上传的封面',type: 'error'})"
+                action="http://localhost:8090/file/upload">
+              <div v-if="coverImgUrlShow" style="height: 360px;width: 360px;">
+                <el-image :src="article.coverImgUrl" fit="fit"/>
+              </div>
+              <i class="el-icon-upload"></i>
+              <div class="el-upload__text">将图片拖到此处，或<em>点击上传</em></div>
+              <div class="el-upload__tip" slot="tip">只能上传jpg/png/gif文件，且不超过2M</div>
+            </el-upload>
+          </div>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="saveArticleDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="saveArticleDialogVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -36,12 +126,40 @@ import ElementUI from "element-ui";
 
 export default {
   name: "EditArticle",
-  components:{
+  components: {
     mavonEditor,
   },
   data() {
     return {
-      article: {}
+      newTag: {
+        color: '#409EFF',
+        name: "标签名"
+      },
+      searchTagsTemp: [],
+      loading: false,
+      newTagInnerVisible: false,
+      saveArticleDialogVisible: false,
+      typeList: [
+        {
+          key: 1,
+          desc: "脚本",
+
+        },
+        {
+          key: 2,
+          desc: "闲聊",
+
+        },
+        {
+          key: 3,
+          desc: "教程",
+
+        },
+      ],
+      coverImgUrlShow: false,
+      article: {
+        coverImgUrl: ''
+      }
     }
   },
 
@@ -66,6 +184,87 @@ export default {
     })
   },
   methods: {
+    removeImg(file, fileList) {
+      this.coverImgUrlShow = false
+    },
+    uploadSuccess(resp, file, fileList) {
+      this.article.coverImgUrl = resp.data
+      this.coverImgUrlShow = true
+    },
+
+    upCompressImg($file) {
+      if (!['image/jpeg', 'image/png', 'image/gif'].includes($file.type)) {
+        // 如果不是图片类型，则提示错误并返回 false
+        this.$notify({
+          title: '上传文章封面失败',
+          message: '只能上传图片',
+          type: 'error'
+        });
+        return false;
+      }
+      if ($file.size / 1024 / 1024 > 2) {
+        this.$notify({
+          title: '上传文章封面失败',
+          message: '上传文件不能大于2M',
+          type: 'error'
+        });
+        return false;
+      }
+      console.debug("上传文件大小", $file.size / 1024, 'KB', $file)
+      return new Promise((resolve, reject) => {
+        if ($file.type === 'image/gif') {
+          // todo gif文件不支持压缩
+          return resolve($file)
+        }
+        this.$func.compressImg($file).then(newFile => {
+          console.debug("压缩文件大小", newFile.size / 1024, 'KB', newFile)
+          return resolve(newFile)
+        })
+      })
+    },
+    saveNewTag() {
+      if (!this.newTag.name || !this.newTag.color) {
+        this.$notify({
+          title: '创建标签失败',
+          message: '请输入标签名和背景色',
+          type: 'error'
+        });
+        return;
+      }
+      this.newTagInnerVisible = false
+      this.$axios.post("tag/save", this.newTag).then(_ => {
+        this.$notify({
+          title: '创建标签成功',
+          message: '请在搜索框搜索使用',
+          type: 'success'
+        });
+      })
+    },
+    colorChange(color) {
+      this.newTag.color = color
+    },
+    articleTagMouseEntry(event) {
+      // 暂存标签原值
+      event.target.temp1 = event.target.style.backgroundColor;
+      event.target.temp2 = event.target.style.color;
+
+      event.target.style.backgroundColor = '#fff';
+      event.target.style.color = '#606278';
+    },
+    articleTagMouseOut(event) {
+      // 还原标签颜色
+      event.target.style.backgroundColor = event.target.temp1;
+      event.target.style.color = event.target.temp2;
+    },
+    remoteMethod(query) {
+      if (query === '') {
+        return;
+      }
+      this.loading = true;
+      this.$axios.get("tag/search").then(resp => {
+        this.searchTagsTemp = resp.data.data;
+      })
+    },
     deleteWord(event) {
       // 检查按下的键是否是 Backspace 键，并且是否按下了 Ctrl 键
       if (event.key === 'Backspace' && event.ctrlKey) {
@@ -100,117 +299,9 @@ export default {
       return isNumberString && startsWithNumber && isInteger;
     },
 
-    async imgAdd(pos, $file) {
-      console.debug("上传文件大小", $file.size / 1024, 'KB', $file)
-
-      // 压缩图片
-      let compressFile = await this.compressImg($file)
-      console.debug("压缩文件大小", compressFile.size / 1024, 'KB', compressFile)
-      let then = this;
-      this.uploadFile(compressFile).then(url => {
-        console.debug("上线文件返回url", url)
-        then.$refs.md.$img2Url(pos, url);
-      })
-    },
-
-    async uploadFile($file) {
-      return new Promise((resolve, reject) => {
-        // 第一步.将图片上传到服务器.
-        let formData = new FormData();
-        formData.append('file', $file);
-        this.$axios({
-          url: '/file/upload',
-          method: 'post',
-          data: formData,
-          headers: {'Content-Type': 'multipart/form-data'},
-        }).then((data) => {
-          return resolve(data.data.data)
-        }).catch(e => {
-          reject(e)
-        })
-      })
-    },
-
-    /**
-     * @压缩公共方法
-     * @params file
-     * @return 压缩后的文件，支持两种，file和 blob
-     */
-    async compressImg(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        // readAsDataURL 方法会读取指定的 Blob 或 File 对象。读取操作完成的时候，readyState 会变成已完成DONE，并触发 loadend (en-US) 事件，
-        // 同时 result 属性将包含一个data:URL格式的字符串（base64编码）以表示所读取文件的内容。
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-          const img = new Image();
-          img.src = reader.result;
-          img.onload = () => {
-            // 图片的宽高
-            const w = img.width;
-            const h = img.height;
-            const canvas = document.createElement("canvas");
-            // canvas对图片进行裁剪，这里设置为图片的原始尺寸
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext("2d");
-            // canvas中，png转jpg会变黑底，所以先给canvas铺一张白底
-            ctx.fillStyle = "#fff";
-            // fillRect()方法绘制一个填充了内容的矩形，这个矩形的开始点（左上点）在
-            // (x, y) ，它的宽度和高度分别由width 和 height 确定，填充样式由当前的fillStyle 决定。
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            // 绘制图像
-            ctx.drawImage(img, 0, 0, w, h);
-
-            // canvas转图片达到图片压缩效果
-            // 返回一个包含图片展示的 data URI base64 在指定图片格式为 image/jpeg 或 image/webp的情况下，
-            // 可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 0.92。其他参数会被忽略。
-            const base64Data = canvas.toDataURL("image/jpeg", 0.8);
-            const compressedFile = this.dataURLtoFile(base64Data, file.name);
-            resolve(compressedFile);
-          };
-          img.onerror = reject;
-        };
-        reader.onerror = reject;
-      })
-
-    },
-
-    /**
-     * canvas生成的格式为base64，需要进行转化, base64->file
-     * @param base64Data
-     * @param fileName
-     * @returns {File}
-     */
-    dataURLtoFile(base64Data, fileName) {
-      let arr = base64Data.split(','),
-          mime = arr[0].match(/:(.*?);/)[1],
-
-          bstr = atob(arr[1]),
-          n = bstr.length,
-          u8arr = new Uint8Array(n);
-      while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-      }
-      return new File([u8arr], fileName, {type: mime})
-    },
-
-    /**
-     * canvas生成的格式为base64，需要进行转化, base64->blob
-     * @param base64Data
-     * @returns {Blob}
-     */
-    dataURLtoBlob(base64Data) {
-      const arr = base64Data.split(","),
-          mime = arr[0].match(/:(.*?);/)[1],
-          bstr = atob(arr[1]);
-      let n = bstr.length;
-      const u8arr = new Uint8Array(n);
-      while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-      }
-      return new Blob([u8arr], {type: mime});
-    },
+    imgAdd(pos, $file) {
+      this.$func.imgAddVue(pos, $file, this)
+    }
   }
 }
 </script>
