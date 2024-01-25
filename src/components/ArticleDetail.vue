@@ -17,7 +17,7 @@
               </div>
             </el-col>
             <el-col :span="6">
-              <div class="grid-content bg-purple icon"  @click="starArticle">
+              <div class="grid-content bg-purple icon" @click="starArticle">
                 <el-badge :value="article.starQuantity" :max="99" class="item" type="primary">
                   <i v-if="stared" class="el-icon-star-on opt-icon"></i>
                   <i v-if="!stared" class="el-icon-star-off opt-icon"></i>
@@ -104,11 +104,14 @@
             </div>
             <div v-if="article.type === '任务'">
               <el-card shadow="hover">
-                <el-steps direction="vertical" :space="100" :active="2" finish-status="success">
-                  <el-step title="申请" icon="el-icon-collection-tag"></el-step>
-                  <el-step title="提交" icon="el-icon-edit-outline"></el-step>
-                  <el-step title="审核" icon="el-icon-monitor"></el-step>
-                  <el-step title="完成" icon="el-icon-folder-checked"></el-step>
+                <el-steps direction="vertical" :space="100" :active="task?.status" finish-status="success">
+                  <el-step @click.native="taskApply" title="申请" icon="el-icon-collection-tag"></el-step>
+                  <el-step @click.native="taskCommit" title="提交" icon="el-icon-edit-outline"></el-step>
+                  <el-step @click.native="taskAudit" title="审核" icon="el-icon-monitor"
+                           :description="task?.ext?.audit?.desc"
+                           :status="task?.ext?.audit?.status"></el-step>
+                  <el-step @click.native="taskFinish" title="完成" icon="el-icon-folder-checked"
+                           :description="task.status === 4 ? '点击领取金币':''"></el-step>
                 </el-steps>
               </el-card>
             </div>
@@ -129,6 +132,25 @@
       </el-main>
     </el-container>
     <el-backtop style="right: 1px"></el-backtop>
+
+    <!--提交任务内容-->
+    <el-dialog
+        title="提交任务"
+        :visible.sync="commitFormDialogVisible"
+        width="50%"
+        :before-close="handleClose">
+      <mavon-editor
+          ref='md'
+          :boxShadow="false"
+          previewBackground="#fff"
+          placeholder="提交您的任务凭证，文字以及截图..."
+          @imgAdd="wrappedImgAdd"
+          v-model="task.content"></mavon-editor>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="commitFormDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="doTaskCommit">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -154,7 +176,7 @@ export default {
   },
   data() {
     return {
-      authorUserInfo:{
+      authorUserInfo: {
         userId: 35,
         name: "test_8fb",
         imgUrl: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
@@ -165,6 +187,16 @@ export default {
       stared: false,
       messageTotal: 12,
       catalogue: [],
+      commitFormDialogVisible: false,
+      task: {
+        status: 4,
+        ext: {
+          audit: {
+            status: 'error',
+            desc: "上传文件不对",
+          }
+        }
+      },
       article: {
         content: "\n## 标题1\n我的内容\n我的内容\n我的内容\n\n我的内容\n我的内容\n我的内容\n我的内容我的内容\n我的内容\n### 标题1-1 \n" +
             "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
@@ -179,7 +211,10 @@ export default {
         starQuantity: 4,
         type: "任务",
         coverImgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-        tagList: [{name:"大数据",color:"red"}, {name:"python",color:"green"}, "java", "java", "javaaaaaaa", "javavvvv"]
+        tagList: [{name: "大数据", color: "red"}, {
+          name: "python",
+          color: "green"
+        }, "java", "java", "javaaaaaaa", "javavvvv"]
       },
       messageList: [
         {
@@ -260,6 +295,90 @@ export default {
     })
   },
   methods: {
+
+    wrappedImgAdd(pos, $file) {
+      this.$func.imgAddVue(pos, $file, this);
+    },
+
+    taskApply() {
+      if (this.task.status >= 1) {
+        this.$notify({
+          title: '申请失败',
+          message: '当前任务已经申请了哟!',
+          type: 'info'
+        });
+        return;
+      }
+
+      this.$axios.post('/task/task_apply?articleId=' + this.task.articleId).then(_ => {
+        this.$notify({
+          title: '任务申请成功',
+          message: '请按照教程完成任务，然后提交任务信息',
+          type: 'success'
+        });
+      })
+    },
+
+    handleClose(done) {
+      // 关闭确认，不需要
+      // this.$confirm('确认关闭？')
+      //     .then(_ => {
+      //       done();
+      //     })
+      //     .catch(_ => {
+      //     });
+    },
+
+    doTaskCommit() {
+      this.commitFormDialogVisible = true
+      this.$axios.post("/task/commit", {
+        taskId: this.task.id,
+        articleId: this.task.articleId,
+        content: this.task.content
+      }).then(_ => {
+        this.$notify({
+          title: '任务提交成功',
+          message: '提交成功，等待管理员审核',
+          type: 'success'
+        });
+      })
+    },
+
+    taskCommit() {
+      // 这里这是显示弹框，不是真正提交
+      // 申请任务（第一次提交），提交任务（更新提交），
+      if (this.task.status === 1 || this.task.status === 2) {
+        this.commitFormDialogVisible = true
+      }
+
+      // 审核（被驳回，重新提交）
+      if (this.task.status === 3 && this.task.ext?.audit?.status === 'error') {
+        this.commitFormDialogVisible = true
+      }
+    },
+    taskAudit() {
+      if (this.task.status !== 3) {
+        return;
+      }
+      this.$notify({
+        title: '等待管理员审核',
+        message: '当前任务已经申请了哟!',
+        type: 'info'
+      });
+    },
+    taskFinish() {
+      if (this.task.status !== 4) {
+        return;
+      }
+
+      this.$axios.post('/task/task_award?id=' + this.task.id).then(_ => {
+        this.$notify({
+          title: '任务奖励领取成功',
+          message: '金币已放入您的个人钱包中了哟!',
+          type: 'success'
+        });
+      })
+    },
     starArticle() {
       this.stared = !this.stared
       if (this.stared) {
@@ -328,12 +447,14 @@ export default {
 
       return isNumberString && startsWithNumber && isInteger;
     }
-  },
-  computed:{
-    windowWith(){
+  }
+  ,
+  computed: {
+    windowWith() {
       return window;
     }
-  },
+  }
+  ,
   created() {
     let pathArr = this.$route.path.split("/");
     let articleId = pathArr[pathArr.length - 1];
@@ -354,7 +475,8 @@ export default {
       }, 2000)
     }).catch(_ => {
     })
-  },
+  }
+  ,
 }
 </script>
 
