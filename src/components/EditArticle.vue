@@ -61,16 +61,28 @@
                              @active-change="colorChange"></el-color-picker>
           </div>
           <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveNewTag">确 定
+            <el-button type="primary" @click="saveNewTag">创 建
             </el-button>
           </div>
         </el-dialog>
         <div>
           文章类型：
           <el-radio-group v-model="article.type">
-            <el-radio-button v-for="item in typeList" :label="item.key" border>{{ item.desc }}</el-radio-button>
+            <el-radio-button @click="article.type = item.key" v-for="item in typeList" :label="item.key" border>
+              {{ item.desc }}
+            </el-radio-button>
           </el-radio-group>
           <br>
+          <br>
+          <!--为任务时可支持奖励-->
+          <div v-if="typeList?.map(item=>item.key).includes(4)" style="display: flex">
+            任务奖励：
+            <el-input style="width: 40%"
+                      placeholder="输入任务奖励金币数"
+                      v-model="article.award"
+                      :disabled="article.type!==4">
+            </el-input>
+          </div>
           <br>
           文章标签：
           <el-select
@@ -113,7 +125,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
     <el-button @click="saveArticleDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="saveArticleDialogVisible = false">确 定</el-button>
+    <el-button type="primary" @click="releaseArticle">发 布</el-button>
   </span>
     </el-dialog>
   </div>
@@ -155,6 +167,11 @@ export default {
           desc: "教程",
 
         },
+        {
+          key: 4,
+          desc: "任务",
+
+        },
       ],
       coverImgUrlShow: false,
       article: {
@@ -184,6 +201,57 @@ export default {
     })
   },
   methods: {
+    releaseArticle() {
+      if (!this.article.title) {
+        this.$notify({
+          title: "文章发布失败",
+          message: "请编写文章标题",
+          type: "warning"
+        })
+        return;
+      }
+      if (!this.article.type) {
+        this.$notify({
+          title: "文章发布失败",
+          message: "请选择文章类型",
+          type: "warning"
+        })
+        return;
+      }
+      if (this.article.type === 4 && !this.article.award) {
+        this.$notify({
+          title: "文章发布失败",
+          message: "请指定任务奖励金币",
+          type: "warning"
+        })
+        return;
+      }
+      this.saveArticleDialogVisible = false
+      let request
+      if (this.article.id) {
+        request = this.$axios.post("/article/update", {
+          ...this.article,
+          status: 2,
+          tagList: this.article.tagList.map(tag => tag.id)
+        })
+      } else {
+        request = this.$axios.post("/article/add", {
+          ...this.article,
+          status: 2,
+          tagList: this.article.tagList.map(tag => tag.id)
+        })
+      }
+
+      request.then(resp => {
+        this.$notify({
+          title: "文章发布成功",
+          message: "等待管理员审核文章",
+          type: "success"
+        })
+      }).catch(_ => {
+
+      })
+    },
     removeImg(file, fileList) {
       this.coverImgUrlShow = false
     },
