@@ -41,7 +41,7 @@
         <el-menu-item index="/ai_chat">
           <span class="menu-text">
           <i class="el-icon-chat-line-square"></i>
-          AI会话
+          AI(开发中)
           </span>
         </el-menu-item>
 
@@ -99,7 +99,7 @@
         </el-submenu>
 
 
-        <el-menu-item v-if="!login" index="user" style="margin-right: 10px">
+        <el-menu-item v-if="!login" index="/user" style="margin-right: 10px">
           <span class="menu-text">
             <i class="el-icon-position"></i>
               点击登录

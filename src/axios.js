@@ -75,7 +75,7 @@ request.interceptors.response.use(resp => {
         }
 
         if (result.code === 401) {
-            let goToRouter = 'user'
+            let goToRouter = '/user'
             ElementUI.Message.error({
                 message: result.message + ` : <a href=${goToRouter}>点击登录</a>`,
                 dangerouslyUseHTMLString: true,

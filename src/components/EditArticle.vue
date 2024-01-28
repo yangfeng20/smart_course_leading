@@ -4,7 +4,7 @@
       <el-header class="header-edit">
         <el-input class="title-edit" v-model="article.title" placeholder="文章标题"></el-input>
         <div class="but-opt">
-          <el-button type="primary" plain>保存草稿</el-button>
+          <el-button type="primary" @click="saveArticleDraft" plain>保存草稿</el-button>
           <el-button type="primary" @click="saveArticleDialogVisible = true">发布文章</el-button>
           <div style="margin-left: 10px">
             <el-image
@@ -201,6 +201,41 @@ export default {
     })
   },
   methods: {
+    saveArticleDraft(){
+      if (!this.article.title) {
+        this.$notify({
+          title: "文章发布失败",
+          message: "请编写文章标题",
+          type: "warning"
+        })
+        return;
+      }
+
+      let request
+      if (this.article.id) {
+        request = this.$axios.post("/article/update", {
+          ...this.article,
+          status: 1,
+          tagList: this.article.tagList?.map(tag => tag.id)
+        })
+      } else {
+        request = this.$axios.post("/article/add", {
+          ...this.article,
+          status: 1,
+          tagList: this.article.tagList?.map(tag => tag.id)
+        })
+      }
+
+      request.then(resp => {
+        this.$notify({
+          title: "文章草稿保存成功",
+          message: "文章草稿保存成功",
+          type: "success"
+        })
+      }).catch(_ => {
+
+      })
+    },
     releaseArticle() {
       if (!this.article.title) {
         this.$notify({
@@ -232,13 +267,13 @@ export default {
         request = this.$axios.post("/article/update", {
           ...this.article,
           status: 2,
-          tagList: this.article.tagList.map(tag => tag.id)
+          tagList: this.article.tagList?.map(tag => tag.id)
         })
       } else {
         request = this.$axios.post("/article/add", {
           ...this.article,
           status: 2,
-          tagList: this.article.tagList.map(tag => tag.id)
+          tagList: this.article.tagList?.map(tag => tag.id)
         })
       }
 
