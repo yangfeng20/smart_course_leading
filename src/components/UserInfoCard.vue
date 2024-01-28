@@ -1,6 +1,6 @@
 <template>
   <div class="body">
-    <el-card shadow="hover">
+    <el-card shadow="hover" @click.native="intoMe">
       <el-row :gutter="30">
         <el-col :span="5">
           <el-avatar :src="userInfo.imgUrl"></el-avatar>
@@ -33,8 +33,12 @@
 <script>
 export default {
   name: "UserInfoCard",
-
-  props: ['userInfo']
+  props: ['userInfo'],
+  methods:{
+    intoMe(){
+      this.$router.push('/me')
+    },
+  }
 }
 </script>
 
