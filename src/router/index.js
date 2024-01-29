@@ -39,16 +39,12 @@ export default new vueRouter({
             component: () => import("../components/Feedback")
         },
         {
-            path: "/user",
+            path: "/login",
             component: () => import("../components/Login")
         },
         {
             path: "/article",
             component: () => import("../components/Article")
-        },
-        {
-            path: "/me",
-            component: () => import("../components/MeBackground")
         },
         {
             path: "/article/detail/*",
@@ -57,6 +53,21 @@ export default new vueRouter({
         {
             path: "/article/edit/*",
             component: () => import("../components/EditArticle")
+        },
+        {
+            path: "/me",
+            component: () => import("../components/MeBackground"),
+            children: [
+                {
+                    path: 'user', component: () => import("../components/UserInfo")
+                },
+                {
+                    path: 'me_article', component: () => import("../components/MeArticle")
+                },
+                {
+                    path: 'star_article', component: () => import("../components/StarArticle")
+                },
+            ]
         },
     ]
 })

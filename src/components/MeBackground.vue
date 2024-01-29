@@ -4,38 +4,36 @@
       <el-aside width="300px" class="catalogue" >
         <el-menu
             style="height: 100%"
-            default-active="2"
+            default-active="/user"
             class="el-menu-vertical-demo"
-            @open="handleOpen"
-            @close="handleClose">
-          <el-submenu index="1">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>用户</span>
-            </template>
-          </el-submenu>
+            :router="true">
 
-          <el-menu-item index="2">
+          <el-menu-item index="/me/user">
             <template slot="title">
-              <i class="el-icon-menu"></i>
+              <i class="el-icon-user-solid"></i>
+              <span>个人资料</span>
+            </template>
+          </el-menu-item>
+
+          <el-submenu index="#">
+            <template slot="title">
+              <i class="el-icon-notebook-2"></i>
               <span>文章中心</span>
             </template>
-
-            <el-menu-item-group>
-              <template slot="title">分组一</template>
-              <el-menu-item index="2-1">选项1</el-menu-item>
-              <el-menu-item index="2-2">选项2</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="分组2">
-              <el-menu-item index="1-3">选项3</el-menu-item>
-            </el-menu-item-group>
-          </el-menu-item>
+            <el-menu-item index="/me/me_article">我的文章</el-menu-item>
+            <el-menu-item index="/me/star_article">收藏文章</el-menu-item>
+          </el-submenu>
         </el-menu>
       </el-aside>
 
       <el-main class="article-aside-main">
         <el-container>
           <el-main class="one-article-main">
+
+            <div class="content-body">
+              <router-view></router-view>
+            </div>
+
           </el-main>
           <el-aside width="280px" class="aside-right">
 
@@ -94,19 +92,24 @@ export default {
 
 .article-aside-main {
   padding-top: 40px;
-  padding-left: 220px;
+  padding-left: 40px;
   padding-right: 40px;
   overflow: visible;
 }
 
 .one-article-main {
-  padding-right: 20px;
+  padding-right: 40px;
   overflow: visible;
 }
 
 .aside-right {
   background-color: #ffffff;
   padding: 10px;
+}
+
+.content-body{
+  background-color: #ffffff;
+  height: 100%;
 }
 
 </style>
