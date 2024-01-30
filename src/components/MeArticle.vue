@@ -38,7 +38,9 @@ export default {
   },
 
   created() {
-
+      this.$axios.post('/article/get_my_article_list').then(resp=>{
+        this.article = resp.data.data
+      })
   }
 }
 </script>

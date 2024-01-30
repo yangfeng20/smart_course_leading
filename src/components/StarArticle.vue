@@ -34,8 +34,11 @@ export default {
     }
   },
 
-  created() {
 
+  created() {
+    this.$axios.post('/article/get_my_start_article_list').then(resp=>{
+      this.article = resp.data.data
+    })
   }
 }
 </script>

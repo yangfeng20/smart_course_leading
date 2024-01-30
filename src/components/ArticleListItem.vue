@@ -46,7 +46,8 @@
                 </div>
                 <div style="margin-top: 10px;" v-if="opt">
                   <el-tooltip class="item" effect="dark" content="编辑文章" placement="bottom">
-                    <el-button type="primary" icon="el-icon-edit" size="mini" circle></el-button>
+                    <el-button @click="()=>this.$router.push('/article/edit/' + article.id)" type="primary"
+                               icon="el-icon-edit" size="mini" circle></el-button>
                   </el-tooltip>
 
                   <el-tooltip class="item" effect="dark" content="删除文章" placement="bottom">
@@ -82,10 +83,7 @@
 export default {
   name: "ArticleListItem",
   data() {
-    return {
-      article: {},
-      opt: false,
-    }
+    return {}
   },
   props: ['article', 'opt']
 }
