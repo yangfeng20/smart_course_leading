@@ -1,7 +1,7 @@
 <template>
   <div class="body">
     <el-container style="height: 100%">
-      <el-aside width="300px" class="catalogue" >
+      <el-aside width="300px" class="catalogue">
         <el-menu
             style="height: 100%"
             default-active="/user"
@@ -10,8 +10,15 @@
 
           <el-menu-item index="/me/user">
             <template slot="title">
-              <i class="el-icon-user-solid"></i>
+              <i class="el-icon-postcard"></i>
               <span>个人资料</span>
+            </template>
+          </el-menu-item>
+
+          <el-menu-item index="/me/account">
+            <template slot="title">
+              <i class="el-icon-user-solid"></i>
+              <span>账号设置</span>
             </template>
           </el-menu-item>
 
@@ -23,6 +30,22 @@
             <el-menu-item index="/me/me_article">我的文章</el-menu-item>
             <el-menu-item index="/me/star_article">收藏文章</el-menu-item>
           </el-submenu>
+
+
+          <el-menu-item index="/me/audit">
+            <template slot="title">
+              <i class="el-icon-time"></i>
+              <span>审核中心</span>
+            </template>
+          </el-menu-item>
+
+          <el-menu-item index="/me/message">
+            <template slot="title">
+              <i class="el-icon-message"></i>
+              <span>消息中心</span>
+            </template>
+          </el-menu-item>
+
         </el-menu>
       </el-aside>
 
@@ -107,9 +130,10 @@ export default {
   padding: 10px;
 }
 
-.content-body{
+.content-body {
   background-color: #ffffff;
   height: 100%;
+  padding: 20px;
 }
 
 </style>

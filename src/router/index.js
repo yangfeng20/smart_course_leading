@@ -62,6 +62,9 @@ export default new vueRouter({
                     path: 'user', component: () => import("../components/UserInfo")
                 },
                 {
+                    path: 'account', component: () => import("../components/AccountSet")
+                },
+                {
                     path: 'me_article', component: () => import("../components/MeArticle")
                 },
                 {

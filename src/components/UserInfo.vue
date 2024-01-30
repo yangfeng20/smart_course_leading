@@ -61,7 +61,7 @@
 
       <el-footer>
         <div class="footer-body">
-          <el-button>保存修改</el-button>
+          <el-button type="primary" :disabled="change" @click="saveUserInfo">保存修改</el-button>
         </div>
       </el-footer>
     </el-container>
@@ -73,15 +73,26 @@ export default {
   name: "UserInfo",
   data() {
     return {
+      change: true,
       userInfo: {
         nickname: '哈哈哈',
         imgUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
       },
-      temp:''
-
+      temp: ''
+    }
+  },
+  watch: {
+    userInfo(oldVal, newVal) {
+      this.change = false
     }
   },
   methods: {
+    saveUserInfo() {
+      this.$axios.post("/user/save", {})
+          .then(resp => {
+
+      })
+    },
     showUpload() {
       this.temp = this.userInfo.imgUrl
       this.userInfo.imgUrl = ''
@@ -126,6 +137,13 @@ export default {
 .el-upload {
   height: 100px;
   width: 100px;
+}
+
+.footer-body {
+  margin: 300px 60px 0 0;
+  padding: 0;
+  background-color: #ffffff;
+  text-align: right;
 }
 
 </style>
