@@ -1,6 +1,6 @@
 <template>
   <div class="body">
-    <el-card shadow="hover" @click.native="intoMe">
+    <el-card shadow="hover" @click.native="intoMe" class="user-card">
       <el-row :gutter="30">
         <el-col :span="5">
           <el-avatar :src="userInfo.imgUrl"></el-avatar>
@@ -34,8 +34,8 @@
 export default {
   name: "UserInfoCard",
   props: ['userInfo'],
-  methods:{
-    intoMe(){
+  methods: {
+    intoMe() {
       this.$router.push('/me')
     },
   }
@@ -53,21 +53,25 @@ export default {
   font-weight: 500;
 }
 
-.userInfo-about{
+.userInfo-about {
   font-size: 14px;
   color: #74777e;
 }
 
-.data-count{
+.data-count {
   padding-left: 15px;
   padding-top: 5px;
 }
 
-.count-text{
+.count-text {
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
   color: #7D899C;
+}
+
+.user-card:hover {
+  cursor: pointer;
 }
 
 </style>
