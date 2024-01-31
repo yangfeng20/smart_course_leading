@@ -55,6 +55,10 @@ export default new vueRouter({
             component: () => import("../components/EditArticle")
         },
         {
+            path: "/user/*",
+            component: () => import("../components/ShowUser")
+        },
+        {
             path: "/me",
             component: () => import("../components/MeBackground"),
             children: [

@@ -36,7 +36,7 @@ export default {
   props: ['userInfo'],
   methods: {
     intoMe() {
-      this.$router.push('/me')
+      this.$router.push('/user/' + this.userInfo.id)
     },
   }
 }

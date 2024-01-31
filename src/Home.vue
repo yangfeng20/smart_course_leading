@@ -90,16 +90,25 @@
               签到
             </el-link>
           </el-menu-item>
+
+          <el-menu-item>
+            <el-link :underline="false" type="primary" @click="()=>this.$router.push('/me')">
+              <i class="el-icon-setting"></i>
+              我的
+            </el-link>
+          </el-menu-item>
+
           <el-menu-item>
             <el-link :underline="false" type="primary" @click="logout">
               <i class="el-icon-switch-button"></i>
               退出登录
             </el-link>
           </el-menu-item>
+
         </el-submenu>
 
 
-        <el-menu-item v-if="!login" index="/user" style="margin-right: 10px">
+        <el-menu-item v-if="!login" index="/login" style="margin-right: 10px">
           <span class="menu-text">
             <i class="el-icon-position"></i>
               点击登录
