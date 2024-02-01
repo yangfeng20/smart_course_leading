@@ -75,6 +75,9 @@ export default new vueRouter({
                     path: 'star_article', component: () => import("../components/StarArticle")
                 },
                 {
+                    path: 'message_center', component: () => import("../components/MessageCenter")
+                },
+                {
                     path: 'message_center/*', component: () => import("../components/MessageCenter")
                 },
             ]
