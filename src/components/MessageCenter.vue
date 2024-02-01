@@ -1,7 +1,7 @@
 <template>
   <div class="body">
     <el-container style="height: 100%">
-      <el-aside v-if="true" width="220px" class="user-list bg">
+      <el-aside v-if="true" width="220px" class="scrollbar bg" style="overflow-y: auto">
         <div v-for="(item, index) in messageList">
           <MessageUser @click.native="selectUserMsg(index)" class="message-user" :user-info="item.toUser"
                        :class="{ 'selectedMsg': selectMsgIndex === index }"
@@ -12,7 +12,7 @@
 
       <el-main class="message-body bg">
         <div>
-          <div style="height: 500px;border-bottom: 1px solid #e4e6eb;overflow-y: auto">
+          <div style="height: 500px;border-bottom: 1px solid #e4e6eb;overflow-y: auto;" class="scrollbar">
             <div class="bout" v-for="message in messageList[selectMsgIndex].message">
               <div style="text-align: center;" class="message-date">{{ message.createdDate }}</div>
 
@@ -149,7 +149,7 @@ export default {
     },
 
     sendMessage() {
-      if (!this.inputMsg){
+      if (!this.inputMsg) {
         this.$notify({
           title: '发送私信失败',
           message: '私信不能为空哟',
@@ -233,6 +233,30 @@ export default {
 
 .selectedMsg > :first-child {
   background-color: #d9e6fa;
+}
+
+.scrollbar{
+  overflow-y: auto;
+  height: 600px;
+}
+
+/* 自定义滚动条宽度和颜色 */
+.scrollbar::-webkit-scrollbar {
+  width: 3px; /* 设置滚动条宽度 */
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: #e4e6e9; /* 设置滚动条颜色 */
+}
+
+/* 鼠标悬停时的滚动条颜色 */
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #e4e6e9;
+}
+
+/* 滚动条轨道颜色 */
+.scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 
 </style>
