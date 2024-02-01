@@ -12,7 +12,7 @@
 
       <el-main class="message-body bg">
         <div>
-          <div style="height: 500px;border-bottom: 1px solid #e4e6eb;">
+          <div style="height: 500px;border-bottom: 1px solid #e4e6eb;overflow-y: auto">
             <div class="bout" v-for="message in messageList[selectMsgIndex].message">
               <div style="text-align: center;" class="message-date">{{ message.createdDate }}</div>
 
@@ -62,12 +62,6 @@ export default {
       messageList: [
         {
           toUser: {
-            name: "aaa",
-            imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-          },
-        },
-        {
-          toUser: {
             name: "哈哈哈",
             imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
           },
@@ -79,9 +73,44 @@ export default {
             },
             {
               me: false,
+              msgContent: "我是消息的是覅回我\n我是消息的是覅回我我是消息的是覅回我我是消息的是覅回我我是消息的是覅回我我是消息的是覅回我我是消息的是覅回我我是消息的是覅回我\n",
+              createdDate: "14:31",
+            },
+            {
+              me: false,
               msgContent: "我是消息的是覅回我",
               createdDate: "14:31",
-            }
+            },
+            {
+              me: false,
+              msgContent: "我是消息的是覅回我",
+              createdDate: "14:31",
+            },
+            {
+              me: true,
+              msgContent: "我是消息的是覅回我",
+              createdDate: "14:31",
+            },
+            {
+              me: false,
+              msgContent: "我是消息的是覅回我",
+              createdDate: "14:31",
+            },
+            {
+              me: false,
+              msgContent: "我是消息的是覅回我",
+              createdDate: "14:31",
+            },
+            {
+              me: false,
+              msgContent: "我是消息的是覅回我",
+              createdDate: "14:31",
+            },
+            {
+              me: false,
+              msgContent: "我是消息的是覅回我",
+              createdDate: "14:31",
+            },
           ]
         },
         {
@@ -120,6 +149,14 @@ export default {
     },
 
     sendMessage() {
+      if (!this.inputMsg){
+        this.$notify({
+          title: '发送私信失败',
+          message: '私信不能为空哟',
+          type: 'warning'
+        })
+        return;
+      }
       let toUserId = this.messageList[this.selectMsgIndex].toUser.id
 
       // todo 添加消息接口
