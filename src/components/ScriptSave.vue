@@ -98,7 +98,7 @@ export default {
     },
   },
   created() {
-    this.isPermissionAction()
+    this.$func.isPermissionAction()
     this.refresh()
   },
 
@@ -112,24 +112,6 @@ export default {
         }
       }
       return ""
-    },
-    isPermissionAction() {
-      let token = this.getCookie("token");
-      if (!token) {
-        this.scriptInfo = {}
-        this.isPermission = false
-        ElementUI.Message.error("禁止访问")
-        return;
-      }
-
-      this.$axios.post("/auth/query_permission", {
-        token,
-        pageUrl: this.$route.path
-      }).then(resp => {
-        this.isPermission = resp.data.data
-      }).catch(_ => {
-        this.isPermission = false
-      })
     },
     handleChange(file) {
       if (file.status === 'ready') {

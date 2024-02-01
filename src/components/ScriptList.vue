@@ -183,24 +183,11 @@ export default {
       }
       return ""
     },
-    isPermissionAction() {
-      let token = this.getCookie("token");
-      if (!token) {
-        return;
-      }
-
-      this.$axios.post("/auth/query_permission", {
-        token,
-        pageUrl: this.$route.path
-      }).then(resp => {
-        this.isPermission = resp.data.data
-      })
-    },
   },
 
   created() {
     this.searchScript()
-    this.isPermissionAction()
+    this.$func.isPermissionAction()
   },
 
   watch: {

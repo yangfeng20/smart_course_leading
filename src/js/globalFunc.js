@@ -3,6 +3,33 @@ import axios from "../axios";
 // 定义全局可以使用的函数
 const exportFunc =  {
 
+    getCookie(cookieName) {
+        const cookies = document.cookie.split("; ")
+        for (let i = 0; i < cookies.length; i++) {
+            const [name, value] = cookies[i].split("=")
+            if (name === cookieName) {
+                return decodeURIComponent(value)
+            }
+        }
+        return ""
+    },
+
+    isPermissionAction() {
+        let token = this.getCookie("token");
+        if (!token) {
+            return;
+        }
+
+        // todo 权限校验，加密解密，最好不需要重新调用外部接口
+        axios.post("/auth/query_permission", {
+            token,
+            pageUrl: location.pathname
+        }).then(resp => {
+            resp.data.data
+            this.isPermission = resp.data.data
+        })
+    },
+
     async imgAddVue(pos, $file, vue) {
         console.debug("上传文件大小", $file.size / 1024, 'KB', $file)
 
