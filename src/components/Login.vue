@@ -231,9 +231,21 @@ export default {
         imgVerifyCode: this.loginForm.code,
         token: this.loginForm.token
       }).then(resp => {
-        localStorage.setItem('token', resp.headers['authorization']);
+        let authAndToken = resp.headers['authorization'];
+        if (!authAndToken.includes("-")) {
+          localStorage.setItem('authorization', authAndToken);
+        } else {
+          let arr = authAndToken.split("-")
+          localStorage.setItem('authorization', arr[0]);
+
+          // 过期时间两个小时
+          let now = new Date();
+          now.setTime(now.getTime() + 2 * 60 * 60 * 1000);
+          let expires = "expires=" + now.toUTCString();
+          document.cookie = "token=" + arr[1] + "; " + expires + "path=/";
+        }
         // 登录成功，跳转首页
-        location.href='/'
+        location.href = '/'
       }).catch(e => {
         console.log("登录失败")
       })

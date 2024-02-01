@@ -32,10 +32,10 @@ if (process.env.NODE_ENV === 'production') {
  * 请求拦截器
  */
 request.interceptors.request.use(req => {
-        let token = localStorage.getItem('token');
+        let authorization = localStorage.getItem('authorization');
         // 请求时携带token
-        if (token) {
-            req.headers['Authorization'] = token;
+        if (authorization) {
+            req.headers['Authorization'] = authorization;
         }
         return req;
     }

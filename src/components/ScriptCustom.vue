@@ -303,7 +303,7 @@ export default {
 
   created() {
     this.searchScriptCustom();
-    this.$func.isPermissionAction();
+    this.$func.isPermissionAction().then(data=>{this.isPermission=data});
   },
 
   watch: {

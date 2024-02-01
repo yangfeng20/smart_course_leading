@@ -98,7 +98,7 @@ export default {
     },
   },
   created() {
-    this.$func.isPermissionAction()
+    this.$func.isPermissionAction().then(data=>{this.isPermission=data});
     this.refresh()
   },
 

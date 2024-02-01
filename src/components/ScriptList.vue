@@ -187,7 +187,7 @@ export default {
 
   created() {
     this.searchScript()
-    this.$func.isPermissionAction()
+    this.$func.isPermissionAction().then(data=>{this.isPermission=data});
   },
 
   watch: {

@@ -15,8 +15,9 @@ const exportFunc =  {
     },
 
     async isPermissionAction() {
-        new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             let token = this.getCookie("token");
+            console.log("token", token)
             if (!token) {
                 return reject(false);
             }
@@ -29,6 +30,8 @@ const exportFunc =  {
                 resp.data.data
                 this.isPermission = resp.data.data
                 resolve(resp.data.data)
+            }).catch(_=>{
+                reject(false)
             })
         })
     },
