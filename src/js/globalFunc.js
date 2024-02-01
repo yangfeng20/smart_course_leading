@@ -14,19 +14,22 @@ const exportFunc =  {
         return ""
     },
 
-    isPermissionAction() {
-        let token = this.getCookie("token");
-        if (!token) {
-            return;
-        }
+    async isPermissionAction() {
+        new Promise((resolve, reject) => {
+            let token = this.getCookie("token");
+            if (!token) {
+                return reject(false);
+            }
 
-        // todo 权限校验，加密解密，最好不需要重新调用外部接口
-        axios.post("/auth/query_permission", {
-            token,
-            pageUrl: location.pathname
-        }).then(resp => {
-            resp.data.data
-            this.isPermission = resp.data.data
+            // todo 权限校验，加密解密，最好不需要重新调用外部接口
+            axios.post("/auth/query_permission", {
+                token,
+                pageUrl: location.pathname
+            }).then(resp => {
+                resp.data.data
+                this.isPermission = resp.data.data
+                resolve(resp.data.data)
+            })
         })
     },
 

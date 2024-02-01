@@ -2,7 +2,9 @@
   <div class="body">
     <el-container style="height: 100%">
       <el-aside v-if="true" width="300px" class="catalogue">
-        留言：权限
+        <el-button v-if="this.$func.isPermissionAction()" @click="sendMessage" type="primary" icon="el-icon-message"
+                   style="width: 80%;margin: 10px;">发消息
+        </el-button>
       </el-aside>
 
       <el-main class="article-aside-main">
@@ -64,6 +66,11 @@ export default {
         starArticleCount: 48
       },
     }
+  },
+  methods: {
+    sendMessage() {
+      this.$router.push("/me/message_center/" + this.userInfo.userId)
+    },
   }
 }
 </script>

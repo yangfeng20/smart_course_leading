@@ -39,10 +39,17 @@
             </template>
           </el-menu-item>
 
-          <el-menu-item index="/me/message">
+          <el-menu-item index="/me/message_center">
             <template slot="title">
               <i class="el-icon-message"></i>
               <span>消息中心</span>
+            </template>
+          </el-menu-item>
+
+          <el-menu-item index="/me/message_manager">
+            <template slot="title">
+              <i class="el-icon-s-grid"></i>
+              <span>消息管理</span>
             </template>
           </el-menu-item>
 
