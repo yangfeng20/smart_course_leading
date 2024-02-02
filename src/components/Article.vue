@@ -127,9 +127,10 @@
 
                     </el-container>
                     <el-pagination style="position: absolute;bottom: 0;display: inline;"
-                        background
-                        layout="prev, pager, next"
-                        :total="1000">
+                                   background
+                                   :total="articlePage.total"
+                                   :current-page.sync="articlePage.page"
+                                   layout="total, prev, pager, next">
                     </el-pagination>
                   </el-main>
                   <el-aside>
@@ -187,8 +188,8 @@ export default {
 
     articleTagMouseEntry(event) {
       // 暂存标签原值
-      event.target.temp1 =event.target.style.backgroundColor;
-      event.target.temp2 =event.target.style.color;
+      event.target.temp1 = event.target.style.backgroundColor;
+      event.target.temp2 = event.target.style.color;
 
       event.target.style.backgroundColor = '#fff';
       event.target.style.color = '#606278';
@@ -204,6 +205,11 @@ export default {
       userInput: "",
       articleType: 1,
       selectedArticleType: 1,
+      articlePage: {
+        page: 1,
+        size: 9,
+        total: 100,
+      },
       articleList: [
         {
           id: 1,
@@ -214,7 +220,7 @@ export default {
           starQuantity: 4,
           type: "任务",
           coverImgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          tagList: [{name:"大数据",color:"red"}, {name:"😂",color:"green"}, "java", "java", "javaaaaaaa", "javavvvv"]
+          tagList: [{name: "大数据", color: "red"}, {name: "😂", color: "green"}, "java", "java", "javaaaaaaa", "javavvvv"]
         },
         {
           id: 2,
@@ -273,6 +279,14 @@ export default {
         {id: 1, title: "java的代码任何写"},
       ]
     }
+  },
+  watch: {
+    'articlePage.page': {
+      handler: function () {
+        // todo 请求文章下一页
+        console.log("页变更", this.articlePage.page)
+      }
+    },
   },
   created() {
   }
