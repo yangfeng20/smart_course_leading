@@ -62,7 +62,7 @@ request.interceptors.response.use(resp => {
                 result.data.updatedDate = new Moment(result.data.updatedDate).format(formatStr)
             }
 
-            if (result?.data?.content) {
+            if (result?.data?.content && result.data.content instanceof Array) {
                 result.data.content.forEach(item => {
                     if (item?.createdDate) {
                         item.createdDate = new Moment(item.createdDate).format(formatStr)

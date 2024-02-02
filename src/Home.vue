@@ -74,7 +74,7 @@
             <span class="menu-text">
               <el-image
                   style="width: 35px; height: 35px; border-radius: 80%;"
-                  src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+                  :src="avatarFileUrl"
                   fit="cover"></el-image>
             </span>
           </template>
@@ -164,6 +164,7 @@ export default {
       if (!userInfo) {
         return;
       }
+      this.avatarFileUrl = userInfo.imgUrl
       this.coin_number = userInfo.coin ? userInfo.coin : 0
       this.login = true
       localStorage.setItem("user", JSON.stringify(userInfo))
@@ -214,6 +215,7 @@ export default {
       showLinkView: true,
       login: false,
       coin_number: 0,
+      avatarFileUrl: ""
     }
   }
 

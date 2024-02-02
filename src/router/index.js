@@ -82,5 +82,9 @@ export default new vueRouter({
                 },
             ]
         },
+        {
+            path: "/test",
+            component: () => import("../components/Test")
+        },
     ]
 })

@@ -5,13 +5,13 @@
         <el-input class="title-edit" v-model="article.title" placeholder="文章标题"></el-input>
         <div class="but-opt">
           <el-button type="primary" @click="saveArticleDraft" plain>保存草稿</el-button>
-          <el-button type="primary" @click="saveArticleDialogVisible = true">发布文章</el-button>
-          <div style="margin-left: 10px">
-            <el-image
-                style="width: 40px; height: 40px;border-radius: 50%;"
-                src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-                fit="fit"></el-image>
-          </div>
+          <el-button type="primary" @click="clickReleaseArticle">发布文章</el-button>
+          <!--<div style="margin-left: 10px">-->
+          <!--  <el-image-->
+          <!--      style="width: 40px; height: 40px;border-radius: 50%;"-->
+          <!--      :src="userInfo.imgUrl"-->
+          <!--      fit="fit"></el-image>-->
+          <!--</div>-->
         </div>
       </el-header>
       <el-main>
@@ -67,8 +67,8 @@
         </el-dialog>
         <div>
           文章类型：
-          <el-radio-group v-model="article.type">
-            <el-radio-button @click="article.type = item.key" v-for="item in typeList" :label="item.key" border>
+          <el-radio-group v-model="article.type.key">
+            <el-radio-button @click="article.type.key = item.key" v-for="item in typeList" :label="item.key" border>
               {{ item.desc }}
             </el-radio-button>
           </el-radio-group>
@@ -80,25 +80,27 @@
             <el-input style="width: 40%"
                       placeholder="输入任务奖励金币数"
                       v-model="article.award"
-                      :disabled="article.type!==4">
+                      :disabled="article.type.key!==4">
             </el-input>
           </div>
           <br>
           文章标签：
           <el-select
               v-model="article.tagList"
+              value-key="key"
               multiple
               filterable
               remote
               reserve-keyword
               placeholder="请输入标签"
-              :remote-method="remoteMethod"
+              :remote-method="searchTag"
               :loading="loading">
             <el-option
-                v-for="item in searchTagsTemp"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
+                v-for="item in searchTagsTemp" :key="item.key" :label="item.label" :value="item">
+              <span style="float: left"><el-tag style="color: #eff0f1"
+                                                :color="item.color"
+                                                effect="plain">{{ item.label }}</el-tag></span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.key }}</span>
             </el-option>
           </el-select>
           <el-button type="primary" @click="newTagInnerVisible = true">创建标签</el-button>
@@ -175,8 +177,8 @@ export default {
       ],
       coverImgUrlShow: false,
       article: {
-        coverImgUrl: ''
-      }
+        coverImgUrl: '',
+      },
     }
   },
 
@@ -187,11 +189,20 @@ export default {
       return;
     }
 
+
+
+
     // 存在文章，获取文章数据
-    this.$axios.post('/article' + articleId).then(resp => {
+    this.$axios.get('/article/' + articleId).then(resp => {
       let article = resp.data.data
       if (article) {
         this.article = article;
+        this.article.tagList = resp.data.data.tagList.map(item=> {
+          return {key:item.id, label:item.name, color:item.color}
+        });
+        // 回显标签需要选项集合中有对应的值，才能回显
+        this.searchTagsTemp = resp.data.data.tagList
+        return;
       }
       ElementUI.Message.warning("文章不存在，正在跳转列表")
       setTimeout(() => {
@@ -199,9 +210,17 @@ export default {
       }, 2000)
     }).catch(_ => {
     })
+
   },
   methods: {
-    saveArticleDraft(){
+    clickReleaseArticle() {
+      this.saveArticleDialogVisible = true
+      this.$axios.post("/article/get_all_type").then(resp => {
+        this.typeList = resp.data.data
+      }).catch(_ => {
+      })
+    },
+    saveArticleDraft() {
       if (!this.article.title) {
         this.$notify({
           title: "文章发布失败",
@@ -213,20 +232,23 @@ export default {
 
       let request
       if (this.article.id) {
-        request = this.$axios.post("/article/update", {
+        request = this.$axios.put("/article/update", {
           ...this.article,
           status: 1,
-          tagList: this.article.tagList?.map(tag => tag.id)
+          type:this.article.type?.key,
+          tagList: this.article.tagList?.map(tag => tag.key)
         })
       } else {
         request = this.$axios.post("/article/add", {
           ...this.article,
           status: 1,
-          tagList: this.article.tagList?.map(tag => tag.id)
+          type:this.article.type?.key,
+          tagList: this.article.tagList?.map(tag => tag.key)
         })
       }
 
       request.then(resp => {
+        this.article.id = resp.data.data
         this.$notify({
           title: "文章草稿保存成功",
           message: "文章草稿保存成功",
@@ -245,7 +267,7 @@ export default {
         })
         return;
       }
-      if (!this.article.type) {
+      if (!this.article.type.key) {
         this.$notify({
           title: "文章发布失败",
           message: "请选择文章类型",
@@ -253,7 +275,7 @@ export default {
         })
         return;
       }
-      if (this.article.type === 4 && !this.article.award) {
+      if (this.article.type.key === 4 && !this.article.award) {
         this.$notify({
           title: "文章发布失败",
           message: "请指定任务奖励金币",
@@ -264,16 +286,18 @@ export default {
       this.saveArticleDialogVisible = false
       let request
       if (this.article.id) {
-        request = this.$axios.post("/article/update", {
+        request = this.$axios.put("/article/update", {
           ...this.article,
           status: 2,
-          tagList: this.article.tagList?.map(tag => tag.id)
+          type:this.article.type?.key,
+          tagList: this.article.tagList?.map(tag => tag.key)
         })
       } else {
         request = this.$axios.post("/article/add", {
           ...this.article,
           status: 2,
-          tagList: this.article.tagList?.map(tag => tag.id)
+          type:this.article.type?.key,
+          tagList: this.article.tagList?.map(tag => tag.key)
         })
       }
 
@@ -341,6 +365,7 @@ export default {
           message: '请在搜索框搜索使用',
           type: 'success'
         });
+      }).catch(_ => {
       })
     },
     colorChange(color) {
@@ -359,13 +384,18 @@ export default {
       event.target.style.backgroundColor = event.target.temp1;
       event.target.style.color = event.target.temp2;
     },
-    remoteMethod(query) {
+    searchTag(query) {
       if (query === '') {
         return;
       }
       this.loading = true;
-      this.$axios.get("tag/search").then(resp => {
-        this.searchTagsTemp = resp.data.data;
+      this.$axios.post("tag/search", {
+        name: query,
+      }).then(resp => {
+        this.loading = false
+        this.searchTagsTemp = resp.data.data.content.map(item => {
+          return {key: item.id, label: item.name, color: item.color};
+        });
       })
     },
     deleteWord(event) {

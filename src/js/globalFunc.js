@@ -1,7 +1,18 @@
 import axios from "../axios";
 
 // 定义全局可以使用的函数
-const exportFunc =  {
+const exportFunc = {
+
+
+    getLocalUser() {
+        let userInfo = localStorage.getItem("user")
+        if (!userInfo) {
+            return
+        }
+        let userInfoObj = JSON.parse(userInfo);
+        console.debug("getLocalUser", userInfoObj)
+        return userInfoObj
+    },
 
     getCookie(cookieName) {
         const cookies = document.cookie.split("; ")
@@ -30,7 +41,7 @@ const exportFunc =  {
                 resp.data.data
                 this.isPermission = resp.data.data
                 resolve(resp.data.data)
-            }).catch(_=>{
+            }).catch(_ => {
                 reject(false)
             })
         })
