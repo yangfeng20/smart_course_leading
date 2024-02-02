@@ -126,6 +126,11 @@
                       </el-aside>
 
                     </el-container>
+                    <el-pagination style="position: absolute;bottom: 0;display: inline;"
+                        background
+                        layout="prev, pager, next"
+                        :total="1000">
+                    </el-pagination>
                   </el-main>
                   <el-aside>
                     <HotArticleList></HotArticleList>
