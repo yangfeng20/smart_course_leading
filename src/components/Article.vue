@@ -20,23 +20,9 @@
       <el-container>
         <el-aside width="150px" class="type-aside">
           <div ref="articleTypeBtnGroup">
-            <p style="background-color: #ecf5ff">
-              <el-button icon="el-icon-discover" type="text" @click="selectArticleType(1)">综合</el-button>
-            </p>
-            <p>
-              <el-button icon="el-icon-chat-round" type="text" @click="selectArticleType(2)">闲聊</el-button>
-            </p>
-            <p>
-              <el-button icon="el-icon-cpu" type="text" @click="selectArticleType(3)">脚本</el-button>
-            </p>
-            <p>
-              <el-button icon="el-icon-collection" type="text" @click="selectArticleType(4)">教程</el-button>
-            </p>
-            <p>
-              <el-button icon="el-icon-folder-checked" type="text" @click="selectArticleType(5)">任务</el-button>
-            </p>
-            <p>
-              <el-button icon="el-icon-date" type="text" @click="selectArticleType(6)">系统公告</el-button>
+            <p v-for="(type,index) in typeList" :style="index===0 ? 'background-color: #ecf5ff':''">
+              <el-button icon="el-icon-discover" type="text" @click="selectArticleType(type.key)">{{ type.desc }}
+              </el-button>
             </p>
           </div>
         </el-aside>
@@ -48,18 +34,10 @@
                 <el-header>
                   <div style="display: flex">
                     <div style="margin-top: 5px;width: 78%">
-                      <el-input placeholder="请输入内容" v-model="userInput" class="input-with-select" clearable>
-                        <el-select v-model="articleType" slot="prepend" placeholder="请选择">
-                          <i class="el-icon-discover">
-                            <el-option label="综合" value="1"></el-option>
-                          </i>
-                          <el-option label="闲聊" value="2"></el-option>
-                          <el-option label="脚本" value="3"></el-option>
-                          <el-option label="教程" value="4"></el-option>
-                          <el-option label="任务" value="5"></el-option>
-                          <el-option label="系统公告" value="6"></el-option>
-                        </el-select>
-                        <el-button type="primary" slot="append" icon="el-icon-search"></el-button>
+                      <el-input placeholder="请输入内容" v-model="userInput" class="input-with-select"
+                                @keydown.native.enter="searchArticle" clearable>
+                        <el-button type="primary" plain slot="append" icon="el-icon-search"
+                                   @click="searchArticle"></el-button>
                       </el-input>
                     </div>
                     <div style="margin-top: 5px;margin-left: 5px">
@@ -68,7 +46,13 @@
                   </div>
                 </el-header>
                 <el-container>
-                  <el-main style="padding-top: 0;min-height: 610px;text-align: center;">
+                  <el-main
+                      v-loading="listLoading"
+                      element-loading-text="帖子加载中"
+                      element-loading-spinner="el-icon-loading"
+                      element-loading-background="rgba(0, 0, 0, 0.3)"
+                      style="padding-top: 0;min-height: 610px;text-align: center;">
+                    <el-empty v-show="articleList.length<=0"></el-empty>
                     <!--文章内容+图片-->
                     <el-container v-for="article in articleList" class="articleList-div">
                       <!--文章主体内容-->
@@ -82,8 +66,8 @@
                               <el-row :gutter="0" class="article-last-row">
                                 <el-col :span="6">
                                   <div class="grid-content bg-purple">
-                                    <el-tag effect="dark">{{ article.type.key }}</el-tag>
-                                    | {{ article.author }}
+                                    <el-tag effect="dark">{{ article.type.desc }}</el-tag>
+                                    | {{ article.author.desc.nickname }}
                                   </div>
                                 </el-col>
 
@@ -177,13 +161,14 @@ export default {
     selectArticleType(type) {
       let btnGroup = this.$refs.articleTypeBtnGroup;
       for (let i = 0; i < btnGroup.childNodes.length; i++) {
-        if (i + 1 === type) {
+        if (i === type) {
           btnGroup.childNodes[i].style.backgroundColor = '#ecf5ff'
         } else {
           btnGroup.childNodes[i].style.removeProperty('background-color');
         }
       }
-
+      this.selectedArticleType = type
+      this.searchArticle()
     },
 
     articleTagMouseEntry(event) {
@@ -198,53 +183,37 @@ export default {
       // 还原标签颜色
       event.target.style.backgroundColor = event.target.temp1;
       event.target.style.color = event.target.temp2;
-    }
+    },
+    searchArticle() {
+      this.listLoading = true
+      this.$axios.post("/article/search",
+          {
+            ...this.articlePage,
+            title: this.userInput,
+            type: this.selectedArticleType
+          })
+          .then(resp => {
+            this.articleList = resp.data.data.content
+          }).catch(_ => {
+      }).finally(() => {
+        setTimeout(() => {
+          this.listLoading = false
+        }, 500)
+      })
+    },
   },
   data() {
     return {
-      userInput: "",
-      articleType: 1,
-      selectedArticleType: 1,
+      listLoading: false,
+      userInput: null,
+      selectedArticleType: null,
       articlePage: {
         page: 1,
         size: 9,
         total: 100,
       },
-      articleList: [
-        {
-          id: 1,
-          title: "测试文章标题",
-          content: "测试文章内容-ABDCDDIOWFJEIOJO",
-          author: "作者",
-          readingQuantity: 120,
-          starQuantity: 4,
-          type: "任务",
-          coverImgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          tagList: [{name: "大数据", color: "red"}, {name: "😂", color: "green"}, "java", "java", "javaaaaaaa", "javavvvv"]
-        },
-        {
-          id: 2,
-          title: "关于管理办法",
-          content: "这是我的管理aaaaaaaaaa-ABDCDDIOWFJEIOJO",
-          author: "小松鼠哈哈哈哈",
-          readingQuantity: 34534899,
-          starQuantity: 394,
-          type: "系统公告",
-          coverImgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          tagList: ["大数据", "python", "java", "java", "javaaaaaaa", "javavvvv"]
-        },
-        {
-          id: 2,
-          title: "关于管理办法",
-          content: "这是我的管理aaaaaaaaaa-ABDCDDIOWFJEIOJO",
-          author: "小松鼠哈哈哈哈",
-          readingQuantity: 34534899,
-          starQuantity: 394,
-          type: "系统公告",
-          coverImgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          tagList: ["大数据", "python", "java", "java", "javaaaaaaa", "javavvvv"]
-        },
-      ],
+      typeList: [],
+      articleList: [],
       topList: [
         {
           "id": 1,
@@ -283,12 +252,18 @@ export default {
   watch: {
     'articlePage.page': {
       handler: function () {
-        // todo 请求文章下一页
-        console.log("页变更", this.articlePage.page)
+        this.searchArticle()
       }
     },
   },
   created() {
+    this.searchArticle()
+
+    this.$axios.post("/article/get_all_type").then(resp => {
+      this.typeList = resp.data.data
+      this.typeList.unshift({key: 0, desc: "综合"})
+    }).catch(_ => {
+    })
   }
 }
 </script>
@@ -381,6 +356,10 @@ body > .el-container {
   margin-right: 10px;
   margin-bottom: 10px;
   text-align: left;
+}
+
+.el-select {
+  width: 130px;
 }
 
 </style>

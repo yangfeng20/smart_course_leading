@@ -464,10 +464,11 @@ export default {
       return;
     }
 
-    this.$axios.post('/article' + articleId).then(resp => {
+    this.$axios.get('/article/' + articleId).then(resp => {
       let article = resp.data.data
       if (article) {
         this.article = article;
+        return;
       }
       ElementUI.Message.warning("文章不存在，正在跳转列表")
       setTimeout(() => {
