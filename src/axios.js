@@ -52,7 +52,7 @@ request.interceptors.response.use(resp => {
             return resp;
         }
 
-        // 创建更新时间格式
+        // 创建更新时间格式 todo 后端处理了时间
         function formatDate(result) {
             let formatStr = 'YYYY-MM-DD HH:mm:ss'
             if (result?.data?.createdDate) {

@@ -4,35 +4,61 @@
       <el-form ref="form" :model="comment" label-width="60px" v-if="showCreateComment"
                style="width: 100%;display: flex;">
         <el-image class="new-comment-message-created-icon message-created-icon"
-                  src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"></el-image>
+                  :src="userInfo.imgUrl"></el-image>
         <div style="display: flex;padding: 10px;align-items: flex-end;width: 100%">
-          <el-input :autosize="{ minRows: 2}" type="textarea" v-model="comment.content" placeholder="编写评论" maxlength="100"
+          <el-input :autosize="{ minRows: 3}" type="textarea" v-model="comment.inputMsg" placeholder="编写评论"
+                    maxlength="100"
+                    show-word-limit
                     style="width: 60%;"></el-input>
-          <div>
-            <el-button style="margin-left: 10px;" size="small" type="primary" @click="onSubmit">提交</el-button>
-          </div>
+          <el-button style="position:relative;margin-left: -56px;" size="small" type="primary" @click="onSubmit(null)">
+            发送
+          </el-button>
         </div>
       </el-form>
     </div>
     <div v-for="message in messageList">
       <div style="margin: 10px">
         <el-row>
-          <el-col :span="1">
-            <el-image class="message-created-icon"
-                      :src="message.createdUser.imgUrl"></el-image>
-          </el-col>
-          <el-col :span="4" class="message-created-name">{{ message.createdUser.name }} | {{ message.createdDate }}
-          </el-col>
+          <div style="display: flex">
+            <div>
+              <el-image class="message-created-icon"
+                        :src="message?.createdUser?.imgUrl"></el-image>
+            </div>
+            <div class="message-created-name">{{ message.createdUser.name }}
+            </div>
+          </div>
         </el-row>
         <el-row>
-          <el-col :span="2"></el-col>
-          <el-col style="padding-left: 50px" :span="22" class="message-created-name"
-                  v-html="message.msgContent"></el-col>
+          <div style="padding-left: 50px" :span="22" class="message-created-name"
+               v-html="message.msgContent"></div>
+        </el-row>
+        <el-row>
+          <div style="padding-left:50px;margin-top:10px;display: flex" class="message-created-name">
+            <div>{{ message.createdDate }}</div>
+            <el-button style="position: relative;margin-left: 10px;top: -3px;" type="text" plain
+                       icon="el-icon-s-comment"
+                       @click="openCommentInput(message)" size="mini">{{ commentBtnText }}
+            </el-button>
+          </div>
+        </el-row>
+
+        <el-row>
+          <div v-if="message.newComment" style="padding-left: 50px" class="message-created-name">
+            <el-input ref="input" :autosize="{ minRows: 3}" type="textarea" v-model="comment.replyInputMsg"
+                      @blur="closeCommentInput(message)"
+                      :placeholder="message.toUser"
+                      maxlength="100"
+                      show-word-limit
+                      style="width: 60%;"></el-input>
+            <el-button style="position:relative;margin-left: -56px;" size="small" type="primary"
+                       @click="onSubmit(message)">回复
+            </el-button>
+          </div>
         </el-row>
       </div>
 
       <div class="sub-message">
-        <Remark :message-list="message.subMessageList"></Remark>
+        <Remark :message-list="message.subMessageList" :link-id="linkId"></Remark>
       </div>
     </div>
   </div>
@@ -45,19 +71,82 @@ export default {
   components: {
     Remark,
   },
-  props: ['messageList', 'showCreateComment'],
+  props: ['messageList', 'showCreateComment', 'linkId'],
   data() {
     return {
+      commentBtnText: "评论",
       comment: {
-        content: ""
-      }
+        inputMsg: "",
+        replyInputMsg: "",
+      },
+      userInfo: {}
     }
   },
 
   methods: {
-    onSubmit() {
+    onSubmit(message) {
+      let parentMessageId = message.id
+      let inputMsg
+      if (parentMessageId) {
+        inputMsg = this.comment.replyInputMsg
+      } else {
+        inputMsg = this.comment.inputMsg
+      }
 
+      if (!inputMsg) {
+        return;
+      }
+
+      this.$axios.post("/message/add", {
+        linkId: this.linkId,
+        msgType: 4,
+        msgContent: inputMsg,
+        parentId: parentMessageId,
+      }).then(resp => {
+        this.$notify({
+          title: '评论提交成功',
+          message: '等待管理员审核后可查看',
+          type: 'success'
+        });
+
+        // 清空评论区
+        if (parentMessageId) {
+          this.comment.replyInputMsg = ""
+        } else {
+          this.comment.inputMsg = ""
+        }
+        // 关闭评论输入框
+        this.closeCommentInput(message)
+      })
     },
+
+    closeCommentInput(message) {
+      console.log("失焦")
+      message.newComment = false
+      this.commentBtnText = "评论"
+    },
+    openCommentInput(message) {
+      console.log("打开", message.newComment)
+      if (message.newComment) {
+        return;
+      }
+      message.newComment = true
+      this.commentBtnText = "取消"
+
+      setTimeout(() => {
+        if (this.$refs.input.length >= 1) {
+          this.$refs.input[0].focus()
+        }
+      }, 100)
+      message.toUser = "回复" + message.createdUser.name
+    },
+  },
+  created() {
+    if (!this.showCreateComment) {
+      return;
+    }
+
+    this.userInfo = this.$func.getLocalUser()
   }
 }
 
@@ -95,5 +184,14 @@ export default {
 
 .el-textarea > :first-child {
   background-color: #f2f3f5;
+}
+
+.el-textarea > :nth-child(2) {
+  color: #909399;
+  background: #FFF;
+  position: absolute;
+  font-size: 12px;
+  bottom: 5px;
+  right: 65px;
 }
 </style>

@@ -55,8 +55,8 @@
               <el-row :gutter="0" class="article-last-row">
                 <el-col :span="6">
                   <div class="grid-content bg-purple">
-                    <el-tag effect="dark">{{ article.type }}</el-tag>
-                    | {{ article.author }}
+                    <el-tag effect="dark">{{ article?.type?.desc }}</el-tag>
+                    | {{ article?.author?.desc?.nickname }}
                   </div>
                 </el-col>
 
@@ -93,7 +93,7 @@
                   v-model="article.content"></mavon-editor>
               <el-footer style="height: 100%">
                 <div class="footer-body" id="commentList">
-                  <Remark :message-list="messageList" :show-create-comment="true"></Remark>
+                  <Remark :message-list="messageList" :show-create-comment="true" :link-id="article.id"></Remark>
                 </div>
               </el-footer>
             </el-container>
@@ -185,7 +185,7 @@ export default {
         starArticleCount: 48
       },
       stared: false,
-      messageTotal: 12,
+      messageTotal: 0,
       catalogue: [],
       commitFormDialogVisible: false,
       task: {
@@ -197,101 +197,31 @@ export default {
           }
         }
       },
-      article: {
-        content: "\n## 标题1\n我的内容\n我的内容\n我的内容\n\n我的内容\n我的内容\n我的内容\n我的内容我的内容\n我的内容\n### 标题1-1 \n" +
-            "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
-            "哈哈哈哈\n我的内容\n我的内容哈哈哈哈哈哈哈哈哈哈\n我的内容\n我的内容\n我的内容哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
-            "哈哈哈哈哈哈哈哈哈哈哈哈哈哈\n我的内容\n我的内容哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈123" +
-            "\n## 标题2 \n我的内容\n我的内容\n我的内容\n我的内容\n我的内容\n## 后续标题\n我的内容\n我的内容\n我的内容" +
-            "\n## 后续标题\n## 后续标题\n我的内容\n我的内容\n我的内容\n我的内容\n我的内容\n## 后续标题\n## 后续标题" +
-            "\n我的内容\n我的内容\n我的内容\n我的内容\n我的内容\n我的内容\n## 后续标题\n我的内容",
-        title: "关于Java",
-        author: "作者",
-        readingQuantity: 120,
-        starQuantity: 4,
-        type: "任务",
-        coverImgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-        tagList: [{name: "大数据", color: "red"}, {
-          name: "python",
-          color: "green"
-        }, "java", "java", "javaaaaaaa", "javavvvv"]
-      },
-      messageList: [
-        {
-          id: 1,
-          msgContent: "哈哈哈，我是评论",
-          createdDate: "2023-10-23",
-          createdUser: {
-            name: "小王",
-            imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          },
-          subMessageList: [
-            {
-              id: 2,
-              msgContent: "我是子评论<br>fafjeiw\nfafjeiw\n哈哈哈哈",
-              createdUser: {
-                name: "小李",
-                imgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-              },
-            },
-            {
-              id: 2,
-              msgContent: "我是子评论",
-              createdUser: {
-                name: "小李",
-                imgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-              },
-              subMessageList: [
-                {
-                  id: 2,
-                  msgContent: "我是子评论",
-                  createdUser: {
-                    name: "小李",
-                    imgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-                  },
-                },
-              ]
-            },
-          ]
-        },
-        {
-          id: 4,
-          msgContent: "就是措施，我是评论",
-          createdDate: "2023-10-23",
-          createdUser: {
-            name: "丽丽",
-            imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          },
-        },
-        {
-          id: 2,
-          msgContent: "我是子评论",
-          createdUser: {
-            name: "小李",
-            imgUrl: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          },
-        },
-      ]
+      article: {},
+      messageList: [],
     }
   },
 
   mounted() {
     this.$nextTick(() => {
+      // 隐藏自带目录
       let originalCatalogue = document.querySelector(".v-note-navigation-wrapper.transition");
       originalCatalogue.style = 'display: none;';
 
-      let titleList = document.querySelectorAll(".v-note-navigation-wrapper.transition a");
+      // 构建侧边目录
       let catalogue = []
-      titleList.forEach(item => {
-        if (item.id) {
-          catalogue.push({
-            href: item.id,
-            name: item.parentElement.innerText
-          })
-        }
-      })
-
-      this.catalogue = catalogue
+      setTimeout(() => {
+        let titleList = document.querySelectorAll(".v-note-navigation-wrapper.transition a");
+        titleList.forEach(item => {
+          if (item.id) {
+            catalogue.push({
+              href: item.id,
+              name: item.parentElement.innerText
+            })
+          }
+        })
+        this.catalogue = catalogue
+      }, 300)
     })
   },
   methods: {
@@ -466,16 +396,27 @@ export default {
 
     this.$axios.get('/article/' + articleId).then(resp => {
       let article = resp.data.data
-      if (article) {
-        this.article = article;
+      if (!article) {
+        ElementUI.Message.warning("文章不存在，正在跳转列表")
+        setTimeout(() => {
+          this.$router.push("/article")
+        }, 2000)
         return;
       }
-      ElementUI.Message.warning("文章不存在，正在跳转列表")
-      setTimeout(() => {
-        this.$router.push("/article")
-      }, 2000)
+
+      this.article = article;
+      this.$axios.post("/message/search", {
+        linkId: articleId,
+        recursion: true,
+      }).then(resp => {
+        this.messageList = resp.data.data.content
+        this.messageTotal = resp.data.data.total
+      })
+
+
     }).catch(_ => {
     })
+
   }
   ,
 }
