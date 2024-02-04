@@ -92,7 +92,7 @@
               filterable
               remote
               reserve-keyword
-              placeholder="请输入标签"
+              placeholder="请输入标签搜索"
               :remote-method="searchTag"
               :loading="loading">
             <el-option
@@ -105,6 +105,7 @@
           </el-select>
           <el-button type="primary" @click="newTagInnerVisible = true">创建标签</el-button>
           <div style="margin-top: 10px;">
+            文章封面：
             <el-upload
                 style="width: 280px"
                 class="upload-demo"
@@ -153,31 +154,14 @@ export default {
       loading: false,
       newTagInnerVisible: false,
       saveArticleDialogVisible: false,
-      typeList: [
-        {
-          key: 1,
-          desc: "脚本",
-
-        },
-        {
-          key: 2,
-          desc: "闲聊",
-
-        },
-        {
-          key: 3,
-          desc: "教程",
-
-        },
-        {
-          key: 4,
-          desc: "任务",
-
-        },
-      ],
+      typeList: [],
       coverImgUrlShow: false,
       article: {
+        type: {
+          key: 2
+        },
         coverImgUrl: '',
+        award: '',
       },
     }
   },
@@ -190,18 +174,25 @@ export default {
     }
 
 
-
-
     // 存在文章，获取文章数据
     this.$axios.get('/article/' + articleId).then(resp => {
       let article = resp.data.data
+
       if (article) {
-        this.article = article;
-        this.article.tagList = resp.data.data.tagList.map(item=> {
-          return {key:item.id, label:item.name, color:item.color}
+        let tagList = resp.data.data.tagList.map(item => {
+          return {key: item.id, label: item.name, color: item.color}
         });
         // 回显标签需要选项集合中有对应的值，才能回显
-        this.searchTagsTemp = resp.data.data.tagList
+        this.searchTagsTemp = tagList
+        this.article = {
+          ...article,
+          award: JSON.parse(article.extInfo).award,
+          tagList: tagList
+        };
+        if (this.article?.coverImgUrl.startsWith("http")) {
+          this.coverImgUrlShow = true
+        }
+
         return;
       }
       ElementUI.Message.warning("文章不存在，正在跳转列表")
@@ -215,10 +206,13 @@ export default {
   methods: {
     clickReleaseArticle() {
       this.saveArticleDialogVisible = true
-      this.$axios.post("/article/get_all_type").then(resp => {
-        this.typeList = resp.data.data
-      }).catch(_ => {
-      })
+
+      if (this.typeList.length === 0) {
+        this.$axios.post("/article/get_all_type").then(resp => {
+          this.typeList = resp.data.data
+        }).catch(_ => {
+        })
+      }
     },
     saveArticleDraft() {
       if (!this.article.title) {
@@ -231,20 +225,17 @@ export default {
       }
 
       let request
+      let requestParam = {
+        ...this.article,
+        status: 1,
+        type: this.article.type?.key,
+        tagList: this.article.tagList?.map(tag => tag.key),
+        extInfo: JSON.stringify({award: this.article.award})
+      }
       if (this.article.id) {
-        request = this.$axios.put("/article/update", {
-          ...this.article,
-          status: 1,
-          type:this.article.type?.key,
-          tagList: this.article.tagList?.map(tag => tag.key)
-        })
+        request = this.$axios.put("/article/update", requestParam)
       } else {
-        request = this.$axios.post("/article/add", {
-          ...this.article,
-          status: 1,
-          type:this.article.type?.key,
-          tagList: this.article.tagList?.map(tag => tag.key)
-        })
+        request = this.$axios.post("/article/add", requestParam)
       }
 
       request.then(resp => {
@@ -285,28 +276,28 @@ export default {
       }
       this.saveArticleDialogVisible = false
       let request
+      let requestParam = {
+        ...this.article,
+        status: 2,
+        type: this.article.type?.key,
+        tagList: this.article.tagList?.map(tag => tag.key),
+        extInfo: JSON.stringify({award: this.article.award})
+      }
       if (this.article.id) {
-        request = this.$axios.put("/article/update", {
-          ...this.article,
-          status: 2,
-          type:this.article.type?.key,
-          tagList: this.article.tagList?.map(tag => tag.key)
-        })
+        request = this.$axios.put("/article/update", requestParam)
       } else {
-        request = this.$axios.post("/article/add", {
-          ...this.article,
-          status: 2,
-          type:this.article.type?.key,
-          tagList: this.article.tagList?.map(tag => tag.key)
-        })
+        request = this.$axios.post("/article/add", requestParam)
       }
 
       request.then(resp => {
         this.$notify({
           title: "文章发布成功",
-          message: "等待管理员审核文章",
+          message: "等待管理员审核文章-正在跳转列表",
           type: "success"
         })
+        setTimeout(() => {
+          this.$router.push("/article")
+        }, 1000)
       }).catch(_ => {
 
       })
