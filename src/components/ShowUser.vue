@@ -16,7 +16,7 @@
                 <UserInfoCard :user-info="userInfo"></UserInfoCard>
               </div>
 
-              <ArticleList></ArticleList>
+              <ArticleList :article-list="this.articleList"></ArticleList>
             </div>
 
           </el-main>
@@ -57,20 +57,27 @@ export default {
   },
   data() {
     return {
-      userInfo: {
-        userId: 35,
-        name: "test_8fb",
-        imgUrl: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
-        briefInfo: "我是简介,hahahahhf我发较为覅偶尔哦",
-        articleCount: 93,
-        starArticleCount: 48
-      },
+      userInfo: {},
+      articleList: []
     }
   },
   methods: {
     sendMessage() {
-      this.$router.push("/me/message_center/" + this.userInfo.userId)
+      this.$router.push("/me/message_center/" + this.userInfo.id)
     },
+  },
+  created() {
+    let pathArr = this.$route.path.split("/");
+    let userId = pathArr[pathArr.length - 1];
+    this.$axios.post("/user/info?userId=" + userId).then(resp => {
+      this.userInfo = resp.data.data
+    })
+
+    this.$axios.post('/article/search', {
+      author: userId,
+    }).then(resp => {
+      this.articleList = resp.data.data.content
+    })
   }
 }
 </script>

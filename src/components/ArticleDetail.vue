@@ -47,19 +47,20 @@
         <el-container>
           <el-main class="one-article-main">
             <el-container>
-              <el-header class="article-top" style="height: 100px">
+              <el-header class="article-top" style="height: 70px">
                 <div class="article-title">
                   <h1>{{ article.title }}</h1>
                 </div>
               </el-header>
-              <div class="article-last-row">
+              <div class="article-last-row" style="height: 50px;">
                 <div class="grid-content bg-purple" style="display: flex;gap: 20px;width: 100%;">
                   <el-tag effect="dark">{{ article?.type?.desc }}</el-tag>
-                  <el-tag type="success" effect="dark" v-if="true">任务奖励：{{ taskAward }}
+                  <el-tag @click="()=>{this.$notify({title: '任务申请',message: '点击右侧侧边栏申请任务',type: 'success'})}"
+                          type="success" effect="dark" v-if="article?.type?.key ===4">任务奖励：{{ taskAward }}
                     <el-icon class="el-icon-coin"></el-icon>
                   </el-tag>
 
-                  <div>{{ article?.author?.desc?.name }}</div>
+                  <div class="article-icon">{{ article?.author?.desc?.name }}</div>
 
                   <div class="article-icon">
                     <div class="grid-content bg-purple">
@@ -567,5 +568,13 @@ export default {
 
 .article-title {
   font-size: 30px;
+}
+
+.article-title h1 {
+  margin: 10px;
+}
+
+.article-icon {
+  padding-top: 5px;
 }
 </style>

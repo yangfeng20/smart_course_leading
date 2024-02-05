@@ -67,7 +67,7 @@
                                 <el-col :span="6">
                                   <div class="grid-content bg-purple">
                                     <el-tag effect="dark">{{ article.type.desc }}</el-tag>
-                                    | {{ article.author.desc.nickname }}
+                                    | {{ article.author.desc.name }}
                                   </div>
                                 </el-col>
 

@@ -19,8 +19,8 @@
         </el-col>
       </el-row>
       <el-row class="data-count count-number">
-        <el-col :span="12">1</el-col>
-        <el-col :span="12">12</el-col>
+        <el-col :span="12">{{ this.userInfo.articleCount }}</el-col>
+        <el-col :span="12">{{ this.userInfo.starArticleCount }}</el-col>
       </el-row>
       <el-row class="data-count count-text">
         <el-col :span="12">文章</el-col>
@@ -36,7 +36,8 @@ export default {
   props: ['userInfo'],
   methods: {
     intoMe() {
-      this.$router.push('/user/' + this.userInfo.id)
+      let userId = this.userInfo.userId ? this.userInfo.userId : this.userInfo.id
+      this.$router.push('/user/' + userId)
     },
   }
 }

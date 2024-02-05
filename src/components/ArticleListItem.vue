@@ -3,7 +3,7 @@
     <el-container class="articleList-div">
       <!--文章主体内容-->
       <el-main class="article-item-parent">
-        <div>
+        <div @click="()=>{this.$router.push('/article/detail/'+this.article.id)}">
           <el-descriptions class="article-item" :column="1" :colon="false">
             <el-descriptions-item><span class="article-title">{{ article.title }}</span>
             </el-descriptions-item>
@@ -15,6 +15,7 @@
                   <el-row :gutter="5" class="article-tag-div">
                     <el-col :span="3.5" v-for="tag in article.tagList">
                       <el-tag style="color: #eff0f1" ref="articleTag"
+                              size="medium"
                               :color="tag.color"
                               @click.stop=""
                               effect="plain">{{ tag.name }}
@@ -23,25 +24,24 @@
                   </el-row>
                 </div>
 
-                <div style="display: flex">
-                  <div class="grid-content bg-purple">
-                    <el-tag effect="dark">{{ article.type?.key }}</el-tag>
-                    |
-                    <el-tag effect="dark">{{ article.status?.desc }}</el-tag>
-                    | {{ article.author }}
-
+                <div style="display: flex;gap: 20px;padding-top: 5px;">
+                  <div class="grid-content bg-purple" style="display:flex;gap: 10px;">
+                    <el-tag effect="plain" size="mini">{{ article.type?.desc }}</el-tag>
+                    <el-tag effect="plain" size="mini">{{ article.status?.desc }}</el-tag>
+                    <div>
+                      | {{ article.author.desc.name }}
+                    </div>
                   </div>
 
                   <div class="grid-content bg-purple text-item">
-                    &nbsp;&nbsp;&nbsp;&nbsp;
                     <i class="el-icon-view"></i>
                     {{ article.readingQuantity }}
                     <i class="el-icon-star-on"></i>
                     {{ article.starQuantity }}
                   </div>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
+                <div style="display: flex;gap: 20px;">
                   <div class="text-item">创建时间：{{ article.createdDate }}</div>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
                   <div class="text-item">更新时间：{{ article.updatedDate }}</div>
                 </div>
                 <div style="margin-top: 10px;" v-if="opt">
@@ -121,6 +121,6 @@ export default {
 
 .text-item {
   position: relative;
-  top: 5px
+  /*top: 5px*/
 }
 </style>
