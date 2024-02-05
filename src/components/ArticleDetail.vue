@@ -47,41 +47,41 @@
         <el-container>
           <el-main class="one-article-main">
             <el-container>
-              <el-header class="article-top">
-                <div>
+              <el-header class="article-top" style="height: 100px">
+                <div class="article-title">
                   <h1>{{ article.title }}</h1>
                 </div>
               </el-header>
-              <el-row :gutter="0" class="article-last-row">
-                <el-col :span="6">
-                  <div class="grid-content bg-purple">
-                    <el-tag effect="dark">{{ article?.type?.desc }}</el-tag>
-                    | {{ article?.author?.desc?.nickname }}
-                  </div>
-                </el-col>
+              <div class="article-last-row">
+                <div class="grid-content bg-purple" style="display: flex;gap: 20px;width: 100%;">
+                  <el-tag effect="dark">{{ article?.type?.desc }}</el-tag>
+                  <el-tag type="success" effect="dark" v-if="true">任务奖励：{{ taskAward }}
+                    <el-icon class="el-icon-coin"></el-icon>
+                  </el-tag>
 
-                <el-col :span="4" class="article-icon">
-                  <div class="grid-content bg-purple">
-                    <i class="el-icon-view"></i>
-                    {{ article.readingQuantity }}
-                    <i class="el-icon-star-on"></i>
-                    {{ article.starQuantity }}
-                  </div>
-                </el-col>
+                  <div>{{ article?.author?.desc?.name }}</div>
 
-                <el-col :span="14">
-                  <el-row :gutter="5" class="article-tag-div">
-                    <el-col :span="3.5" v-for="tag in article.tagList">
+                  <div class="article-icon">
+                    <div class="grid-content bg-purple">
+                      <i class="el-icon-view"></i>
+                      {{ article.readingQuantity }}
+                      <i class="el-icon-star-on"></i>
+                      {{ article.starQuantity }}
+                    </div>
+                  </div>
+
+                  <div style="display: flex;gap:2px;padding-right: 4px;margin-left: auto;">
+                    <div v-for="tag in article.tagList">
                       <el-tag style="color: #eff0f1" ref="articleTag"
                               :color="tag.color"
                               @click.stop=""
                               effect="plain">{{ tag.name }}
                       </el-tag>
-                    </el-col>
-                  </el-row>
-                </el-col>
+                    </div>
+                  </div>
+                </div>
 
-              </el-row>
+              </div>
               <mavon-editor
                   :subfield="false"
                   :toolbarsFlag="false"
@@ -102,16 +102,26 @@
             <div style="height: 200px">
               <UserInfoCard :user-info="authorUserInfo"></UserInfoCard>
             </div>
-            <div v-if="article.type === '任务'">
+            <div v-if="article.type?.key === 4">
               <el-card shadow="hover">
                 <el-steps direction="vertical" :space="100" :active="task?.status" finish-status="success">
-                  <el-step @click.native="taskApply" title="申请" icon="el-icon-collection-tag"></el-step>
-                  <el-step @click.native="taskCommit" title="提交" icon="el-icon-edit-outline"></el-step>
+                  <el-step @click.native="taskApply" title="申请"
+                           :description="task?.ext?.apply?.desc"
+                           :status="task?.ext?.apply?.status"
+                           icon="el-icon-collection-tag"></el-step>
+
+                  <el-step @click.native="taskCommit"
+                           :description="task?.ext?.comment?.desc"
+                           :status="task?.ext?.comment?.status"
+                           title="提交" icon="el-icon-edit-outline"></el-step>
+
                   <el-step @click.native="taskAudit" title="审核" icon="el-icon-monitor"
                            :description="task?.ext?.audit?.desc"
                            :status="task?.ext?.audit?.status"></el-step>
+
                   <el-step @click.native="taskFinish" title="完成" icon="el-icon-folder-checked"
-                           :description="task.status === 4 ? '点击领取金币':''"></el-step>
+                           :description="task?.ext?.finish?.desc"
+                           :status="task?.ext?.finish?.status"></el-step>
                 </el-steps>
               </el-card>
             </div>
@@ -176,17 +186,17 @@ export default {
   },
   data() {
     return {
+      taskAward: "",
       authorUserInfo: {},
       stared: false,
       messageTotal: 0,
       catalogue: [],
       commitFormDialogVisible: false,
       task: {
-        status: 4,
+        status: 0,
         ext: {
-          audit: {
-            status: 'error',
-            desc: "上传文件不对",
+          apply: {
+            desc: "点击申请任务"
           }
         }
       },
@@ -233,23 +243,24 @@ export default {
         return;
       }
 
-      this.$axios.post('/task/task_apply?articleId=' + this.task.articleId).then(_ => {
+      this.$axios.post('/task/apply?articleId=' + this.article.id).then(_ => {
         this.$notify({
           title: '任务申请成功',
           message: '请按照教程完成任务，然后提交任务信息',
           type: 'success'
         });
+
+        this.refreshTask();
       })
     },
 
     handleClose(done) {
-      // 关闭确认，不需要
-      // this.$confirm('确认关闭？')
-      //     .then(_ => {
-      //       done();
-      //     })
-      //     .catch(_ => {
-      //     });
+      this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {
+          });
     },
 
     doTaskCommit() {
@@ -264,6 +275,8 @@ export default {
           message: '提交成功，等待管理员审核',
           type: 'success'
         });
+        this.commitFormDialogVisible = false
+        this.refreshTask()
       })
     },
 
@@ -280,17 +293,33 @@ export default {
       }
     },
     taskAudit() {
-      if (this.task.status !== 3) {
+      if (this.task.status !== 2) {
+        return;
+      }
+      if (this.task.ext.audit.status === 'error') {
+        this.$notify({
+          title: '审核拒绝',
+          message: '请重新提交',
+          type: 'info'
+        });
         return;
       }
       this.$notify({
         title: '等待管理员审核',
-        message: '当前任务已经申请了哟!',
+        message: '等待管理员审核',
         type: 'info'
       });
     },
     taskFinish() {
-      if (this.task.status !== 4) {
+      if (this.task.status !== 3) {
+        return;
+      }
+      if (this.task.ext.audit.status === 'error') {
+        this.$notify({
+          title: '审核失败',
+          message: '请重新提交任务，等待审核',
+          type: 'info'
+        });
         return;
       }
 
@@ -300,6 +329,7 @@ export default {
           message: '金币已放入您的个人钱包中了哟!',
           type: 'success'
         });
+        this.refreshTask();
       })
     },
     starArticle() {
@@ -370,6 +400,16 @@ export default {
       }
     },
 
+    refreshTask() {
+      // 查询任务
+      this.$axios.post("/task/task_process?articleId=" + this.article.id).then(resp => {
+        let task = resp.data.data
+        if (task) {
+          this.task = task
+        }
+      })
+    },
+
     isIntegerString(str) {
       // 检查字符串是否只包含数字字符
       const isNumberString = /^[0-9]*$/.test(str);
@@ -411,6 +451,7 @@ export default {
 
       this.article = article;
       this.authorUserInfo = article?.author?.desc
+      this.taskAward = JSON.parse(article.extInfo).award
       this.$axios.post("/message/search", {
         linkId: articleId,
         recursion: true,
@@ -428,7 +469,12 @@ export default {
         }
       })
 
+      if (article.type.key !== 4) {
+        return;
+      }
 
+      // 查询任务
+      this.refreshTask()
     }).catch(_ => {
     })
 
@@ -489,6 +535,7 @@ export default {
 .article-last-row {
   background-color: #ffffff;
   padding-left: 20px;
+  display: flex;
 }
 
 .footer-body {
@@ -516,5 +563,9 @@ export default {
 .item > :nth-child(2) {
   top: 5px;
   right: 12px;
+}
+
+.article-title {
+  font-size: 30px;
 }
 </style>
