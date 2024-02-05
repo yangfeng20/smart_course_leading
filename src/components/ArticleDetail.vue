@@ -18,7 +18,7 @@
             </el-col>
             <el-col :span="6">
               <div class="grid-content bg-purple icon" @click="starArticle">
-                <el-badge :value="article.starQuantity" :max="99" class="item" type="primary">
+                <el-badge :value="article.starQuantity" :max="999" class="item" type="primary">
                   <i v-if="stared" class="el-icon-star-on opt-icon"></i>
                   <i v-if="!stared" class="el-icon-star-off opt-icon"></i>
                 </el-badge>
@@ -176,14 +176,7 @@ export default {
   },
   data() {
     return {
-      authorUserInfo: {
-        userId: 35,
-        name: "test_8fb",
-        imgUrl: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
-        briefInfo: "我是简介,hahahahhf我发较为覅偶尔哦",
-        articleCount: 93,
-        starArticleCount: 48
-      },
+      authorUserInfo: {},
       stared: false,
       messageTotal: 0,
       catalogue: [],
@@ -310,20 +303,32 @@ export default {
       })
     },
     starArticle() {
-      this.stared = !this.stared
       if (this.stared) {
         this.$notify({
           title: '收藏文章失败',
           message: '已经收藏过文章了哟',
           type: 'warning'
         });
-      } else {
-        this.$notify({
-          title: '收藏文章',
-          message: '文章已经放进你的收藏夹了哟',
-          type: 'success'
-        })
+        return;
       }
+
+      this.$axios.post("/article/star?articleId=" + this.article.id).then(resp => {
+        if (resp.data.data) {
+          this.$notify({
+            title: '收藏文章',
+            message: '文章已经放进你的收藏夹了哟',
+            type: 'success'
+          })
+          this.stared = true
+          this.article.starQuantity += 1
+        } else {
+          this.$notify({
+            title: '收藏失败',
+            message: '未知错误',
+            type: 'error'
+          })
+        }
+      })
     },
     shareArticle() {
       this.copyToClipboard(location.href)
@@ -405,12 +410,22 @@ export default {
       }
 
       this.article = article;
+      this.authorUserInfo = article?.author?.desc
       this.$axios.post("/message/search", {
         linkId: articleId,
         recursion: true,
+        msgType: 4,
       }).then(resp => {
         this.messageList = resp.data.data.content
         this.messageTotal = resp.data.data.total
+      })
+
+      // 是否收藏文章
+      this.$axios.post("/article/get_my_start_article_list_id").then(resp => {
+        let articleList = resp.data.data;
+        if (articleList.includes(parseInt(articleId))) {
+          this.stared = true
+        }
       })
 
 
