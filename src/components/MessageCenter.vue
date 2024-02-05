@@ -17,7 +17,7 @@
               <div style="text-align: center;" class="message-date">{{ message.createdDate }}</div>
 
               <div v-if="!message.me" style="display: flex; justify-content: flex-start; align-items: center;">
-                <el-avatar :src="messageList[selectMsgIndex].toUser.imgUrl"></el-avatar>
+                <el-avatar :src="messageList[selectMsgIndex].toUser?.imgUrl"></el-avatar>
                 <div class="to-message message-div">
                   {{ message.msgContent }}
                 </div>
@@ -26,7 +26,7 @@
                 <div class="from-message message-div">
                   {{ message.msgContent }}
                 </div>
-                <el-avatar :src="user.imgUrl"></el-avatar>
+                <el-avatar :src="fromUser?.imgUrl"></el-avatar>
               </div>
               <div style="height: 10px"></div>
             </div>
@@ -132,10 +132,7 @@ export default {
           ]
         },
       ],
-      user: {
-        name: "哈哈哈",
-        imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-      }
+      fromUser: {}
     }
   },
 
@@ -157,25 +154,35 @@ export default {
         })
         return;
       }
+
+      this.messageList[this.selectMsgIndex].message = this.messageList[this.selectMsgIndex].message || []
+      let curMessage = this.messageList[this.selectMsgIndex].message
       let toUserId = this.messageList[this.selectMsgIndex].toUser.id
 
       // todo 添加消息接口
+      this.$axios.post("/message/add", {
+        linkId: toUserId,
+        parentId: curMessage.slice(-1).id,
+        msgType: 5,
+        msgContent: this.inputMsg
+      }).then(resp => {
+        // 添加到页面
+        this.messageList[this.selectMsgIndex].message.push({
+          me: true,
+          id: resp.data.data,
+          msgContent: this.inputMsg,
+          createdDate: new Moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+        },)
+        this.inputMsg = ""
 
-      // 添加到页面
-      this.messageList[this.selectMsgIndex].message = this.messageList[this.selectMsgIndex].message || []
-      this.messageList[this.selectMsgIndex].message.push({
-        me: true,
-        msgContent: this.inputMsg,
-        createdDate: new Moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
-      },)
-
-      this.inputMsg = ""
+      })
     },
   },
 
   created() {
     let pathArr = this.$route.path.split("/");
     let toUserId = pathArr[pathArr.length - 1];
+    this.fromUser = this.$func.getLocalUser()
 
     this.$axios.post("/user/info?userId=" + toUserId).then(resp => {
       console.log(resp.data.data)
@@ -189,8 +196,14 @@ export default {
     })
 
 
-    this.$axios.post("/message/my_message").then(resp => {
-
+    this.$axios.post("/message/chat_message_list", {
+      linkId: toUserId,
+      recursion: true,
+      msgType: 5,
+      chatQuery: true,
+      createdId: this.fromUser.id
+    }).then(resp => {
+      this.messageList = resp.data.data.content
     })
   }
 }
@@ -235,7 +248,7 @@ export default {
   background-color: #d9e6fa;
 }
 
-.scrollbar{
+.scrollbar {
   overflow-y: auto;
   height: 600px;
 }
