@@ -17,10 +17,13 @@
               <div style="text-align: center;" class="message-date">{{ message?.createdDate }}</div>
 
               <div v-if="!message?.me" style="display: flex; justify-content: flex-start; align-items: center;">
-                <el-image
-                    style="width: 35px; height: 35px; border-radius: 80%;"
-                    :src="messageList[selectMsgIndex].toUser?.imgUrl"
-                    fit="cover"></el-image>
+                <el-tooltip class="item" effect="dark" :content="messageList[selectMsgIndex].toUser?.name"
+                            placement="top">
+                  <el-image
+                      style="width: 35px; height: 35px; border-radius: 80%;"
+                      :src="messageList[selectMsgIndex].toUser?.imgUrl"
+                      fit="cover"></el-image>
+                </el-tooltip>
                 <div class="to-message message-div">
                   {{ message?.msgContent }}
                 </div>
@@ -29,10 +32,12 @@
                 <div class="from-message message-div">
                   {{ message?.msgContent }}
                 </div>
-                <el-image
-                    style="width: 35px; height: 35px; border-radius: 80%;"
-                    :src="fromUser?.imgUrl"
-                    fit="cover"></el-image>
+                <el-tooltip class="item" effect="dark" :content="fromUser?.name" placement="top">
+                  <el-image
+                      style="width: 35px; height: 35px; border-radius: 80%;"
+                      :src="fromUser?.imgUrl"
+                      fit="cover"></el-image>
+                </el-tooltip>
               </div>
               <div style="height: 10px"></div>
             </div>
@@ -131,30 +136,23 @@ export default {
     let toUserId = pathArr[pathArr.length - 1];
     this.fromUser = this.$func.getLocalUser()
 
+    // 路由中是否有用户id
     let isInt = this.isIntegerString(toUserId);
 
-    if (isInt) {
-      this.$axios.post("/user/info?userId=" + toUserId).then(resp => {
-        console.log(resp.data.data)
-        this.messageList.unshift({
-          toUser: {
-            id: resp.data.data.id,
-            name: resp.data.data.name,
-            imgUrl: resp.data.data.imgUrl
-          }
-        })
-      })
-    }
-
-
-    this.$axios.post("/message/chat_message_list", {
-      linkId: isInt ? toUserId : null,
-      recursion: true,
-      msgType: 5,
-      chatQuery: true,
-      createdId: this.fromUser.id
-    }).then(resp => {
+    this.$axios.post("/message/chat_message_list").then(resp => {
       this.messageList.push(...resp.data.data.content)
+      if (isInt && !this.messageList.map(item => item?.toUser.id).includes(parseInt(toUserId))) {
+        // 消息列表中没有当前用户，添加toUser到首部
+        this.$axios.post("/user/info?userId=" + toUserId).then(resp => {
+          this.messageList.unshift({
+            toUser: {
+              id: resp.data.data.id,
+              name: resp.data.data.name,
+              imgUrl: resp.data.data.imgUrl
+            }
+          })
+        })
+      }
     })
   }
 }

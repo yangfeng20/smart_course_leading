@@ -3,7 +3,10 @@
     <el-card shadow="hover" class="user-card">
       <el-row :gutter="30">
         <el-col :span="5">
-          <el-avatar :src="userInfo.imgUrl"></el-avatar>
+          <el-image
+              style="width: 35px; height: 35px; border-radius: 80%;"
+              :src="userInfo.imgUrl"
+              fit="cover"></el-image>
         </el-col>
         <el-col :span="18">
           <el-row>
