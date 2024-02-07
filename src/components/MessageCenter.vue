@@ -49,7 +49,7 @@
 
           </el-input>
           <el-button @click="sendMessage" size="small" type="primary"
-                     style="position: relative;top: -128px">发送消息
+                     style='position: absolute;margin-left: -83px;margin-top: 60px;'>发送消息
           </el-button>
         </div>
       </el-main>
@@ -141,7 +141,8 @@ export default {
 
     this.$axios.post("/message/chat_message_list").then(resp => {
       this.messageList.push(...resp.data.data.content)
-      if (isInt && !this.messageList.map(item => item?.toUser.id).includes(parseInt(toUserId))) {
+      // 路由是用户id，不是当前用户，消息列表中没有当前用户
+      if (isInt && !this.$func.getLocalUser().id + "" === toUserId && !this.messageList.map(item => item?.toUser.id).includes(parseInt(toUserId))) {
         // 消息列表中没有当前用户，添加toUser到首部
         this.$axios.post("/user/info?userId=" + toUserId).then(resp => {
           this.messageList.unshift({
@@ -219,6 +220,18 @@ export default {
 /* 滚动条轨道颜色 */
 .scrollbar::-webkit-scrollbar-track {
   background-color: transparent;
+}
+
+/**
+发送消息输入框字数限制位置
+ */
+.el-textarea > :nth-child(2) {
+  color: #909399;
+  background: #FFF;
+  position: absolute;
+  font-size: 12px;
+  bottom: 5px;
+  right: 90px;
 }
 
 </style>
