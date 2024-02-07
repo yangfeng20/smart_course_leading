@@ -58,9 +58,9 @@
           <!--暂时仅需要邮箱验证码-->
           <div class="input-field">
             <i class="el-icon-message"></i>
-            <input class="input-verify" v-model="loginForm.emailCode" oninput="if(value.length>5)value=value.slice(0,5)"
+            <input class="input-verify" v-model="loginForm.emailCode" oninput="if(value.length>4)value=value.slice(0,4)"
                    placeholder="验证码"/>
-            <div class="sc-dOSRxR jmvKBE" @click="getEmailVerityCode">获取验证码</div>
+            <div class="sc-dOSRxR jmvKBE" @click="registerSendEmailVerifyCodeHandler" v-text="registerCodeName"></div>
           </div>
 
           <!--图片验证码，暂时不需要-->
@@ -114,9 +114,9 @@ export default {
         account: null,
         pwd: null,
         pwd2: null,
-        token: null,
+        token: '%abc',
         emailCode: null,
-        code: null,
+        code: 1234,
 
       },
       imgBase64Code: "",
@@ -125,10 +125,14 @@ export default {
       errorMsg: "",
       isRegister: false,
 
+      registerIsSend: true,
       isSend: true,
       codeName: "获取验证码",
+      registerCodeName: "获取验证码",
       totalTime: 60, //一般是60
       timer: '', //定时器
+      registerTotalTime: 60, //一般是60
+      registerTimer: '', //定时器
 
     }
   },
@@ -171,6 +175,33 @@ export default {
       }, 1000)
     },
 
+    registerSendEmailVerifyCodeHandler() {
+      if (!this.registerIsSend) {
+        return
+      }
+      //邮箱格式
+      let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(this.loginForm.account)) {
+        this.paramCheckFail = true;
+        ElementUI.Message.error("邮箱地址错误");
+        return;
+      }
+      // 发送验证码
+      this.sendEmailVerifyCode()
+      this.registerIsSend = false
+      this.registerCodeName = this.registerTotalTime + 's后重新发送'
+      this.registerTimer = setInterval(() => {
+        this.registerTotalTime--
+        this.registerCodeName = this.registerTotalTime + 's后重新发送'
+        if (this.registerTotalTime < 0) {
+          clearInterval(this.registerTimer)
+          this.registerCodeName = '重新获取验证码'
+          this.registerTotalTime = 60
+          this.registerIsSend = true
+        }
+      }, 1000)
+    },
+
     sendEmailVerifyCode() {
       this.$axios.post("/user/send_email_verify", {
         email: this.loginForm.account
@@ -187,7 +218,7 @@ export default {
       if (this.containerClass === 'container sign-up-mode') {
         console.log("注册")
         this.isRegister = true
-        this.checkForm();
+        this.registerCheckForm();
         if (!this.paramCheckFail) {
           this.doRegister();
         } else {
@@ -254,12 +285,20 @@ export default {
       this.$axios.post("/user/register", {
         email: this.loginForm.account,
         password: this.loginForm.pwd,
+        emailVerifyCode: this.loginForm.emailCode,
         imgVerifyCode: this.loginForm.code,
         token: this.loginForm.token
-      }).then(
-          resp => {
-            console.log(resp.data.data);
-          }).catch(e => {
+      }).then(resp => {
+        this.$notify({
+          type: "success",
+          title: "注册成功",
+          message: "请登录"
+        })
+        setTimeout(() => {
+          // 切换到登录
+          this.containerClass = "container"
+        }, 500)
+      }).catch(e => {
         console.log("注册失败")
       })
     },
@@ -288,13 +327,49 @@ export default {
       if (this.loginType && this.isRegister && (this.loginForm.pwd2 === null || this.loginForm.pwd2 !== this.loginForm.pwd)) {
         this.paramCheckFail = true;
         this.errorMsg = "两次密码输入不一致";
+        return;
       }
-      if (this.isRegister && (this.loginForm.code === null || this.loginForm.code.length < 5)) {
+
+      // // 当前不需要图片验证码
+      // if (this.isRegister && (this.loginForm.code === null || this.loginForm.code.length < 5)) {
+      //   this.paramCheckFail = true;
+      //   this.errorMsg = "验证码格式不正确";
+      // }
+
+      if (!this.loginType && this.loginForm.emailCode.length !== 4) {
         this.paramCheckFail = true;
         this.errorMsg = "验证码格式不正确";
       }
+    },
+    // 校验表单参数
+    registerCheckForm() {
+      this.paramCheckFail = false;
+      //邮箱格式
+      let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(this.loginForm.account)) {
+        this.paramCheckFail = true;
+        this.errorMsg = "邮箱格式错误";
+        return;
+      }
 
-      if (!this.loginType && this.loginForm.emailCode.length !== 4) {
+      let pwd_ = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{0,12}$/;
+      if (!pwd_.test(this.loginForm.pwd)) {
+        this.paramCheckFail = true;
+        this.errorMsg = "密码格式错误(数字加字母，长度应为6-12之间)";
+        return;
+      }
+      if ((this.loginForm.pwd.length < 6 || this.loginForm.pwd.length > 12)) {
+        this.paramCheckFail = true;
+        this.errorMsg = "密码长度应为6-12之间";
+        return;
+      }
+      if (this.isRegister && (this.loginForm.pwd2 === null || this.loginForm.pwd2 !== this.loginForm.pwd)) {
+        this.paramCheckFail = true;
+        this.errorMsg = "两次密码输入不一致";
+        return;
+      }
+
+      if (this.loginForm.emailCode?.length !== 4) {
         this.paramCheckFail = true;
         this.errorMsg = "验证码格式不正确";
       }

@@ -4,7 +4,7 @@
       <el-aside width="200px" class="catalogue">
         <el-menu
             style="height: 100%"
-            default-active="/user"
+            default-active="/me/user"
             class="el-menu-vertical-demo"
             :router="true">
 

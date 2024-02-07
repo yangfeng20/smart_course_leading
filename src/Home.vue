@@ -70,13 +70,18 @@
 
 
         <el-submenu v-if="login" index="" style="margin-right: 10px">
+
           <template slot="title">
+
             <span class="menu-text">
+              <el-tooltip class="item" effect="dark" :content="username" placement="right">
               <el-image
                   style="width: 35px; height: 35px; border-radius: 80%;"
                   :src="avatarFileUrl"
                   fit="cover"></el-image>
+                </el-tooltip>
             </span>
+
           </template>
 
 
@@ -92,7 +97,7 @@
           </el-menu-item>
 
           <el-menu-item>
-            <el-link :underline="false" type="primary" @click="()=>this.$router.push('/me')">
+            <el-link :underline="false" type="primary" @click="()=>this.$router.push('/me/user')">
               <i class="el-icon-setting"></i>
               我的
             </el-link>
@@ -166,6 +171,7 @@ export default {
       }
       this.avatarFileUrl = userInfo.imgUrl
       this.coin_number = userInfo.coin ? userInfo.coin : 0
+      this.username = userInfo.name
       this.login = true
       localStorage.setItem("user", JSON.stringify(userInfo))
     }).catch(e => {
@@ -215,7 +221,8 @@ export default {
       showLinkView: true,
       login: false,
       coin_number: 0,
-      avatarFileUrl: ""
+      avatarFileUrl: "",
+      username: "未登录用户"
     }
   }
 

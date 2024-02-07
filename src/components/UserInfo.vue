@@ -18,7 +18,7 @@
               用户名
             </div>
             <el-input class="input-inner"
-                      v-model="userInfo.nickname">
+                      v-model="userInfo.name">
             </el-input>
           </div>
 
@@ -27,7 +27,7 @@
               个人简介
             </div>
             <el-input class="input-inner"
-                      v-model="userInfo.about">
+                      v-model="userInfo.briefInfo">
             </el-input>
           </div>
         </el-aside>
@@ -36,6 +36,7 @@
               style="width: 180px;height: 160px;"
               class="upload-demo"
               :limit="1"
+              :on-success="updateImgUrl"
               :on-exceed="(files, fileList)=>this.$notify({title: '上传文章封面失败',message: '请先移除之前上传的封面',type: 'error'})"
               action="http://localhost:8090/file/upload">
             <div>
@@ -62,6 +63,7 @@
       <el-footer>
         <div class="footer-body">
           <el-button type="primary" :disabled="change" @click="saveUserInfo">保存修改</el-button>
+          <el-button type="primary" @click="previewHandler">预览</el-button>
         </div>
       </el-footer>
     </el-container>
@@ -74,10 +76,7 @@ export default {
   data() {
     return {
       change: true,
-      userInfo: {
-        nickname: '哈哈哈',
-        imgUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
-      },
+      userInfo: {},
       temp: ''
     }
   },
@@ -87,10 +86,24 @@ export default {
     }
   },
   methods: {
+    updateImgUrl(response, file, fileList) {
+      console.log("success上传", response, file, fileList)
+      this.userInfo.imgUrl = response.data
+    },
+    previewHandler() {
+      this.$router.push("/user/" + this.userInfo.id)
+    },
     saveUserInfo() {
-      this.$axios.post("/user/save", {})
-          .then(resp => {
-
+      this.$axios.post("/user/update_user",
+          this.userInfo
+      ).then(resp => {
+        this.$notify({
+          type: "success",
+          title: "保存成功",
+          message: "点击预览可以从他人视角看到你的主页哟"
+        })
+        this.userInfo = resp.data.data
+        localStorage.setItem("user", JSON.stringify(resp.data.data))
       })
     },
     showUpload() {
@@ -102,6 +115,9 @@ export default {
       this.userInfo.imgUrl = this.temp
     },
   },
+  created() {
+    this.userInfo = this.$func.getLocalUser()
+  }
 }
 </script>
 

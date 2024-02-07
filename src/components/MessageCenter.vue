@@ -13,20 +13,26 @@
       <el-main class="message-body bg">
         <div>
           <div style="height: 500px;border-bottom: 1px solid #e4e6eb;overflow-y: auto;" class="scrollbar">
-            <div class="bout" v-for="message in messageList[selectMsgIndex].message">
-              <div style="text-align: center;" class="message-date">{{ message.createdDate }}</div>
+            <div class="bout" v-for="message in messageList[selectMsgIndex]?.message">
+              <div style="text-align: center;" class="message-date">{{ message?.createdDate }}</div>
 
-              <div v-if="!message.me" style="display: flex; justify-content: flex-start; align-items: center;">
-                <el-avatar :src="messageList[selectMsgIndex].toUser?.imgUrl"></el-avatar>
+              <div v-if="!message?.me" style="display: flex; justify-content: flex-start; align-items: center;">
+                <el-image
+                    style="width: 35px; height: 35px; border-radius: 80%;"
+                    :src="messageList[selectMsgIndex].toUser?.imgUrl"
+                    fit="cover"></el-image>
                 <div class="to-message message-div">
-                  {{ message.msgContent }}
+                  {{ message?.msgContent }}
                 </div>
               </div>
-              <div v-if="message.me" style="display: flex; justify-content: flex-end; align-items: center;">
+              <div v-if="message?.me" style="display: flex; justify-content: flex-end; align-items: center;">
                 <div class="from-message message-div">
-                  {{ message.msgContent }}
+                  {{ message?.msgContent }}
                 </div>
-                <el-avatar :src="fromUser?.imgUrl"></el-avatar>
+                <el-image
+                    style="width: 35px; height: 35px; border-radius: 80%;"
+                    :src="fromUser?.imgUrl"
+                    fit="cover"></el-image>
               </div>
               <div style="height: 10px"></div>
             </div>
@@ -59,79 +65,7 @@ export default {
     return {
       inputMsg: "",
       selectMsgIndex: 0,
-      messageList: [
-        {
-          toUser: {
-            name: "哈哈哈",
-            imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-          },
-          message: [
-            {
-              me: true,
-              msgContent: "哈哈哈",
-              createdDate: "14:30",
-            },
-            {
-              me: false,
-              msgContent: "我是消息的是覅回我\n我是消息的是覅回我我是消息的是覅回我我是消息的是覅回我我是消息的是覅回我我是消息的是覅回我我是消息的是覅回我我是消息的是覅回我\n",
-              createdDate: "14:31",
-            },
-            {
-              me: false,
-              msgContent: "我是消息的是覅回我",
-              createdDate: "14:31",
-            },
-            {
-              me: false,
-              msgContent: "我是消息的是覅回我",
-              createdDate: "14:31",
-            },
-            {
-              me: true,
-              msgContent: "我是消息的是覅回我",
-              createdDate: "14:31",
-            },
-            {
-              me: false,
-              msgContent: "我是消息的是覅回我",
-              createdDate: "14:31",
-            },
-            {
-              me: false,
-              msgContent: "我是消息的是覅回我",
-              createdDate: "14:31",
-            },
-            {
-              me: false,
-              msgContent: "我是消息的是覅回我",
-              createdDate: "14:31",
-            },
-            {
-              me: false,
-              msgContent: "我是消息的是覅回我",
-              createdDate: "14:31",
-            },
-          ]
-        },
-        {
-          toUser: {
-            name: "用户b",
-            imgUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-          },
-          message: [
-            {
-              me: true,
-              msgContent: "我是新的消息",
-              createdDate: "14:30",
-            },
-            {
-              me: false,
-              msgContent: "确定吗？",
-              createdDate: "14:31",
-            }
-          ]
-        },
-      ],
+      messageList: [],
       fromUser: {}
     }
   },
@@ -177,6 +111,19 @@ export default {
 
       })
     },
+
+    isIntegerString(str) {
+      // 检查字符串是否只包含数字字符
+      const isNumberString = /^[0-9]*$/.test(str);
+
+      // 检查字符串是否以数字开头
+      const startsWithNumber = !isNaN(parseInt(str.charAt(0)));
+
+      // 检查字符串是否为整数
+      const isInteger = !isNaN(Number(str));
+
+      return isNumberString && startsWithNumber && isInteger;
+    },
   },
 
   created() {
@@ -184,26 +131,30 @@ export default {
     let toUserId = pathArr[pathArr.length - 1];
     this.fromUser = this.$func.getLocalUser()
 
-    this.$axios.post("/user/info?userId=" + toUserId).then(resp => {
-      console.log(resp.data.data)
-      this.messageList.unshift({
-        toUser: {
-          id: resp.data.data.id,
-          name: resp.data.data.name,
-          imgUrl: resp.data.data.imgUrl
-        }
+    let isInt = this.isIntegerString(toUserId);
+
+    if (isInt) {
+      this.$axios.post("/user/info?userId=" + toUserId).then(resp => {
+        console.log(resp.data.data)
+        this.messageList.unshift({
+          toUser: {
+            id: resp.data.data.id,
+            name: resp.data.data.name,
+            imgUrl: resp.data.data.imgUrl
+          }
+        })
       })
-    })
+    }
 
 
     this.$axios.post("/message/chat_message_list", {
-      linkId: toUserId,
+      linkId: isInt ? toUserId : null,
       recursion: true,
       msgType: 5,
       chatQuery: true,
       createdId: this.fromUser.id
     }).then(resp => {
-      this.messageList = resp.data.data.content
+      this.messageList.push(...resp.data.data.content)
     })
   }
 }
