@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ArticleListItem v-for="article in articleList" :article="article" :opt="false"></ArticleListItem>
+    <ArticleListItem v-for="article in articleList" :article="article" :opt="opt"></ArticleListItem>
   </div>
 </template>
 
@@ -12,7 +12,7 @@ export default {
   components: {
     ArticleListItem,
   },
-  props:["articleList"],
+  props:["articleList", 'opt'],
 
   data() {
     return {

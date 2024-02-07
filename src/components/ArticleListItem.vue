@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-container class="articleList-div">
+    <el-container class="articleList-div" v-if="!deleted">
       <!--文章主体内容-->
       <el-main class="article-item-parent">
         <div @click="()=>{this.$router.push('/article/detail/'+this.article.id)}">
@@ -46,12 +46,13 @@
                 </div>
                 <div style="margin-top: 10px;" v-if="opt">
                   <el-tooltip class="item" effect="dark" content="编辑文章" placement="bottom">
-                    <el-button @click="()=>this.$router.push('/article/edit/' + article.id)" type="primary"
+                    <el-button @click.stop="()=>this.$router.push('/article/edit/' + article.id)" type="primary"
                                icon="el-icon-edit" size="mini" circle></el-button>
                   </el-tooltip>
 
                   <el-tooltip class="item" effect="dark" content="删除文章" placement="bottom">
-                    <el-button type="danger" icon="el-icon-delete" size="mini" circle></el-button>
+                    <el-button @click.stop="deleteArticle" type="danger" icon="el-icon-delete" size="mini"
+                               circle></el-button>
                   </el-tooltip>
 
                   <el-tooltip class="item" effect="dark" content="发布文章" placement="bottom">
@@ -83,9 +84,23 @@
 export default {
   name: "ArticleListItem",
   data() {
-    return {}
+    return {
+      deleted: false
+    }
   },
-  props: ['article', 'opt']
+  props: ['article', 'opt'],
+  methods: {
+    deleteArticle() {
+      this.$axios.delete("/article/delete?idList=" + this.article.id).then(resp => {
+        this.$notify({
+          title: '删除成功',
+          message: '文章删除成功',
+          type: 'success'
+        });
+        this.deleted = true
+      })
+    },
+  },
 }
 </script>
 
