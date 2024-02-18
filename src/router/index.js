@@ -59,10 +59,6 @@ export default new vueRouter({
             component: () => import("../components/ShowUser")
         },
         {
-            path: "/audit",
-            component: () => import("../components/AuditCenter")
-        },
-        {
             path: "/me",
             component: () => import("../components/MeBackground"),
             children: [
@@ -83,6 +79,10 @@ export default new vueRouter({
                 },
                 {
                     path: 'message_center/*', component: () => import("../components/MessageCenter")
+                },
+
+                {
+                    path: 'audit', component: () => import("../components/AuditCenter")
                 },
             ]
         },

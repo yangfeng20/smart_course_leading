@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ArticleListItem v-for="article in articleList" :article="article" :opt="opt"></ArticleListItem>
+    <ArticleListItem v-for="article in articleList" :article="article" :opt="opt" :admin-permission="isPermission"></ArticleListItem>
   </div>
 </template>
 

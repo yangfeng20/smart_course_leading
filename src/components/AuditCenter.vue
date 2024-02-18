@@ -20,7 +20,11 @@ export default {
   },
 
   created() {
-    this.$axios.post('/article/get_adminer_article_list').then(resp => {
+    // this.$axios.post('/article/get_adminer_article_list').then(resp => {
+    //   this.articleList = resp.data.data.content
+    // })
+
+    this.$axios.post('/article/search', {}).then(resp => {
       this.articleList = resp.data.data.content
     })
   }

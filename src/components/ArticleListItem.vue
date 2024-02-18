@@ -28,6 +28,15 @@
                   <div class="grid-content bg-purple" style="display:flex;gap: 10px;">
                     <el-tag effect="plain" size="mini">{{ article.type?.desc }}</el-tag>
                     <el-tag effect="plain" size="mini">{{ article.status?.desc }}</el-tag>
+                    <!-- 下架理由-->
+                    <el-tag v-if="article.status?.key===4" effect="plain" size="mini" color="red" style="color: #eff0f1">
+                      文章下架原因：{{ article?.takenDownCause }}
+                    </el-tag>
+                    <!--审核拒绝理由-->
+                    <el-tag v-if="article.status?.key===5" effect="plain" size="mini" color="red" style="color: #eff0f1">
+                      审核拒绝原因：{{ JSON.parse(article.extInfo)?.rejectText }}
+                    </el-tag>
+
                     <div>
                       | {{ article.author.desc.name }}
                     </div>
@@ -68,7 +77,8 @@
                   </el-tooltip>
 
                   <el-tooltip class="item" effect="dark" content="审核文章" placement="bottom">
-                    <el-button v-if="adminPermission" @click.stop="auditDialogVisible=true" type="info" icon="el-icon-printer"
+                    <el-button v-if="adminPermission" @click.stop="auditDialogVisible=true" type="info"
+                               icon="el-icon-printer"
                                size="mini"
                                circle></el-button>
                   </el-tooltip>
@@ -92,7 +102,7 @@
                     :visible.sync="articleDownDialogVisible"
                     width="30%"
                     :before-close="handleClose">
-                  <el-input @click.stop="" v-model="rejectText" placeholder="下架原因"></el-input>
+                  <el-input @click.stop="" v-model="takenDownCause" placeholder="下架原因"></el-input>
                   <span slot="footer" class="dialog-footer">
                 <el-button @click.stop="articleDownDialogVisible=false">取消</el-button>
                 <el-button type="primary" @click.stop="doRemovedFromShelves">提交</el-button>
@@ -126,12 +136,20 @@ export default {
       auditDialogVisible: false,
       articleDownDialogVisible: false,
       rejectText: "",
+      takenDownCause: "",
     }
   },
   props: ['article', 'opt', 'adminPermission'],
   methods: {
     // 下架文章
     doRemovedFromShelves() {
+      this.$axios.post("/article/taken_down_article?articleId=" + this.article.id + "&takenDownCause=" + this.takenDownCause).then(resp => {
+        this.$notify({
+          type: "success",
+          title: "文章下架成功",
+          message: "文章下架成功"
+        })
+      })
       this.articleDownDialogVisible = false
     },
     clickArticleItem(e) {
@@ -153,6 +171,14 @@ export default {
         })
         return;
       }
+
+      this.$axios.post("/article/audit_article?articleId=" + this.article.id + "&pass=" + pass + "&rejectText=" + this.rejectText).then(resp => {
+        this.$notify({
+          type: "success",
+          title: "审核文章",
+          message: "操作成功"
+        })
+      })
       this.auditDialogVisible = false
     },
     handleClose(done) {
