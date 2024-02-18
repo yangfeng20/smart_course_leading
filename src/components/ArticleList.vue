@@ -12,15 +12,18 @@ export default {
   components: {
     ArticleListItem,
   },
-  props:["articleList", 'opt'],
+  props: ["articleList", 'opt'],
 
   data() {
     return {
+      isPermission: false,
     }
   },
 
   created() {
-
+    this.$func.isPermissionAction().then(data => {
+      this.isPermission = data
+    }).catch(_=>{});
   }
 }
 </script>

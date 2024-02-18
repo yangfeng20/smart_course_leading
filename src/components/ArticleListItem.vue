@@ -3,7 +3,7 @@
     <el-container class="articleList-div" v-if="!deleted">
       <!--文章主体内容-->
       <el-main class="article-item-parent">
-        <div @click="()=>{this.$router.push('/article/detail/'+this.article.id)}">
+        <div @click="clickArticleItem">
           <el-descriptions class="article-item" :column="1" :colon="false">
             <el-descriptions-item><span class="article-title">{{ article.title }}</span>
             </el-descriptions-item>
@@ -44,7 +44,7 @@
                   <div class="text-item">创建时间：{{ article.createdDate }}</div>
                   <div class="text-item">更新时间：{{ article.updatedDate }}</div>
                 </div>
-                <div style="margin-top: 10px;" v-if="opt">
+                <div style="margin-top: 10px;" v-if="opt" class="optDiv">
                   <el-tooltip class="item" effect="dark" content="编辑文章" placement="bottom">
                     <el-button @click.stop="()=>this.$router.push('/article/edit/' + article.id)" type="primary"
                                icon="el-icon-edit" size="mini" circle></el-button>
@@ -60,7 +60,44 @@
                                circle></el-button>
                   </el-tooltip>
 
+                  <el-tooltip class="item" effect="dark" content="下架文章" placement="bottom">
+                    <el-button v-if="adminPermission" @click.stop="articleDownDialogVisible=true" type="warning"
+                               icon="el-icon-error"
+                               size="mini"
+                               circle></el-button>
+                  </el-tooltip>
+
+                  <el-tooltip class="item" effect="dark" content="审核文章" placement="bottom">
+                    <el-button v-if="adminPermission" @click.stop="auditDialogVisible=true" type="info" icon="el-icon-printer"
+                               size="mini"
+                               circle></el-button>
+                  </el-tooltip>
+
                 </div>
+
+                <el-dialog
+                    title="审核文章"
+                    :visible.sync="auditDialogVisible"
+                    width="30%"
+                    :before-close="handleClose">
+                  <el-input @click.stop="" v-model="rejectText" placeholder="不通过请说明原因"></el-input>
+                  <span slot="footer" class="dialog-footer">
+                <el-button @click.stop="doAudit(false)">不通过</el-button>
+                <el-button type="primary" @click.stop="doAudit(true)">通过</el-button>
+                </span>
+                </el-dialog>
+
+                <el-dialog
+                    title="下架文章"
+                    :visible.sync="articleDownDialogVisible"
+                    width="30%"
+                    :before-close="handleClose">
+                  <el-input @click.stop="" v-model="rejectText" placeholder="下架原因"></el-input>
+                  <span slot="footer" class="dialog-footer">
+                <el-button @click.stop="articleDownDialogVisible=false">取消</el-button>
+                <el-button type="primary" @click.stop="doRemovedFromShelves">提交</el-button>
+                </span>
+                </el-dialog>
 
               </el-row>
             </el-descriptions-item>
@@ -85,11 +122,47 @@ export default {
   name: "ArticleListItem",
   data() {
     return {
-      deleted: false
+      deleted: false,
+      auditDialogVisible: false,
+      articleDownDialogVisible: false,
+      rejectText: "",
     }
   },
-  props: ['article', 'opt'],
+  props: ['article', 'opt', 'adminPermission'],
   methods: {
+    // 下架文章
+    doRemovedFromShelves() {
+      this.articleDownDialogVisible = false
+    },
+    clickArticleItem(e) {
+      // 操作列表不进入文章详情
+      // todo 暂时有个bug，就是点击弹窗空白还是会跳转详情
+      if (e.target.classList instanceof DOMTokenList
+          && (e.target.classList.contains("el-dialog__close") || e.target.classList.contains("el-input__inner")
+              || e.target.classList.contains("el-dialog__wrapper"))) {
+        return;
+      }
+      this.$router.push('/article/detail/' + this.article.id)
+    },
+    doAudit(pass) {
+      if (!pass && !this.rejectText) {
+        this.$notify({
+          type: "error",
+          title: "审核失败",
+          message: "拒绝通过请说明原因"
+        })
+        return;
+      }
+      this.auditDialogVisible = false
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {
+          });
+    },
     deleteArticle() {
       this.$axios.delete("/article/delete?idList=" + this.article.id).then(resp => {
         this.$notify({

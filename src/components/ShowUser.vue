@@ -2,7 +2,7 @@
   <div class="body">
     <el-container style="height: 100%">
       <el-aside v-if="true" width="300px" class="catalogue">
-        <el-button v-if="this.$func.isPermissionAction()" @click="sendMessage" type="primary" icon="el-icon-message"
+        <el-button v-if="this.isPermission" @click="sendMessage" type="primary" icon="el-icon-message"
                    style="width: 80%;margin: 10px;">发消息
         </el-button>
       </el-aside>
@@ -58,7 +58,8 @@ export default {
   data() {
     return {
       userInfo: {},
-      articleList: []
+      articleList: [],
+      isPermission: false,
     }
   },
   methods: {
@@ -78,6 +79,10 @@ export default {
     }).then(resp => {
       this.articleList = resp.data.data.content
     })
+
+    this.$func.isPermissionAction().then(data => {
+      this.isPermission = data
+    });
   }
 }
 </script>
