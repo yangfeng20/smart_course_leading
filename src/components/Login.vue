@@ -254,6 +254,13 @@ export default {
     },
 
     doLogin() {
+      // 重定向
+      let redirectUrl = location.search
+      if (redirectUrl) {
+        redirectUrl = decodeURIComponent(redirectUrl.split("=")[1])
+      } else {
+        redirectUrl = "/"
+      }
       this.$axios.post("/user/login", {
         email: this.loginForm.account,
         password: this.loginForm.pwd,
@@ -276,7 +283,7 @@ export default {
           document.cookie = "token=" + arr[1] + "; " + expires + "path=/";
         }
         // 登录成功，跳转首页
-        location.href = '/'
+        location.href = redirectUrl
       }).catch(e => {
         console.log("登录失败")
       })
