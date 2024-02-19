@@ -81,7 +81,7 @@ export default {
       this.$axios.post("/message/audit?msgId=" + this.message.id + "&pass=" + pass + "&rejectText=" + this.rejectText).then(resp => {
         this.$notify({
           type: "success",
-          title: "审核文章",
+          title: "审核消息",
           message: "操作成功"
         })
       })
