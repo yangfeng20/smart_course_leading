@@ -193,7 +193,10 @@ export default {
             type: this.selectedArticleType
           })
           .then(resp => {
-            this.articleList = resp.data.data.content
+            this.articleList = resp.data.data.content;
+            this.articlePage.page = resp.data.data.page
+            this.articlePage.size = resp.data.data.size
+            this.articlePage.total = resp.data.data.total
           }).catch(_ => {
       }).finally(() => {
         setTimeout(() => {

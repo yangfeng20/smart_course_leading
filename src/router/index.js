@@ -80,9 +80,11 @@ export default new vueRouter({
                 {
                     path: 'message_center/*', component: () => import("../components/MessageCenter")
                 },
-
                 {
                     path: 'audit', component: () => import("../components/AuditCenter")
+                },
+                {
+                    path: 'message_manager', component: () => import("../components/MessageManager")
                 },
             ]
         },
