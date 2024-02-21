@@ -1,10 +1,13 @@
 <template>
   <div class="body">
     <el-container style="height: 100%">
-      <el-aside v-if="true" width="300px" class="catalogue">
-        <el-button v-if="this.isPermission" @click="sendMessage" type="primary" icon="el-icon-message"
+      <el-aside width="300px" class="catalogue">
+
+        <el-button v-if="this.$func.getLocalUser().id !== this.userInfo.id" @click="sendMessage" type="primary" icon="el-icon-message"
                    style="width: 80%;margin: 10px;">发消息
         </el-button>
+
+        <HotArticleList></HotArticleList>
       </el-aside>
 
       <el-main class="article-aside-main">
@@ -45,6 +48,7 @@ import ArticleList from "../components/ArticleList";
 import UserInfoCard from "../components/UserInfoCard";
 import Sponsor from "../components/Sponsor";
 import SiteManager from "../components/SiteManager";
+import HotArticleList from "../components/HotArticleList";
 
 
 export default {
@@ -53,13 +57,13 @@ export default {
     ArticleList,
     UserInfoCard,
     Sponsor,
-    SiteManager
+    SiteManager,
+    HotArticleList
   },
   data() {
     return {
       userInfo: {},
       articleList: [],
-      isPermission: false,
     }
   },
   methods: {
@@ -79,10 +83,6 @@ export default {
     }).then(resp => {
       this.articleList = resp.data.data.content
     })
-
-    this.$func.isPermissionAction().then(data => {
-      this.isPermission = data
-    });
   }
 }
 </script>
@@ -105,6 +105,7 @@ export default {
 .catalogue {
   background-color: #ffffff;
   margin-top: 40px;
+  padding: 10px;
 }
 
 

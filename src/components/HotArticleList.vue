@@ -3,36 +3,45 @@
     <el-card shadow="hover">
       <div slot="header" class="clearfix">热帖 TOP</div>
       <div class="hot-item" v-for="item in hotList">
-        <el-link :underline="false" :href="item.href">{{ item.title }}</el-link>
+        <el-link :underline="false" :href="'/article/detail/'+item.id">{{ item.title }}</el-link>
       </div>
     </el-card>
   </div>
 </template>
 
 <script>
+import {ExpiredStorage} from "../js/definition";
+
 export default {
   name: "HotArticleList",
   data() {
     return {
-      hotList: [
-        {id: 1, title: "发布会招呼", href: 'http://localhost:8080/article/detail/2'},
-        {id: 1, title: "关于我的世界来着"},
-        {id: 1, title: "python的代码任何写"},
-        {id: 1, title: "哈哈哈哈哈哈哈哈哈哈哈哈"},
-        {id: 1, title: "java的代码任何写"},
-        {id: 1, title: "java的代码任何写"},
-        {id: 1, title: "java的代码任何写"},
-        {id: 1, title: "java的代码任何写"},
-        {id: 1, title: "java的代码任何写"},
-      ]
+      hotList: []
     }
   },
+
+  created() {
+
+    let expiredStorage = new ExpiredStorage();
+    let hotArticleListKey = "HOT_ARTICLE_LIST";
+    this.hotList = expiredStorage.get(hotArticleListKey)
+    console.log("存储结构：", this.hotList)
+    if (this.hotList) {
+      return;
+    }
+
+    this.$axios.post("/article/hot_list").then(resp => {
+      this.hotList = resp.data.data.content
+      expiredStorage.set(hotArticleListKey, this.hotList,60)
+    })
+
+  }
 }
 </script>
 
 <style scoped>
 
-.hot-item{
+.hot-item {
   line-height: 32px;
 }
 </style>
