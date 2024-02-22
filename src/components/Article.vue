@@ -3,18 +3,28 @@
     <el-container>
       <el-header style="height: 100%">
 
-        <el-row>
-          <el-col :span="24 / topList.length" v-for="topItem in topList" class="top-card">
+        <div style="display: flex">
+          <div v-for="topItem in topList" class="top-card">
             <el-card class="box-card">
               <div slot="header" class="clearfix">
-                <span>{{ topItem.name }}</span>
+                <span><el-link :underline="false" :href="'/article/detail/'+topItem.id" type="primary">{{ topItem.title }}</el-link></span>
               </div>
-              <div>
-                {{ topItem.content }}
+              <div style="min-height: 25px">
+                <el-row :gutter="5" class="article-tag-div">
+                  <el-col :span="3.5" v-for="tag in topItem.tagList">
+                    <el-tag style="color: #eff0f1" ref="articleTag"
+                            size="mini"
+                            :color="tag.color"
+                            @click.stop=""
+                            effect="plain">{{ tag.name }}
+                    </el-tag>
+                  </el-col>
+                </el-row>
               </div>
             </el-card>
-          </el-col>
-        </el-row>
+          </div>
+        </div>
+
 
       </el-header>
       <el-container>
@@ -139,6 +149,7 @@
 import HotArticleList from "../components/HotArticleList";
 import Sponsor from "../components/Sponsor";
 import SiteManager from "../components/SiteManager";
+import {ExpiredStorage} from "../js/definition";
 
 export default {
   components: {
@@ -217,39 +228,7 @@ export default {
       },
       typeList: [],
       articleList: [],
-      topList: [
-        {
-          "id": 1,
-          "name": "顶部卡片1",
-          "content": "测试文本"
-        },
-        {
-          "id": 2,
-          "name": "顶部卡片2",
-          "content": "Hello World"
-        },
-        {
-          "id": 2,
-          "name": "顶部卡片2",
-          "content": "Hello World"
-        },
-        {
-          "id": 2,
-          "name": "顶部卡片2",
-          "content": "Hello World"
-        },
-      ],
-      hotList: [
-        {id: 1, title: "发布会招呼"},
-        {id: 1, title: "关于我的世界来着"},
-        {id: 1, title: "python的代码任何写"},
-        {id: 1, title: "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈"},
-        {id: 1, title: "java的代码任何写"},
-        {id: 1, title: "java的代码任何写"},
-        {id: 1, title: "java的代码任何写"},
-        {id: 1, title: "java的代码任何写"},
-        {id: 1, title: "java的代码任何写"},
-      ]
+      topList: [],
     }
   },
   watch: {
@@ -266,6 +245,19 @@ export default {
       this.typeList = resp.data.data
       this.typeList.unshift({key: 0, desc: "综合"})
     }).catch(_ => {
+    })
+
+
+    let expiredStorage = new ExpiredStorage();
+    let hotArticleListKey = "HOT_ARTICLE_LIST";
+    this.topList = expiredStorage.get(hotArticleListKey)
+    if (this.topList) {
+      return;
+    }
+
+    this.$axios.post("/article/hot_list").then(resp => {
+      this.topList = resp.data.data.content
+      expiredStorage.set(hotArticleListKey, this.topList, 60)
     })
   }
 }
@@ -303,6 +295,7 @@ body > .el-container {
 .top-card {
   padding: 5px 3px;
   text-align: left;
+  flex: 1;
 }
 
 .article-icon {

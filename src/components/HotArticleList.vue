@@ -25,7 +25,6 @@ export default {
     let expiredStorage = new ExpiredStorage();
     let hotArticleListKey = "HOT_ARTICLE_LIST";
     this.hotList = expiredStorage.get(hotArticleListKey)
-    console.log("存储结构：", this.hotList)
     if (this.hotList) {
       return;
     }
