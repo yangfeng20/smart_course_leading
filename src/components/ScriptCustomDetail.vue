@@ -25,6 +25,8 @@
       <div class="detail-wrapper">
         <div class="label">申请状态:</div>
         <div class="value">{{ scriptCustomApply.applyStatus?.desc }}</div>
+        &nbsp;&nbsp;&nbsp;备注：
+        <el-input class="value" v-model="scriptCustomApply.comment"></el-input>
 
         <el-form :inline="true" class="demo-form-inline">
           <el-form-item label="">
@@ -69,7 +71,7 @@ export default {
 
   data() {
     return {
-      isPermission:false,
+      isPermission: false,
       scriptCustomApply: {
         applyName: '',
         website: "",
@@ -77,7 +79,8 @@ export default {
         accountInfo: "",
         applyStatus: "",
         createdDate: "",
-        updatedDate: ""
+        updatedDate: "",
+        comment: "",
       },
 
       newApplyStatus: "",
@@ -116,6 +119,7 @@ export default {
         scriptApply.applyStatus = this.newApplyStatus
         scriptApply.createdDate = ""
         scriptApply.updatedDate = ""
+        scriptApply.comment = this.scriptCustomApply.comment
         this.$axios.put("script_apply/update", scriptApply).then(resp => {
           let isUpdateSuccess = resp.data.data
           if (isUpdateSuccess) {

@@ -11,7 +11,9 @@
         <el-option label="已拒绝" value="3"></el-option>
         <el-option label="已完成" value="4"></el-option>
       </el-select>
-      <el-button type="primary" style="margin-left: 10px;" icon="el-icon-refresh" :loading="listLoading" @click="refreshList">刷新列表</el-button>
+      <el-button type="primary" style="margin-left: 10px;" icon="el-icon-refresh" :loading="listLoading"
+                 @click="refreshList">刷新列表
+      </el-button>
       <el-button type="primary" icon="el-icon-edit" @click="dialog = true">新增定制</el-button>
     </div>
 
@@ -30,11 +32,13 @@
                       class="el-icon-view el-icon--right"></i> {{ custom.website }}
                   </el-link>
                 </div>
-                <div class="script-info-inner">申请状态：
+                <div class="script-info-inner">状态：
                   <el-tag :type="tagType(custom.applyStatus?.key)" ref="statusTag" :value="custom.applyStatus?.key">{{
                       custom.applyStatus?.desc
                     }}
                   </el-tag>
+                  <span v-if="custom.comment"><span
+                      v-text="custom?.applyStatus?.key === 3 ? '拒绝原因：':'备注：'"></span>{{ custom.comment }}</span>
                 </div>
                 <div class="script-info-inner">申请时间：{{ custom.createdDate }}</div>
               </div>
@@ -303,7 +307,9 @@ export default {
 
   created() {
     this.searchScriptCustom();
-    this.$func.isPermissionAction().then(data=>{this.isPermission=data});
+    this.$func.isPermissionAction().then(data => {
+      this.isPermission = data
+    });
   },
 
   watch: {
