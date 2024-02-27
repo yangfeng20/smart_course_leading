@@ -35,9 +35,9 @@
           <el-upload
               style="width: 180px;height: 160px;"
               class="upload-demo"
-              :limit="1"
+              :limit="10"
+              :headers="this.$func.getAuthHeader()"
               :on-success="updateImgUrl"
-              :on-exceed="(files, fileList)=>this.$notify({title: '上传文章封面失败',message: '请先移除之前上传的封面',type: 'error'})"
               action="http://localhost:8090/file/upload">
             <div>
               <el-image

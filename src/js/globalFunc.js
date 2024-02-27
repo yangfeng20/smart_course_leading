@@ -158,6 +158,12 @@ const exportFunc = {
         }
         return new Blob([u8arr], {type: mime});
     },
+
+    getAuthHeader() {
+        return {
+            Authorization: localStorage.getItem('authorization')
+        }
+    }
 }
 
 export default exportFunc

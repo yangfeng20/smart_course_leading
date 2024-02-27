@@ -114,6 +114,7 @@
                 :before-upload="upCompressImg"
                 :on-success="uploadSuccess"
                 :on-remove="removeImg"
+                :headers="this.$func.getAuthHeader()"
                 :on-exceed="(files, fileList)=>this.$notify({title: '上传文章封面失败',message: '请先移除之前上传的封面',type: 'error'})"
                 action="http://localhost:8090/file/upload">
               <div v-if="coverImgUrlShow" style="height: 360px;width: 360px;">
