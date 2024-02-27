@@ -116,7 +116,12 @@
                         <el-image
                             style="width: 100px; height: 100px"
                             :src="article.coverImgUrl"
-                            fit="fit"></el-image>
+                            fit="fit">
+                          <div slot="error" class="image-slot" style="display: flex;font-size: 14px;padding-top: 40%;
+                          justify-content: center;align-items: center;color: #C0C4CC;vertical-align: middle;">
+                            无封面
+                          </div>
+                        </el-image>
                       </el-aside>
 
                     </el-container>
