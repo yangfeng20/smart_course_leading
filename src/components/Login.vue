@@ -272,6 +272,7 @@ export default {
         let authAndToken = resp.headers['authorization'];
         if (!authAndToken.includes("-")) {
           localStorage.setItem('authorization', authAndToken);
+          document.cookie = "token=;";
         } else {
           let arr = authAndToken.split("-")
           localStorage.setItem('authorization', arr[0]);

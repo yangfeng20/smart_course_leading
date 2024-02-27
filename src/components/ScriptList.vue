@@ -30,39 +30,39 @@
         <el-row :gutter="1">
           <el-col v-for="(script, index) in scriptList" :key="index" :span="8">
             <transition :name="getTransitionName(index)">
-            <div v-show="listShowRender" class="data-info">
-              <el-button v-show="isPermission" icon="el-icon-edit" size="small" round type="primary" plain
-                         @click="saveScript($event, script.id)">编辑
-              </el-button>
-              <span v-show="!isPermission" style="margin-right: 20%"></span>
-              <span style="margin-right: 60%"></span>
-              <el-tag :type="getStatus(script.scriptStatus?.key)" effect="dark">{{ script.scriptStatus?.desc }}
-              </el-tag>
+              <div v-show="listShowRender" class="data-info">
+                <el-button v-show="isPermission" icon="el-icon-edit" size="small" round type="primary" plain
+                           @click="saveScript($event, script.id)">编辑
+                </el-button>
+                <span v-show="!isPermission" style="margin-right: 20%"></span>
+                <span style="margin-right: 60%"></span>
+                <el-tag :type="getStatus(script.scriptStatus?.key)" effect="dark">{{ script.scriptStatus?.desc }}
+                </el-tag>
 
-              <div class="script-info-inner"><i class="el-icon-menu"></i>脚本名称：
-                <span><el-tag>
+                <div class="script-info-inner"><i class="el-icon-menu"></i>脚本名称：
+                  <span><el-tag>
                   <el-link type="primary" @click="inDetail($event, script.id)" :underline="false">{{
                       script.scriptName
                     }}
                   </el-link>
                 </el-tag></span>
+                </div>
+                <!--<div class="script-info-inner"><i class="el-icon-date"></i>脚本简介：{{ script.scriptDesc }}</div>-->
+                <div class="script-info-inner"><i class="el-icon-date"></i>脚本简介：
+                  <el-input
+                      :value="script.scriptDesc"
+                      :autosize="{ minRows: 2, maxRows: 3}"
+                      style="width: 90%"
+                      :disabled="true"
+                  >
+                  </el-input>
+                </div>
+                <div class="script-info-inner"><i class="el-icon-s-data"></i>下载量：<i class="el-icon-star-on"
+                                                                                    :style="{color: getColor(script.downloadCount)}"></i>{{
+                    script.downloadCount
+                  }}
+                </div>
               </div>
-              <!--<div class="script-info-inner"><i class="el-icon-date"></i>脚本简介：{{ script.scriptDesc }}</div>-->
-              <div class="script-info-inner"><i class="el-icon-date"></i>脚本简介：
-                <el-input
-                    :value="script.scriptDesc"
-                    :autosize="{ minRows: 2, maxRows: 3}"
-                    style="width: 90%"
-                    :disabled="true"
-                >
-                </el-input>
-              </div>
-              <div class="script-info-inner"><i class="el-icon-s-data"></i>下载量：<i class="el-icon-star-on"
-                                                                                  :style="{color: getColor(script.downloadCount)}"></i>{{
-                  script.downloadCount
-                }}
-              </div>
-            </div>
             </transition>
           </el-col>
         </el-row>
@@ -73,10 +73,10 @@
       </div>
       <div class="pagination-wrapper">
         <el-pagination v-show="listShowRender"
-            :current-page.sync="scriptPage.page"
-            :page-size.sync="scriptPage.size"
-            :total="scriptPage.total"
-            layout="total, sizes, prev, pager, next, jumper">
+                       :current-page.sync="scriptPage.page"
+                       :page-size.sync="scriptPage.size"
+                       :total="scriptPage.total"
+                       layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
 
         <el-empty v-show="isShowEmptyList && listShowRender" description="没有满足条件的脚本"></el-empty>
@@ -187,7 +187,9 @@ export default {
 
   created() {
     this.searchScript()
-    this.$func.isPermissionAction().then(data=>{this.isPermission=data});
+    this.$func.isPermissionAction().then(data => {
+      this.isPermission = data
+    });
   },
 
   watch: {

@@ -38,14 +38,14 @@
           </el-submenu>
 
 
-          <el-menu-item index="/me/audit">
+          <el-menu-item index="/me/audit" v-if="isPermission">
             <template slot="title">
               <i class="el-icon-time"></i>
               <span>审核中心</span>
             </template>
           </el-menu-item>
 
-          <el-menu-item index="/me/message_manager">
+          <el-menu-item index="/me/message_manager" v-if="isPermission">
             <template slot="title">
               <i class="el-icon-s-grid"></i>
               <span>消息管理</span>
@@ -94,7 +94,18 @@ export default {
     Sponsor,
     SiteManager
   },
-  name: "MeBackground.vue"
+  name: "MeBackground.vue",
+  data() {
+    return {
+      isPermission: false,
+    }
+  },
+  created() {
+    this.$func.isPermissionAction().then(data => {
+      this.isPermission = data
+    }).catch(_ => {
+    });
+  }
 }
 </script>
 
