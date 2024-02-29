@@ -31,7 +31,9 @@
           <div>
             <span class="login-type" @click="switchLoginType"
                   v-text="'切换为'+(loginType ? '验证码': '密码')+'登录'"></span>
-            <span class="forget-pwd">忘记密码？</span>
+            <span class="forget-pwd" @click="()=>{
+              this.$router.push('/reset_pwd')
+            }">忘记密码？</span>
           </div>
           <input type="button" @click="signIn" value="Login" class="btn solid"/>
         </form>
@@ -326,12 +328,6 @@ export default {
         return;
       }
 
-      let pwd_ = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{0,12}$/;
-      if (this.loginType && !pwd_.test(this.loginForm.pwd)) {
-        this.paramCheckFail = true;
-        this.errorMsg = "密码格式错误(数字加字母，长度应为6-12之间)";
-        return;
-      }
       if (this.loginType && (this.loginForm.pwd.length < 6 || this.loginForm.pwd.length > 12)) {
         this.paramCheckFail = true;
         this.errorMsg = "密码长度应为6-12之间";
@@ -874,7 +870,7 @@ form.sign-in-form {
   display: flex;
   -webkit-box-pack: end;
   justify-content: flex-end;
-  color: rgb(136, 156, 183);
+  color: rgb(3, 100, 255);
   font-size: 13px;
 }
 

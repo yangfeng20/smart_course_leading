@@ -89,6 +89,10 @@ export default new vueRouter({
             ]
         },
         {
+            path: "/reset_pwd",
+            component: () => import("../components/ResetPwd.vue")
+        },
+        {
             path: "/test",
             component: () => import("../components/Test")
         },

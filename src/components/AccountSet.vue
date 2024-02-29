@@ -1,12 +1,27 @@
 <template>
   <div>
-    后期开放入口；现在如有需要，联系站长
+    <ResetPwd :account="userInfo.email"></ResetPwd>
   </div>
 </template>
 
 <script>
+import ResetPwd from "../components/ResetPwd.vue";
+
 export default {
-name: "AccountSet"
+  name: "AccountSet",
+  components: {
+    ResetPwd,
+  },
+
+  data() {
+    return {
+      userInfo: {}
+    }
+  },
+
+  created() {
+    this.userInfo = this.$func.getLocalUser()
+  }
 }
 </script>
 
