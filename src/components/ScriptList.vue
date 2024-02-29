@@ -75,6 +75,7 @@
         <el-pagination v-show="listShowRender"
                        :current-page.sync="scriptPage.page"
                        :page-size.sync="scriptPage.size"
+                       :page-sizes="[9,18,27,36,45]"
                        :total="scriptPage.total"
                        layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>

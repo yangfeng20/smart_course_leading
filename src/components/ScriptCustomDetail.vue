@@ -32,6 +32,8 @@
           <el-form-item label="">
             <el-select v-model="newApplyStatus" placeholder="申请状态">
               <el-option label="已提交" value="1"></el-option>
+              <el-option label="已查看" value="5"></el-option>
+              <el-option label="排期中" value="6"></el-option>
               <el-option label="制作中" value="2"></el-option>
               <el-option label="已拒绝" value="3"></el-option>
               <el-option label="已完成" value="4"></el-option>
@@ -110,25 +112,27 @@ export default {
       })
     },
     updateApplyStatus() {
-      this.$axios.get("script_apply/" + this.$route.query.id).then(resp => {
-        let scriptApply = resp.data.data
-        if (this.newApplyStatus === "" || this.newApplyStatus === scriptApply.applyStatus?.key + "") {
-          return;
-        }
-
-        scriptApply.applyStatus = this.newApplyStatus
-        scriptApply.createdDate = ""
-        scriptApply.updatedDate = ""
-        scriptApply.comment = this.scriptCustomApply.comment
-        this.$axios.put("script_apply/update", scriptApply).then(resp => {
-          let isUpdateSuccess = resp.data.data
-          if (isUpdateSuccess) {
-            ElementUI.Message.info("更新状态成功");
-            this.refresh()
-          } else {
-            ElementUI.Message.warning("更新状态失败");
-          }
+      if (this.newApplyStatus === "" || this.newApplyStatus === "") {
+        this.$notify({
+          type: "warning",
+          title: "更新失败",
+          message: "每次必须变更申请状态"
         })
+        return;
+      }
+
+      this.$axios.put("script_apply/update", {
+        id: this.$route.query.id,
+        applyStatus: this.newApplyStatus,
+        comment: this.scriptCustomApply.comment
+      }).then(resp => {
+        let isUpdateSuccess = resp.data.data
+        if (isUpdateSuccess) {
+          ElementUI.Message.info("更新状态成功");
+          this.refresh()
+        } else {
+          ElementUI.Message.warning("更新状态失败");
+        }
       })
     }
   },

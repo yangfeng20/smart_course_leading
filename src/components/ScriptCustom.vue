@@ -54,6 +54,7 @@
         <el-pagination
             :current-page.sync="customPage.page"
             :page-size.sync="customPage.size"
+            :page-sizes="[9,18,27,36,45]"
             :total="customPage.total"
             layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>

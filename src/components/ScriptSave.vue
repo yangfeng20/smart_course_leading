@@ -22,6 +22,7 @@
         <el-select v-model="scriptInfo.scriptStatus.key" placeholder="上架状态">
           <el-option label="未上架" :value="1"></el-option>
           <el-option label="已上架" :value="2"></el-option>
+          <el-option label="已过期" :value="3"></el-option>
         </el-select>
       </el-col>
 
