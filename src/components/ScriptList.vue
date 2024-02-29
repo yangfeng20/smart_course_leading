@@ -107,8 +107,8 @@ export default {
       scriptList: [],
       scriptPage: {
         page: 1,
-        size: 20,
-        total: 100,
+        size: 9,
+        total: 0,
       },
       isPermission: false,
     }
@@ -158,11 +158,9 @@ export default {
       ).then(resp => {
         let result = resp.data.data;
         this.scriptList = result.content;
-        this.scriptPage.total = result.total;
-        if (result.page) {
+        if (result.total) {
+          this.scriptPage.total = result.total;
           this.scriptPage.page = result.page;
-        }
-        if (result.size) {
           this.scriptPage.size = result.size;
         }
       }).catch(error => {

@@ -76,7 +76,8 @@
         <el-form :model="scriptCustomApplyForm">
 
           <el-form-item label="申请名称" :label-width="formLabelWidth">
-            <el-input v-model="scriptCustomApplyForm.applyName" autocomplete="off" placeholder="需要定制的脚本简短描述"></el-input>
+            <el-input v-model="scriptCustomApplyForm.applyName" autocomplete="off"
+                      placeholder="需要定制的脚本简短描述"></el-input>
           </el-form-item>
 
           <el-form-item label="网站地址" :label-width="formLabelWidth">
@@ -131,7 +132,7 @@ export default {
       customPage: {
         page: 1,
         size: 9,
-        total: 9
+        total: 0
       },
 
       searchParam: {
@@ -193,12 +194,9 @@ export default {
       }).then(resp => {
         let result = resp.data.data;
         this.customList = result.content === null ? [] : result.content;
-        this.customPage.total = result.total;
-
-        if (result.page) {
+        if (result.total) {
+          this.customPage.total = result.total;
           this.customPage.page = result.page;
-        }
-        if (result.size) {
           this.customPage.size = result.size;
         }
       }).catch(e => {

@@ -7,7 +7,9 @@
           <div v-for="topItem in topList" class="top-card">
             <el-card class="box-card">
               <div slot="header" class="clearfix">
-                <span><el-link :underline="false" :href="'/article/detail/'+topItem.id" type="primary">{{ topItem.title }}</el-link></span>
+                <span><el-link :underline="false" :href="'/article/detail/'+topItem.id" type="primary">{{
+                    topItem.title
+                  }}</el-link></span>
               </div>
               <div style="min-height: 25px">
                 <el-row :gutter="5" class="article-tag-div">
@@ -210,9 +212,11 @@ export default {
           })
           .then(resp => {
             this.articleList = resp.data.data.content;
-            this.articlePage.page = resp.data.data.page
-            this.articlePage.size = resp.data.data.size
-            this.articlePage.total = resp.data.data.total
+            if (resp.data.data?.total) {
+              this.articlePage.page = resp.data.data.page
+              this.articlePage.size = resp.data.data.size
+              this.articlePage.total = resp.data.data.total
+            }
           }).catch(_ => {
       }).finally(() => {
         setTimeout(() => {
@@ -229,7 +233,7 @@ export default {
       articlePage: {
         page: 1,
         size: 9,
-        total: 100,
+        total: 0,
       },
       typeList: [],
       articleList: [],

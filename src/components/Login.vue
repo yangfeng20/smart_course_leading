@@ -29,7 +29,8 @@
           </div>
 
           <div>
-            <span class="login-type" @click="switchLoginType" v-text="'切换为'+(loginType ? '验证码': '密码')+'登录'"></span>
+            <span class="login-type" @click="switchLoginType"
+                  v-text="'切换为'+(loginType ? '验证码': '密码')+'登录'"></span>
             <span class="forget-pwd">忘记密码？</span>
           </div>
           <input type="button" @click="signIn" value="Login" class="btn solid"/>
@@ -100,8 +101,8 @@
 </template>
 
 <script>
-import qs from "qs";
 import ElementUI from 'element-ui'
+import Moment from "moment";
 
 export default {
   name: "Login",
@@ -278,10 +279,14 @@ export default {
           localStorage.setItem('authorization', arr[0]);
 
           // 过期时间两个小时
-          let now = new Date();
-          now.setTime(now.getTime() + 2 * 60 * 60 * 1000);
-          let expires = "expires=" + now.toUTCString();
-          document.cookie = "token=" + arr[1] + "; " + expires + "path=/";
+          let expiresDate = new Date();
+          expiresDate.setTime(expiresDate.getTime() + 10 * 3600 * 1000);
+          // token=1763110496858411008; Max-Age=7200; Expires=Thu, 29-Feb-2024 09:54:34 GMT; Path=/
+          let cookieStr = "token=" + arr[1] + "; Max-Age=72000; expires=" + expiresDate.toUTCString() + "; Path=/";
+          console.log(cookieStr)
+          // todo linux chrome设置cookie无效。
+          document.cookie = cookieStr;
+          console.log("cookie", document.cookie)
         }
         // 登录成功，跳转首页
         location.href = redirectUrl

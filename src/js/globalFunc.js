@@ -30,25 +30,25 @@ const exportFunc = {
             let token = this.getCookie("token");
             console.log("token", token)
             if (!token) {
-                return reject(false);
+                return;
             }
 
-            // todo 权限校验，加密解密，最好不需要重新调用外部接口
             axios.post("/auth/query_permission", {
                 token,
                 pageUrl: location.pathname
             }).then(resp => {
                 let data = resp.data.data;
                 if (!data) {
-                    return reject(false)
+                    return;
                 }
-                if (exportFunc.validateSaltedString(data)) {
-                    resolve(true)
-                } else {
-                    reject(false)
+                if (!exportFunc.validateSaltedString(data)) {
+                    return;
                 }
+
+                // 权限校验成功
+                console.log("有管理员权限")
+                resolve(true);
             }).catch(_ => {
-                reject(false)
             })
         })
     },

@@ -27,6 +27,8 @@
               个人简介
             </div>
             <el-input class="input-inner"
+                      maxlength="32"
+                      show-word-limit
                       v-model="userInfo.briefInfo">
             </el-input>
           </div>
@@ -37,6 +39,7 @@
               class="upload-demo"
               :limit="10"
               :headers="this.$func.getAuthHeader()"
+              :before-upload="upCompressImg"
               :on-success="updateImgUrl"
               action="http://localhost:8090/file/upload">
             <div>
@@ -86,6 +89,36 @@ export default {
     }
   },
   methods: {
+    upCompressImg($file) {
+      if (!['image/jpeg', 'image/png', 'image/gif'].includes($file.type)) {
+        // 如果不是图片类型，则提示错误并返回 false
+        this.$notify({
+          title: '上传文章封面失败',
+          message: '只能上传图片',
+          type: 'error'
+        });
+        return false;
+      }
+      if ($file.size / 1024 / 1024 > 3) {
+        this.$notify({
+          title: '上传文章封面失败',
+          message: '上传文件不能大于3M',
+          type: 'error'
+        });
+        return false;
+      }
+      console.debug("上传文件大小", $file.size / 1024, 'KB', $file)
+      return new Promise((resolve, reject) => {
+        if ($file.type === 'image/gif') {
+          // todo gif文件不支持压缩
+          return resolve($file)
+        }
+        this.$func.compressImg($file).then(newFile => {
+          console.debug("压缩文件大小", newFile.size / 1024, 'KB', newFile)
+          return resolve(newFile)
+        })
+      })
+    },
     updateImgUrl(response, file, fileList) {
       console.log("success上传", response, file, fileList)
       this.userInfo.imgUrl = response.data
