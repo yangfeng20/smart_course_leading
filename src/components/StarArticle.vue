@@ -1,6 +1,7 @@
 <template>
   <div>
-    <ArticleList :article-list="articleList"></ArticleList>
+    <ArticleList v-if="articleList.length" :article-list="articleList"></ArticleList>
+    <el-empty v-if="!articleList.length"></el-empty>
   </div>
 </template>
 

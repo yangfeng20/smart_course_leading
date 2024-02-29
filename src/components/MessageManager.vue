@@ -15,14 +15,17 @@
       <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
     </el-input>
 
-    <MessageItem v-for="message in messageList" :message="message"></MessageItem>
+    <div v-if="messageList.length">
+      <MessageItem v-for="message in messageList" :message="message"></MessageItem>
+      <el-pagination style="position: absolute;bottom: 0;display: inline;"
+                     background
+                     :total="messagePage.total"
+                     :current-page.sync="messagePage.page"
+                     layout="total, prev, pager, next">
+      </el-pagination>
+    </div>
+    <el-empty v-if="!messageList.length"></el-empty>
 
-    <el-pagination style="position: absolute;bottom: 0;display: inline;"
-                   background
-                   :total="messagePage.total"
-                   :current-page.sync="messagePage.page"
-                   layout="total, prev, pager, next">
-    </el-pagination>
   </div>
 </template>
 
@@ -46,7 +49,7 @@ export default {
       messagePage: {
         page: 1,
         size: 9,
-        total: 100,
+        total: 0,
       }
     }
   },

@@ -3,7 +3,7 @@
     <el-container style="height: 100%">
       <el-aside width="300px" class="catalogue">
 
-        <el-button v-if="this.$func.getLocalUser().id !== this.userInfo.id" @click="sendMessage" type="primary" icon="el-icon-message"
+        <el-button v-if="showBtn" @click="sendMessage" type="primary" icon="el-icon-message"
                    style="width: 80%;margin: 10px;">发消息
         </el-button>
 
@@ -64,6 +64,7 @@ export default {
     return {
       userInfo: {},
       articleList: [],
+      showBtn: false,
     }
   },
   methods: {
@@ -77,6 +78,8 @@ export default {
     this.$axios.post("/user/info?userId=" + userId).then(resp => {
       this.userInfo = resp.data.data
     })
+
+    this.showBtn = this.$func.getLocalUser().id === this.userInfo.id
 
     this.$axios.post('/article/search', {
       author: userId,

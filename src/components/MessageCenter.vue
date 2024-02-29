@@ -11,7 +11,7 @@
       </el-aside>
 
       <el-main class="message-body bg">
-        <div>
+        <div v-if="messageList.length">
           <div style="height: 500px;border-bottom: 1px solid #e4e6eb;overflow-y: auto;" class="scrollbar">
             <div class="bout" v-for="message in messageList[selectMsgIndex]?.message">
               <div style="text-align: center;" class="message-date">{{ message?.createdDate }}</div>
@@ -51,6 +51,9 @@
           <el-button @click="sendMessage" size="small" type="primary"
                      style='position: absolute;margin-left: -83px;margin-top: 60px;'>发送消息
           </el-button>
+        </div>
+        <div v-if="!messageList.length">
+          <el-empty></el-empty>
         </div>
       </el-main>
     </el-container>
