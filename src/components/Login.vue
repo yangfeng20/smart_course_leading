@@ -271,24 +271,15 @@ export default {
 
         imgVerifyCode: this.loginForm.code,
         token: this.loginForm.token
-      }).then(resp => {
+      }, {withCredentials: true}).then(resp => {
         let authAndToken = resp.headers['authorization'];
+        // 不使用拼接的token，而是使用cookie响应的cookie
         if (!authAndToken.includes("-")) {
           localStorage.setItem('authorization', authAndToken);
           document.cookie = "token=;";
         } else {
           let arr = authAndToken.split("-")
           localStorage.setItem('authorization', arr[0]);
-
-          // 过期时间两个小时
-          let expiresDate = new Date();
-          expiresDate.setTime(expiresDate.getTime() + 10 * 3600 * 1000);
-          // token=1763110496858411008; Max-Age=7200; Expires=Thu, 29-Feb-2024 09:54:34 GMT; Path=/
-          let cookieStr = "token=" + arr[1] + "; Max-Age=72000; expires=" + expiresDate.toUTCString() + "; Path=/";
-          console.log(cookieStr)
-          // todo linux chrome设置cookie无效。
-          document.cookie = cookieStr;
-          console.log("cookie", document.cookie)
         }
         // 登录成功，跳转首页
         location.href = redirectUrl

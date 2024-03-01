@@ -191,6 +191,7 @@ export default {
 
     logout() {
       localStorage.clear()
+      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       this.$axios.post('/user/logout', {}).then(_ => {
         ElementUI.Message.success("退出登录成功")
         location.href = '/'

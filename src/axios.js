@@ -13,7 +13,7 @@ const request = axios.create({
     timeout: 5000,
     // 格式为json数据；字符编码utf-8
     headers: {
-        'Cont-Type': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json; charset=utf-8',
     }
 })
 

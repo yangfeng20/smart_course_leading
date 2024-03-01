@@ -36,7 +36,7 @@ const exportFunc = {
             axios.post("/auth/query_permission", {
                 token,
                 pageUrl: location.pathname
-            }).then(resp => {
+            }, {withCredentials: true}).then(resp => {
                 let data = resp.data.data;
                 if (!data) {
                     return;
