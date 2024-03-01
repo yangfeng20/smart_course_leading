@@ -184,8 +184,20 @@ export default {
     signIn() {
       this.$axios.post('/user/sign_in').then(_ => {
         ElementUI.Message.success("签到成功")
+        this.$axios.post('/user/info').then(resp => {
+          let userInfo = resp.data.data
+          if (!userInfo) {
+            return;
+          }
+          this.avatarFileUrl = userInfo.imgUrl
+          this.coin_number = userInfo.coin ? userInfo.coin : 0
+          this.username = userInfo.name
+          localStorage.setItem("user", JSON.stringify(userInfo))
+        }).catch(e => {
+
+        })
       }).catch(e => {
-        ElementUI.Message.info(e)
+        ElementUI.Message.error(e)
       })
     },
 
