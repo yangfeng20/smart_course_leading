@@ -69,15 +69,15 @@
                                circle></el-button>
                   </el-tooltip>
 
-                  <el-tooltip class="item" effect="dark" content="下架文章" placement="bottom">
-                    <el-button v-if="adminPermission" @click.stop="articleDownDialogVisible=true" type="warning"
+                  <el-tooltip v-if="adminPermission" class="item" effect="dark" content="下架文章" placement="bottom">
+                    <el-button @click.stop="articleDownDialogVisible=true" type="warning"
                                icon="el-icon-bottom"
                                size="mini"
                                circle></el-button>
                   </el-tooltip>
 
-                  <el-tooltip class="item" effect="dark" content="审核文章" placement="bottom">
-                    <el-button v-if="adminPermission" @click.stop="auditDialogVisible=true" type="info"
+                  <el-tooltip v-if="adminPermission" class="item" effect="dark" content="审核文章" placement="bottom">
+                    <el-button @click.stop="auditDialogVisible=true" type="info"
                                icon="el-icon-set-up"
                                size="mini"
                                circle></el-button>

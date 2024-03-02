@@ -170,7 +170,7 @@ export default {
 
       this.$axios.post("/user/info").then(resp => {
         let userInfo = resp.data.data
-        if (!userInfo){
+        if (!userInfo) {
           this.$notify({
             type: "warning",
             title: "写文章",
@@ -219,6 +219,7 @@ export default {
       this.listLoading = true
       this.$axios.post("/article/search",
           {
+            status: 3,
             ...this.articlePage,
             title: this.userInput,
             type: this.selectedArticleType
