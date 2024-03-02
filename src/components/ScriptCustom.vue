@@ -14,7 +14,7 @@
       <el-button type="primary" style="margin-left: 10px;" icon="el-icon-refresh" :loading="listLoading"
                  @click="refreshList">刷新列表
       </el-button>
-      <el-button type="primary" icon="el-icon-edit" @click="dialog = true">新增定制</el-button>
+      <el-button type="primary" icon="el-icon-edit" @click="newScriptApply">新增定制</el-button>
     </div>
 
     <div class="data-page">
@@ -166,6 +166,21 @@ export default {
   },
 
   methods: {
+    newScriptApply() {
+
+      this.$axios.post("/user/info").then(resp => {
+        let userInfo = resp.data.data
+        if (!userInfo) {
+          this.$notify({
+            type: "warning",
+            title: "新建脚本定制",
+            message: "请先登录"
+          })
+          return
+        }
+        this.dialog = true
+      })
+    },
     tagType(status) {
       if (!status) {
         return

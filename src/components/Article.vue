@@ -167,11 +167,24 @@ export default {
   name: "Article",
   methods: {
     newArticle(articleId) {
-      if (articleId) {
-        this.$router.push('article/edit/' + articleId)
-      } else {
-        this.$router.push('article/edit/')
-      }
+
+      this.$axios.post("/user/info").then(resp => {
+        let userInfo = resp.data.data
+        if (!userInfo){
+          this.$notify({
+            type: "warning",
+            title: "写文章",
+            message: "请先登录"
+          })
+          return
+        }
+
+        if (articleId) {
+          this.$router.push('article/edit/' + articleId)
+        } else {
+          this.$router.push('article/edit/')
+        }
+      })
     },
     clickArticle(article) {
       this.$router.push('article/detail/' + article.id)
@@ -250,7 +263,7 @@ export default {
   created() {
     this.searchArticle()
 
-    this.$axios.post("/article/get_all_type").then(resp => {
+    this.$axios.post("/article/get_all_type_desk").then(resp => {
       this.typeList = resp.data.data
       this.typeList.unshift({key: 0, desc: "综合"})
     }).catch(_ => {
@@ -264,7 +277,7 @@ export default {
       return;
     }
 
-    this.$axios.post("/article/hot_list").then(resp => {
+    this.$axios.post("/article/top_list").then(resp => {
       this.topList = resp.data.data.content
       expiredStorage.set(hotArticleListKey, this.topList, 60)
     })
