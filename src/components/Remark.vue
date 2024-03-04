@@ -10,13 +10,13 @@
                     maxlength="100"
                     show-word-limit
                     style="width: 60%;"></el-input>
-          <el-button style="position:relative;margin-left: -56px;" size="small" type="primary" @click="onSubmit(null)">
+          <el-button style="position:relative;margin-left: -56px;" size="small" type="primary" @click="onSubmit({})">
             发送
           </el-button>
         </div>
       </el-form>
     </div>
-    <div v-for="message in messageList">
+    <div v-for="message in messageList" :key="message.id">
       <div style="margin: 10px">
         <el-row>
           <div style="display: flex">
@@ -45,7 +45,6 @@
         <el-row>
           <div v-if="message.newComment" style="padding-left: 50px" class="message-created-name">
             <el-input ref="input" :autosize="{ minRows: 3}" type="textarea" v-model="comment.replyInputMsg"
-                      @blur="closeCommentInput(message)"
                       :placeholder="message.toUser"
                       maxlength="100"
                       show-word-limit
@@ -112,11 +111,11 @@ export default {
         // 清空评论区
         if (parentMessageId) {
           this.comment.replyInputMsg = ""
+          // 关闭评论输入框
+          this.closeCommentInput(message)
         } else {
           this.comment.inputMsg = ""
         }
-        // 关闭评论输入框
-        this.closeCommentInput(message)
       })
     },
 
@@ -128,16 +127,11 @@ export default {
     openCommentInput(message) {
       console.log("打开", message.newComment)
       if (message.newComment) {
+        this.closeCommentInput(message)
         return;
       }
       message.newComment = true
       this.commentBtnText = "取消"
-
-      setTimeout(() => {
-        if (this.$refs.input.length >= 1) {
-          this.$refs.input[0].focus()
-        }
-      }, 100)
       message.toUser = "回复" + message.createdUser.name
     },
   },

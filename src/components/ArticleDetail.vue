@@ -1,7 +1,7 @@
 <template>
   <div class="body">
     <el-container style="height: 100%">
-      <el-aside width="200px" class="catalogue" style="position: fixed;">
+      <el-aside v-if="article.id" width="200px" class="catalogue" style="position: fixed;">
 
         <!--点赞，评论，收藏-->
         <div style="border-bottom: 1px solid rgba(228, 230, 235, 0.5);padding: 10px 10px">
@@ -55,8 +55,9 @@
               <div class="article-last-row" style="height: 50px;">
                 <div class="grid-content bg-purple" style="display: flex;gap: 20px;width: 100%;">
                   <el-tag effect="dark">{{ article?.type?.desc }}</el-tag>
-                  <el-tag @click="()=>{this.$notify({title: '任务申请',message: '点击右侧侧边栏申请任务',type: 'success'})}"
-                          type="success" effect="dark" v-if="article?.type?.key ===4">任务奖励：{{ taskAward }}
+                  <el-tag
+                      @click="()=>{this.$notify({title: '任务申请',message: '点击右侧侧边栏申请任务',type: 'success'})}"
+                      type="success" effect="dark" v-if="article?.type?.key ===4">任务奖励：{{ taskAward }}
                     <el-icon class="el-icon-coin"></el-icon>
                   </el-tag>
 
@@ -92,7 +93,7 @@
                   previewBackground="#fff"
                   style="max-height: 10000px"
                   v-model="article.content"></mavon-editor>
-              <el-footer style="height: 100%">
+              <el-footer v-if="article.id" style="height: 100%">
                 <div class="footer-body" id="commentList">
                   <Remark :message-list="messageList" :show-create-comment="true" :link-id="article.id"></Remark>
                 </div>
@@ -100,7 +101,7 @@
             </el-container>
           </el-main>
           <el-aside width="280px" class="aside-right">
-            <div style="height: 200px">
+            <div v-if="article.id" style="height: 200px">
               <UserInfoCard :user-info="authorUserInfo"></UserInfoCard>
             </div>
             <div v-if="article.type?.key === 4">
@@ -457,6 +458,7 @@ export default {
         linkId: articleId,
         recursion: true,
         msgType: 4,
+        status: 2,
       }).then(resp => {
         this.messageList = resp.data.data.content
         this.messageTotal = resp.data.data.total
