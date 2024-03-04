@@ -77,9 +77,8 @@ export default {
     let userId = pathArr[pathArr.length - 1];
     this.$axios.post("/user/info?userId=" + userId).then(resp => {
       this.userInfo = resp.data.data
+      this.showBtn = this.$func.getLocalUser().id !== this.userInfo.id
     })
-
-    this.showBtn = this.$func.getLocalUser().id === this.userInfo.id
 
     this.$axios.post('/article/search', {
       author: userId,

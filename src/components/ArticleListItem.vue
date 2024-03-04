@@ -29,11 +29,13 @@
                     <el-tag effect="plain" size="mini">{{ article.type?.desc }}</el-tag>
                     <el-tag effect="plain" size="mini">{{ article.status?.desc }}</el-tag>
                     <!-- 下架理由-->
-                    <el-tag v-if="article.status?.key===4" effect="plain" size="mini" color="red" style="color: #eff0f1">
+                    <el-tag v-if="article.status?.key===4" effect="plain" size="mini" color="red"
+                            style="color: #eff0f1">
                       文章下架原因：{{ article?.takenDownCause }}
                     </el-tag>
                     <!--审核拒绝理由-->
-                    <el-tag v-if="article.status?.key===5" effect="plain" size="mini" color="red" style="color: #eff0f1">
+                    <el-tag v-if="article.status?.key===5" effect="plain" size="mini" color="red"
+                            style="color: #eff0f1">
                       审核拒绝原因：{{ JSON.parse(article.extInfo)?.rejectText }}
                     </el-tag>
 
@@ -55,14 +57,20 @@
                 </div>
                 <div style="margin-top: 10px;" v-if="opt" class="optDiv">
                   <el-tooltip class="item" effect="dark" content="编辑文章" placement="bottom">
-                    <el-button @click.stop="()=>this.$router.push('/article/edit/' + article.id)" type="primary"
+                    <el-button @click.stop="editArticleHandler(article)" type="primary"
                                icon="el-icon-edit" size="mini" circle></el-button>
                   </el-tooltip>
 
+
                   <el-tooltip class="item" effect="dark" content="删除文章" placement="bottom">
-                    <el-button @click.stop="deleteArticle" type="danger" icon="el-icon-delete" size="mini"
-                               circle></el-button>
+                    <el-popconfirm title="确认删除当前文章吗？" @confirm="deleteArticle" @click.stop.native="">
+                      <template slot="reference">
+                        <el-button style="margin-left: 10px;margin-right: 10px;" type="danger" icon="el-icon-delete" size="mini"
+                                   circle></el-button>
+                      </template>
+                    </el-popconfirm>
                   </el-tooltip>
+
 
                   <el-tooltip class="item" effect="dark" content="发布文章" placement="bottom">
                     <el-button v-if="article.status?.key===1" type="success" icon="el-icon-check" size="mini"
@@ -141,6 +149,9 @@ export default {
   },
   props: ['article', 'opt', 'adminPermission'],
   methods: {
+    editArticleHandler(article) {
+      this.$router.push('/article/edit/' + article.id)
+    },
     // 下架文章
     doRemovedFromShelves() {
       this.$axios.post("/article/taken_down_article?articleId=" + this.article.id + "&takenDownCause=" + this.takenDownCause).then(resp => {
