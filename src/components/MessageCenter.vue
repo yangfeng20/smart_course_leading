@@ -145,7 +145,7 @@ export default {
     this.$axios.post("/message/chat_message_list").then(resp => {
       this.messageList.push(...resp.data.data.content)
       // 路由是用户id，不是当前用户，消息列表中没有当前用户
-      if (isInt && !this.$func.getLocalUser().id + "" === toUserId && !this.messageList.map(item => item?.toUser.id).includes(parseInt(toUserId))) {
+      if (isInt && this.$func.getLocalUser().id + "" !== toUserId && !this.messageList.map(item => item?.toUser.id).includes(parseInt(toUserId))) {
         // 消息列表中没有当前用户，添加toUser到首部
         this.$axios.post("/user/info?userId=" + toUserId).then(resp => {
           this.messageList.unshift({
