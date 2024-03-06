@@ -7,8 +7,8 @@
       <div style="height: 40px"></div>
     </el-row>
     <el-input v-model="form.email" prefix-icon="el-icon-chat-dot-square" placeholder="回件邮箱"
-              style="width: 50%"></el-input>
-    <el-button type="primary" @click="submitForm">提交反馈</el-button>
+              style="width: 50%" :disabled="disabled"></el-input>
+    <el-button style="transform: translateY(0%);" type="primary" @click="submitForm">提交反馈</el-button>
     <br/>
     <div>
       <quill-editor v-model="form.content" :options="editorOption"
@@ -30,6 +30,7 @@ export default {
         email: '',
         content: ''
       },
+      disabled: false,
       editorOption: {
         placeholder: '反馈内容',
         modules: {
@@ -62,10 +63,17 @@ export default {
       this.$axios.post('/feedback/send_email', {
         msg: this.form.content,
         senderEmail: this.form.email
-      }).then(_=> {
+      }).then(_ => {
         ElementUI.Message.success("提交成功");
         this.$router.push("/")
       })
+    }
+  },
+  created() {
+    let user = this.$func.getLocalUser();
+    if (user && user.email) {
+      this.form.email = user.email
+      this.disabled = true
     }
   }
 };

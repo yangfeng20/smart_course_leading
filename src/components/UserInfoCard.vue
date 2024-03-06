@@ -40,7 +40,11 @@ export default {
   methods: {
     intoMe() {
       let userId = this.userInfo.userId ? this.userInfo.userId : this.userInfo.id
-      this.$router.push('/user/' + userId)
+      let path = '/user/' + userId;
+      if (this.$route.path === path) {
+        return;
+      }
+      this.$router.push(path)
     },
   }
 }
