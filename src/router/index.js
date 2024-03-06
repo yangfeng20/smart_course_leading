@@ -86,6 +86,9 @@ export default new vueRouter({
                 {
                     path: 'message_manager', component: () => import("../components/MessageManager")
                 },
+                {
+                    path: 'task_manager', component: () => import("../components/TaskManager")
+                },
             ]
         },
         {

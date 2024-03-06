@@ -52,6 +52,13 @@
             </template>
           </el-menu-item>
 
+          <el-menu-item index="/me/task_manager" v-if="isPermission">
+            <template slot="title">
+              <i class="el-icon-s-opportunity"></i>
+              <span>任务管理</span>
+            </template>
+          </el-menu-item>
+
         </el-menu>
       </el-aside>
 
