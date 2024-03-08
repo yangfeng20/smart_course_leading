@@ -13,7 +13,9 @@
         </div>
 
         <div>
-          <el-button style="transform: translateY(-50%);" type="primary" round icon="el-icon-download" @click="downAndUpdateCount">点击下载</el-button>
+          <el-button style="transform: translateY(-50%);" type="primary" round icon="el-icon-download"
+                     @click="downAndUpdateCount">点击下载
+          </el-button>
         </div>
 
       </div>
@@ -67,8 +69,7 @@ export default {
   },
   data() {
     return {
-      scriptInfo: {
-      }
+      scriptInfo: {}
     }
   },
 
@@ -92,22 +93,20 @@ export default {
 
       this.$axios.get("script_info/" + id).then(resp => {
         this.scriptInfo = resp.data.data;
-      }).catch(e=>{
+      }).catch(e => {
 
       })
     },
     downAndUpdateCount() {
-      window.open(this.scriptInfo.scriptUrl, "_blank")
-      this.$axios.put("script_info/update_count", qs.stringify({id: this.$route.query.id}))
+      this.$axios.put("script_info/get_url_and_update_count?id=" + this.$route.query.id)
           .then(resp => {
-
+            window.open(resp.data.data, "_blank")
           }).catch(error => {
-
       })
     }
   },
-  computed:{
-    windowWith(){
+  computed: {
+    windowWith() {
       return window;
     }
   }
