@@ -1,197 +1,67 @@
 <template>
-  <div style="padding-left: 10px;padding-top: 10px;padding-bottom:10px;">
-    <div>
-      <el-form ref="form" :model="comment" label-width="60px" v-if="showCreateComment"
-               style="width: 100%;display: flex;">
-        <el-image class="new-comment-message-created-icon message-created-icon"
-                  :src="userInfo.imgUrl"></el-image>
-        <div style="display: flex;padding: 10px;align-items: flex-end;width: 100%">
-          <el-input :autosize="{ minRows: 3}" type="textarea" v-model="comment.inputMsg" placeholder="编写评论"
-                    maxlength="100"
-                    show-word-limit
-                    style="width: 60%;"></el-input>
-          <el-button style="position:relative;margin-left: -56px;" size="small" type="primary" @click="onSubmit({})">
-            发送
-          </el-button>
-        </div>
-      </el-form>
-    </div>
-    <div v-for="message in messageList">
-      <div style="margin: 10px">
-        <el-row>
-          <div style="display: flex">
-            <div>
-              <el-image class="message-created-icon"
-                        :src="message?.createdUser?.imgUrl"></el-image>
-            </div>
-            <div class="message-created-name">{{ message.createdUser.name }}
-            </div>
-          </div>
-        </el-row>
-        <el-row>
-          <div style="padding-left: 50px" :span="22" class="message-created-name"
-               v-html="message.msgContent"></div>
-        </el-row>
-        <el-row>
-          <div style="padding-left:50px;margin-top:10px;display: flex" class="message-created-name">
-            <div>{{ message.createdDate }}</div>
-            <el-button style="position: relative;margin-left: 10px;top: -3px;" type="text" plain
-                       icon="el-icon-s-comment"
-                       @click="openCommentInput(message)" size="mini">{{ commentBtnText }}
-            </el-button>
-          </div>
-        </el-row>
-
-        <el-row>
-          <div v-if="message.newComment" style="padding-left: 50px" class="message-created-name">
-            <el-input ref="input" :autosize="{ minRows: 3}" type="textarea" v-model="comment.replyInputMsg"
-                      @blur="closeCommentInput(message)"
-                      :placeholder="message.toUser"
-                      maxlength="100"
-                      show-word-limit
-                      style="width: 60%;"></el-input>
-            <el-button style="position:relative;margin-left: -56px;" size="small" type="primary"
-                       @click="onSubmit(message)">回复
-            </el-button>
-          </div>
-        </el-row>
-      </div>
-
-      <div class="sub-message">
-        <Remark :message-list="message.subMessageList" :link-id="linkId"></Remark>
-      </div>
+  <div>
+    <div v-if="componentLoaded">
+      <DynamicComponent />
     </div>
   </div>
 </template>
-<script>
-import Remark from "../components/Remark";
 
+<script>
 export default {
-  name: "Remark",
-  components: {
-    Remark,
-  },
-  props: ['messageList', 'showCreateComment', 'linkId'],
   data() {
     return {
-      commentBtnText: "评论",
-      comment: {
-        inputMsg: "",
-        replyInputMsg: "",
-      },
-      userInfo: {}
+      componentLoaded: false
+    };
+  },
+  async created() {
+    try {
+      // const response = await fetch('your_api_endpoint');
+      // // const componentData = await response.json();
+      //
+      // const resp = await this.$axios.post("/data/test", {})
+      // let componentData = resp.data.data
+
+      let componentData = {
+        template: "    <div>\n" +
+            "      <div class=\"home-show\" v-if=\"!showLinkView\" style=\"background-color:rgba(255,255,255,0.5);\">\n" +
+            "        <el-carousel :interval=\"2000\" type=\"card\" height=\"200px\">\n" +
+            "          <el-carousel-item><img :src=\"require('./assets/image/home/1.jpg')\" alt=\"\" width=\"100%\"></el-carousel-item>\n" +
+            "          <el-carousel-item><img :src=\"require('./assets/image/home/2.jpg')\" alt=\"\" width=\"100%\"></el-carousel-item>\n" +
+            "          <el-carousel-item><img :src=\"require('./assets/image/home/3.png')\" alt=\"\" width=\"104%\"></el-carousel-item>\n" +
+            "          <el-carousel-item>\n" +
+            "            <el-button>测试</el-button>\n" +
+            "          </el-carousel-item>\n" +
+            "          <el-carousel-item>\n" +
+            "            <div>哈哈哈</div>\n" +
+            "          </el-carousel-item>\n" +
+            "        </el-carousel>\n" +
+            "      </div>",
+        data
+      }
+
+      this.createDynamicComponent(componentData);
+    } catch (error) {
+      console.error('Failed to load dynamic component:', error);
     }
   },
-
   methods: {
-    onSubmit(message) {
-      let parentMessageId = message.id
-      let inputMsg
-      if (parentMessageId) {
-        inputMsg = this.comment.replyInputMsg
-      } else {
-        inputMsg = this.comment.inputMsg
-      }
+    createDynamicComponent(componentData) {
+      const { template, data, styles } = componentData;
 
-      if (!inputMsg) {
-        return;
-      }
-
-      this.$axios.post("/message/add", {
-        linkId: this.linkId,
-        msgType: 4,
-        msgContent: inputMsg,
-        parentId: parentMessageId,
-      }).then(resp => {
-        this.$notify({
-          title: '评论提交成功',
-          message: '等待管理员审核后可查看',
-          type: 'success'
-        });
-
-        // 清空评论区
-        if (parentMessageId) {
-          this.comment.replyInputMsg = ""
-          // 关闭评论输入框
-          this.closeCommentInput(message)
-        } else {
-          this.comment.inputMsg = ""
+      const DynamicComponent = Vue.component('DynamicComponent', {
+        template: template,
+        data() {
+          return new Function(data)();
         }
-      })
-    },
+      });
 
-    closeCommentInput(message) {
-      console.log("失焦")
-      message.newComment = false
-      this.commentBtnText = "评论"
-    },
-    openCommentInput(message) {
-      console.log("打开", message.newComment)
-      if (message.newComment) {
-        return;
-      }
-      message.newComment = true
-      this.commentBtnText = "取消"
+      const styleElement = document.createElement('style');
+      styleElement.textContent = styles;
+      document.head.appendChild(styleElement);
 
-      setTimeout(() => {
-        if (this.$refs.input.length >= 1) {
-          this.$refs.input[0].focus()
-        }
-      }, 100)
-      message.toUser = "回复" + message.createdUser.name
-    },
-  },
-  created() {
-    if (!this.showCreateComment) {
-      return;
+      Vue.component('DynamicComponent', DynamicComponent);
+      this.componentLoaded = true;
     }
-
-    this.userInfo = this.$func.getLocalUser()
   }
-}
-
+};
 </script>
-<style scoped>
-
-.body {
-  height: 100%;
-  position: relative;
-  background-color: #ffffff;
-}
-
-.new-comment-message-created-icon {
-  top: 12px;
-}
-
-.message-created-icon {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-}
-
-.message-created-name {
-  top: 10px;
-  position: relative;
-  padding-left: 10px;
-}
-
-.sub-message {
-  padding-left: 30px;
-  position: relative;
-  /*top: 30px;*/
-}
-
-
-.el-textarea > :first-child {
-  background-color: #f2f3f5;
-}
-
-.el-textarea > :nth-child(2) {
-  color: #909399;
-  background: #FFF;
-  position: absolute;
-  font-size: 12px;
-  bottom: 5px;
-  right: 65px;
-}
-</style>

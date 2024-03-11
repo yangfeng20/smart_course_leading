@@ -141,9 +141,9 @@
 
       <!--首页展示文本-->
       <div v-if="!showLinkView" align="center" style="padding-top: 10px">
-        <h1>智能课程</h1>
-        <p>你的学习好帮手</p>
-        <p>由于很多人使用脚本的过程中出现各种问题，同时无法沟通的问题，创建了一个群，可扫描上方二维码添加</p>
+        <span style='font-size: 50px;color: #2b2d42;'>智能课程 不止课程</span>
+        <!--<p>课程学习,脚本下载,社区交流，资源共享，这里都有，等待您的探索</p>-->
+        <p style='font-size: 40px;font-family: Helvetica, Tahoma, Arial,serif;' v-html="textToShow"></p>
       </div>
 
 
@@ -217,7 +217,57 @@ export default {
       //   this.showLinkView = true
       // }
       // this.$router.push({path: "/" + e})
+    },
+
+    startTypewriter() {
+      if (this.currentCharIndex < this.texts[this.currentTextIndex].length) {
+        let nextChar = this.texts[this.currentTextIndex][this.currentCharIndex];
+        if (nextChar === '<') {
+          this.isTag = true;
+        }
+
+        // 如果当前是标签内部，找到整个标签
+        if (this.isTag) {
+          let tagEnd = this.texts[this.currentTextIndex].indexOf('>', this.currentCharIndex) + 1;
+          this.textToShow += this.texts[this.currentTextIndex].substring(this.currentCharIndex, tagEnd);
+          this.currentCharIndex = tagEnd;
+          this.isTag = false; // 退出标签模式
+          setTimeout(this.startTypewriter, 0); // 对于标签内部，不延迟
+        } else {
+          // 对于普通文本，逐字显示
+          this.textToShow += nextChar;
+          this.currentCharIndex++;
+          setTimeout(this.startTypewriter, 100); // 控制打字速度
+        }
+      } else {
+        setTimeout(this.startErasing, 1000); // 完成打字后延迟开始擦除
+      }
+    },
+    startErasing() {
+      if (this.textToShow.length > 0) {
+        if (this.textToShow[this.textToShow.length - 1] === '>') {
+          // 如果当前末尾是标签的结束，找到整个标签
+          let tagStart = this.textToShow.lastIndexOf('<', this.textToShow.length);
+          this.textToShow = this.textToShow.substring(0, tagStart);
+          this.currentCharIndex = tagStart;
+          setTimeout(this.startErasing, 0); // 对于标签，不延迟
+        } else {
+          // 对于普通文本，逐字擦除
+          this.textToShow = this.textToShow.substring(0, this.textToShow.length - 1);
+          this.currentCharIndex--;
+          setTimeout(this.startErasing, 100); // 控制擦除速度
+        }
+      } else {
+        this.currentTextIndex++;
+        if (this.currentTextIndex >= this.texts.length) {
+          this.currentTextIndex = 0; // 循环显示文本
+        }
+        setTimeout(this.startTypewriter, 1000); // 延迟后开始下一句打字
+      }
     }
+  },
+  mounted() {
+    this.startTypewriter();
   },
   watch: {
     $route() {
@@ -235,7 +285,17 @@ export default {
       login: false,
       coin_number: 0,
       avatarFileUrl: "",
-      username: "未登录用户"
+      username: "未登录用户",
+
+      texts: [
+        "<p style='color: #444444'>Smart Course . ltd</p>",
+        "<p><span style='color: #907669'>课程学习</span> <span style='color: #8b48c4'>脚本下载</span> <span style='color: #409919'>社区交流</span> <span style='color: #c45e1b'>资源共享</span> ",
+        "<p style='color: #cec08c'>Ctrl + D 可收藏网站</p>"
+      ],
+      currentTextIndex: 0,
+      currentCharIndex: 0,
+      textToShow: "",
+      isTag: false, // 新增：用于标识当前处理的字符是否在HTML标签内
     }
   }
 
