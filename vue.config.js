@@ -45,13 +45,15 @@ module.exports = {
             return {
                 plugins: [
 
-                    // 压缩
-                    // new CompressionPlugin({
-                    //     algorithm: 'gzip', //'brotliCompress'
-                    //     test: /\.js$|\.html$|\.css/, // + $|\.svg$|\.png$|\.jpg
-                    //     threshold: 10240, //对超过10k的数据压缩
-                    //     deleteOriginalAssets: false //不删除原文件
-                    // }),
+                    // 压缩[解决首页加载慢的问题]
+                    new CompressionPlugin({
+                        filename: '[path][base].gz',
+                        algorithm: 'gzip',
+                        test: /\.js$|\.css$|\.html$/,
+                        threshold: 10240,
+                        minRatio: 0.8,
+                        deleteOriginalAssets: false
+                    }),
 
 
                     //js代码加密
