@@ -131,7 +131,7 @@
           <el-carousel-item v-for="img in homeImgSrcList">
             <el-image :src="img.src" :fit="img.fit" :style="img.style"/>
           </el-carousel-item>
-          <el-carousel-item><HotArticleList></HotArticleList></el-carousel-item>
+          <el-carousel-item><HotArticleList :show-tag="true"></HotArticleList></el-carousel-item>
         </el-carousel>
       </div>
 
