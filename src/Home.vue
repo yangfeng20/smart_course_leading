@@ -127,16 +127,11 @@
 
     <div>
       <div class="home-show" v-if="!showLinkView" style="background-color:rgba(255,255,255,0.5);">
-        <el-carousel :interval="2000" type="card" height="300px">
-          <!--<el-carousel-item><img :src="require('./assets/image/home/1.jpg')" alt="" width="100%"></el-carousel-item>-->
-          <!--<el-carousel-item><img :src="require('./assets/image/home/2.jpg')" alt="" width="100%"></el-carousel-item>-->
-          <!--<el-carousel-item><img :src="require('./assets/image/home/3.png')" alt="" width="104%"></el-carousel-item>-->
-          <!--<el-carousel-item><img :src="require('./assets/image/home/4.jpg')" alt="" width="40%"></el-carousel-item>-->
-
-          <el-carousel-item><el-image :src="require('./assets/image/home/1.jpg')" fit="fit"/></el-carousel-item>
-          <el-carousel-item><el-image :src="require('./assets/image/home/2.jpg')" fit="fit"/></el-carousel-item>
-          <el-carousel-item><el-image :src="require('./assets/image/home/3.png')" fit="fit"/></el-carousel-item>
-          <el-carousel-item><el-image :src="require('./assets/image/home/4.jpg')" fit="fit"/></el-carousel-item>
+        <el-carousel :interval="3000" type="card" height="300px">
+          <el-carousel-item v-for="img in homeImgSrcList">
+            <el-image :src="img.src" :fit="img.fit" :style="img.style"/>
+          </el-carousel-item>
+          <el-carousel-item><HotArticleList></HotArticleList></el-carousel-item>
         </el-carousel>
       </div>
 
@@ -165,8 +160,15 @@
 
 <script>
 import ElementUI from "element-ui";
+import HotArticleList from "./components/HotArticleList";
+import Sponsor from "./components/Sponsor";
 
 export default {
+
+  components:{
+    HotArticleList,
+    Sponsor
+  },
 
   created() {
     this.$axios.post('/user/info').then(resp => {
@@ -291,6 +293,23 @@ export default {
       coin_number: 0,
       avatarFileUrl: "",
       username: "未登录用户",
+      homeImgSrcList: [
+        {
+          fit: "",
+          style: "",
+          src: require('./assets/image/home/1.jpg'),
+        },
+        {
+          fit: "",
+          style: "",
+          src: require('./assets/image/home/2.jpg'),
+        },
+        {
+          fit: "",
+          style: "",
+          src: require('./assets/image/home/3.png')
+        },
+      ],
 
       texts: [
         "<p style='color: #444444'>Smart Course . ltd</p>",
