@@ -10,7 +10,7 @@ import Moment from "moment";
  */
 const request = axios.create({
     // 超时时间
-    timeout: 5000,
+    timeout: 10000,
     // 格式为json数据；字符编码utf-8
     headers: {
         'Content-Type': 'application/json; charset=utf-8',
@@ -23,7 +23,9 @@ const request = axios.create({
  * @type {string}
  */
 if (process.env.NODE_ENV === 'production') {
-    request.defaults.baseURL = 'http://smartcourse.ltd:8090/'
+    // http://smartcourse.ltd：9090【使用nginx代理转发到8090】
+    // 直接使用ip地址减少dns解析时间【现在长的时候解析要11秒】
+    request.defaults.baseURL = 'http://43.138.246.37:9090/'
 } else {
     request.defaults.baseURL = 'http://localhost:8090/'
 }

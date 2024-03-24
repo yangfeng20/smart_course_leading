@@ -131,7 +131,9 @@
           <el-carousel-item v-for="img in homeImgSrcList">
             <el-image :src="img.src" :fit="img.fit" :style="img.style"/>
           </el-carousel-item>
-          <el-carousel-item><HotArticleList :show-tag="true"></HotArticleList></el-carousel-item>
+          <el-carousel-item>
+            <HotArticleList :show-tag="true"></HotArticleList>
+          </el-carousel-item>
         </el-carousel>
       </div>
 
@@ -165,12 +167,39 @@ import Sponsor from "./components/Sponsor";
 
 export default {
 
-  components:{
+  components: {
     HotArticleList,
     Sponsor
   },
 
   created() {
+    this.$axios.get("/misc/query_home_image_src").then(resp => {
+      let homeImgList = resp.data.data
+      if (homeImgList.length !== 0 && homeImgList[0].src) {
+        this.homeImgSrcList = homeImgList
+      }
+    }).catch(_ => {
+    }).finally(() => {
+      if (this.homeImgSrcList.length === 0) {
+        this.homeImgSrcList = [
+          {
+            fit: "",
+            style: "",
+            src: require('./assets/image/home/1.jpg'),
+          },
+          {
+            fit: "",
+            style: "",
+            src: require('./assets/image/home/2.jpg'),
+          },
+          {
+            fit: "",
+            style: "",
+            src: require('./assets/image/home/3.png')
+          }
+        ]
+      }
+    })
     this.$axios.post('/user/info').then(resp => {
       let userInfo = resp.data.data
       if (!userInfo) {
@@ -297,17 +326,17 @@ export default {
         {
           fit: "",
           style: "",
-          src: require('./assets/image/home/1.jpg'),
+          src: "http://43.138.246.37:9700/file/1-1711276551768-1.jpg",
         },
         {
           fit: "",
           style: "",
-          src: require('./assets/image/home/2.jpg'),
+          src: "http://43.138.246.37:9700/file/1-1711276607578-2.jpg",
         },
         {
           fit: "",
           style: "",
-          src: require('./assets/image/home/3.png')
+          src: "http://43.138.246.37:9700/file/1-1711276619399-3.png"
         },
       ],
 

@@ -116,7 +116,7 @@
                 :on-remove="removeImg"
                 :headers="this.$func.getAuthHeader()"
                 :on-exceed="(files, fileList)=>this.$notify({title: '上传文章封面失败',message: '请先移除之前上传的封面',type: 'error'})"
-                action="http://localhost:8090/file/upload">
+                :action="this.$axios.defaults.baseURL+'file/upload'">
               <div v-if="coverImgUrlShow" style="height: 360px;width: 360px;">
                 <el-image :src="article.coverImgUrl" fit="fit"/>
               </div>
@@ -307,6 +307,14 @@ export default {
       this.coverImgUrlShow = false
     },
     uploadSuccess(resp, file, fileList) {
+      if (resp.code!==200){
+        this.$notify({
+          type:"error",
+          title:"上传文件失败",
+          message:resp.requestId
+        })
+        return;
+      }
       this.article.coverImgUrl = resp.data
       this.coverImgUrlShow = true
     },

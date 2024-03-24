@@ -41,7 +41,7 @@
               :headers="this.$func.getAuthHeader()"
               :before-upload="upCompressImg"
               :on-success="updateImgUrl"
-              action="http://localhost:8090/file/upload">
+              :action="this.$axios.defaults.baseURL+'file/upload'">
             <div>
               <el-image
                   @mouseenter="showUpload"
@@ -120,6 +120,14 @@ export default {
       })
     },
     updateImgUrl(response, file, fileList) {
+      if (response.code!==200){
+        this.$notify({
+          type:"error",
+          title:"上传文件失败",
+          message:response.requestId
+        })
+        return;
+      }
       console.log("success上传", response, file, fileList)
       this.userInfo.imgUrl = response.data
     },
