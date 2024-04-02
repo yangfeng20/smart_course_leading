@@ -222,7 +222,11 @@ export default {
             status: 3,
             ...this.articlePage,
             title: this.userInput,
-            type: this.selectedArticleType
+            type: this.selectedArticleType,
+            sort: {
+              ordering: "desc",
+              name: "created_date",
+            }
           })
           .then(resp => {
             this.articleList = resp.data.data.content;

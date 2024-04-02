@@ -16,6 +16,11 @@
 
     </el-input>
     <ArticleList v-if="articleList.length" :article-list="this.articleList" :opt="true"></ArticleList>
+    <el-pagination v-if="articleList.length"
+                   :total="auditPage.total"
+                   :current-page.sync="auditPage.page"
+                   layout="total, prev, pager, next">
+    </el-pagination>
     <el-empty v-if="!articleList.length"></el-empty>
   </div>
 </template>
@@ -37,18 +42,39 @@ export default {
       articleTitle: "",
       articleType: "",
       articleStatus: "",
+      auditPage: {
+        page: 1,
+        size: 3,
+        total: 0,
+      }
     }
   },
 
   methods: {
     search() {
-      this.$axios.post('/article/search', {
+      this.$axios.post('/article/search', this.auditPage.total ? {
+        ...this.auditPage,
+        title: this.articleTitle,
+        type: this.articleType,
+        status: this.articleStatus
+      } : {
         title: this.articleTitle,
         type: this.articleType,
         status: this.articleStatus
       }).then(resp => {
         this.articleList = resp.data.data.content
+        this.auditPage.page = resp.data.data.page
+        this.auditPage.size = resp.data.data.size
+        this.auditPage.total = resp.data.data.total
       })
+    },
+  },
+
+  watch: {
+    'auditPage.page': {
+      handler: function () {
+        this.search()
+      }
     },
   },
 
