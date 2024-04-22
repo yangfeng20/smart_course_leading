@@ -17,6 +17,7 @@
     </el-input>
     <ArticleList v-if="articleList.length" :article-list="this.articleList" :opt="true"></ArticleList>
     <el-pagination v-if="articleList.length"
+                   page-size="9"
                    :total="auditPage.total"
                    :current-page.sync="auditPage.page"
                    layout="total, prev, pager, next">

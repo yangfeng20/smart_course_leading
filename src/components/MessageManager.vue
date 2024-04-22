@@ -19,6 +19,7 @@
       <MessageItem v-for="message in messageList" :message="message"></MessageItem>
       <el-pagination style="position: absolute;bottom: 0;display: inline;"
                      background
+                     page-size="9"
                      :total="messagePage.total"
                      :current-page.sync="messagePage.page"
                      layout="total, prev, pager, next">

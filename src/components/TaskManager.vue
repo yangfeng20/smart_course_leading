@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-input placeholder="暂不支持内容搜索" v-model="input" class="input-with-select" @keyup.native.enter="search">
+    <el-input placeholder="请输入任务关联文章标题搜索" v-model="input" class="input-with-select" @keyup.native.enter="search">
 
       <el-select v-model="taskStatus" slot="prepend" placeholder="请选择">
         <el-option label="全部" value="0"></el-option>
@@ -14,6 +14,7 @@
       <TaskItem v-for="task in taskList" :task="task"></TaskItem>
       <el-pagination style="position: absolute;bottom: 0;display: inline;"
                      background
+                     page-size="9"
                      :total="taskPage.total"
                      :current-page.sync="taskPage.page"
                      layout="total, prev, pager, next">
@@ -49,8 +50,8 @@ export default {
   methods: {
     search() {
       const postData = this.taskPage.total
-          ? {...this.taskPage, status: this.taskStatus}
-          : {status: this.taskStatus};
+          ? {...this.taskPage, status: this.taskStatus, articleTitle: this.input}
+          : {status: this.taskStatus, articleTitle: this.input};
 
       this.$axios.post("/task/search", postData).then(resp => {
         this.taskList = resp.data.data.content
